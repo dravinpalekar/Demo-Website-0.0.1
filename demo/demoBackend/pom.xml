@@ -17,6 +17,7 @@
     <modules>
         <module>repository</module>
         <module>restApi</module>
+        <module>authentication</module>
     </modules>
 	<properties>
 		<java.version>21</java.version>
