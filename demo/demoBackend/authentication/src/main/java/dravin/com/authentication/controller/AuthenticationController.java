@@ -4,6 +4,8 @@ package dravin.com.authentication.controller;
 import dravin.com.authentication.requestmodel.LoginRequestModel;
 import dravin.com.authentication.requestmodel.SignupRequestModel;
 import dravin.com.authentication.service.AuthenticationService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +19,7 @@ import static dravin.com.authentication.constant.RoutesFile.*;
 
 @RestController
 @RequestMapping(API_AUTH)
+@Tag(name = "Authentication and Authorization Controller")
 public class AuthenticationController {
 
     private static final Logger logger = LoggerFactory.getLogger( AuthenticationController.class );
@@ -28,12 +31,20 @@ public class AuthenticationController {
     }
 
     @PostMapping(SIGN_IN)
+    @Operation(
+            summary = "Authenticate API for User Or Guest User",
+            description = "Authenticate Admin and Super-AdminFeatures as well."
+    )
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequestModel loginRequest) {
 
         return authenticationService.authenticateUser(loginRequest);
     }
 
     @PostMapping(SIGN_UP)
+    @Operation(
+            summary = "Register API for User Or Guest User",
+            description = "Create Admin Features as well."
+    )
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequestModel signUpRequest) {
 
         return authenticationService.registerUser(signUpRequest);

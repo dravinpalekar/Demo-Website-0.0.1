@@ -65,7 +65,10 @@ public class WebSecurityConfiguration {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/auth/signIn","/api/auth/signUp").permitAll()
+                        auth.requestMatchers("/api/auth/signIn","/api/auth/signUp",
+                                        "/v3/api-docs/**",
+                                        "/swagger-ui.html",
+                                        "/swagger-ui/**").permitAll()
 //                                .requestMatchers("/api/super/**").permitAll()
                                 .requestMatchers("/api/super/**").hasRole("SUPER_ADMIN")
 //                                .requestMatchers("/api/auth/**").permitAll()
