@@ -1,6 +1,6 @@
 package dravin.com.authentication.service.loaduser;
 
-import dravin.com.entity.UserEntity;
+import dravin.com.repository.entity.UserEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;

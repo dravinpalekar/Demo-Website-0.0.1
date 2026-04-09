@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+
 import static dravin.com.authentication.constant.RoutesFile.*;
 
 @RestController
@@ -37,6 +38,7 @@ public class AuthenticationController {
     )
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequestModel loginRequest) {
 
+        logger.info("Attempt user for authenticate and UserName is {}", loginRequest.getUserName());
         return authenticationService.authenticateUser(loginRequest);
     }
 
@@ -47,6 +49,7 @@ public class AuthenticationController {
     )
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequestModel signUpRequest) {
 
+        logger.info("Attempt user for register and email is {}", signUpRequest.getEmail());
         return authenticationService.registerUser(signUpRequest);
     }
 }

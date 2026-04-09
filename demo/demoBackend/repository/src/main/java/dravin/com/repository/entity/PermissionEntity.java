@@ -1,11 +1,15 @@
-package dravin.com.entity;
+package dravin.com.repository.entity;
 
 
-import dravin.com.constant.enumConstant.Permissions;
+
+import dravin.com.repository.constant.enumConstant.Permissions;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.io.Serial;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "permission",
@@ -15,7 +19,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class PermissionEntity {
+public class PermissionEntity extends AbstractDateTimeEntity implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

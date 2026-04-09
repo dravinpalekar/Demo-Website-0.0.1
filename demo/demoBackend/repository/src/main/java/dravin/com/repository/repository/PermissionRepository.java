@@ -1,8 +1,8 @@
-package dravin.com.repository;
+package dravin.com.repository.repository;
 
 
-import dravin.com.constant.enumConstant.Permissions;
-import dravin.com.entity.PermissionEntity;
+import dravin.com.repository.constant.enumConstant.Permissions;
+import dravin.com.repository.entity.PermissionEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Repository;

@@ -1,7 +1,8 @@
-package dravin.com.entity;
+package dravin.com.repository.entity;
 
 
-import dravin.com.constant.enumConstant.Gender;
+
+import dravin.com.repository.constant.enumConstant.Gender;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
 import lombok.Getter;
@@ -9,12 +10,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Range;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 @Entity
 @Table(name = "users_other_information")
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserOtherInformationEntity extends AbstractDateTimeEntity{
+public class UserOtherInformationEntity extends AbstractDateTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

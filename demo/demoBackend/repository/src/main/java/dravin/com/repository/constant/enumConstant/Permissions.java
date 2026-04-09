@@ -1,4 +1,4 @@
-package dravin.com.constant.enumConstant;
+package dravin.com.repository.constant.enumConstant;
 
 public enum  Permissions {
 

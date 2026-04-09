@@ -1,7 +1,8 @@
 package dravin.com.authentication.service.loaduser;
 
-import dravin.com.entity.UserEntity;
-import dravin.com.repository.UserRepository;
+
+import dravin.com.repository.entity.UserEntity;
+import dravin.com.repository.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

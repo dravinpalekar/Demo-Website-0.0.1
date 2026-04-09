@@ -8,6 +8,7 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>repository</artifactId>
+    <packaging>jar</packaging>
 	<dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -49,6 +50,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <mainClass>dravin.com.authentication.AuthenticationApplication</mainClass>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>

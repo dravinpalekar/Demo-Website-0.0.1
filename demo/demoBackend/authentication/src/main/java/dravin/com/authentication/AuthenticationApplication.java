@@ -1,27 +1,27 @@
 package dravin.com.authentication;
 
-import dravin.com.constant.enumConstant.Permissions;
-import dravin.com.constant.enumConstant.Roles;
-import dravin.com.entity.PermissionEntity;
-import dravin.com.entity.RoleEntity;
-import dravin.com.repository.PermissionRepository;
-import dravin.com.repository.RoleRepository;
+
+import dravin.com.repository.constant.enumConstant.Permissions;
+import dravin.com.repository.constant.enumConstant.Roles;
+import dravin.com.repository.entity.PermissionEntity;
+import dravin.com.repository.entity.RoleEntity;
+import dravin.com.repository.repository.PermissionRepository;
+import dravin.com.repository.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.persistence.autoconfigure.EntityScan;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import java.util.Optional;
 import java.util.Set;
 
 @SpringBootApplication
-@EnableJpaRepositories("dravin.com.repository")
-@EntityScan("dravin.com.entity")
-
-
-//@ComponentScan(basePackages = "dravin.com")
+@EnableJpaRepositories("dravin.com.repository.repository")
+@EntityScan("dravin.com.repository.entity")
+@ComponentScan(basePackages = "dravin.com")
 public class AuthenticationApplication implements CommandLineRunner {
 
     @Autowired

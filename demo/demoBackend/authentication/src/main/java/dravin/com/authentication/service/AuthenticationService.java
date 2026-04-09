@@ -4,11 +4,12 @@ package dravin.com.authentication.service;
 import dravin.com.authentication.configuration.jwt.JwtUtils;
 import dravin.com.authentication.requestmodel.LoginRequestModel;
 import dravin.com.authentication.requestmodel.SignupRequestModel;
-import dravin.com.constant.enumConstant.Roles;
-import dravin.com.entity.RoleEntity;
-import dravin.com.entity.UserEntity;
-import dravin.com.repository.RoleRepository;
-import dravin.com.repository.UserRepository;
+
+import dravin.com.repository.constant.enumConstant.Roles;
+import dravin.com.repository.entity.RoleEntity;
+import dravin.com.repository.entity.UserEntity;
+import dravin.com.repository.repository.RoleRepository;
+import dravin.com.repository.repository.UserRepository;
 import org.springframework.security.core.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

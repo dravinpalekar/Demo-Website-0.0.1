@@ -1,8 +1,8 @@
-package dravin.com.repository;
+package dravin.com.repository.repository;
 
 
-import dravin.com.constant.enumConstant.Roles;
-import dravin.com.entity.UserEntity;
+import dravin.com.repository.constant.enumConstant.Roles;
+import dravin.com.repository.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;

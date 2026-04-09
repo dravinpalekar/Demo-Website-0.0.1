@@ -1,4 +1,4 @@
-package dravin.com.entity;
+package dravin.com.repository.entity;
 
 
 import jakarta.persistence.*;
@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,7 +21,10 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserEntity {
+public class UserEntity extends AbstractDateTimeEntity implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

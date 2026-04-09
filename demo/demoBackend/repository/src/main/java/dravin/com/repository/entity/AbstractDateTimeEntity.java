@@ -1,4 +1,4 @@
-package dravin.com.entity;
+package dravin.com.repository.entity;
 
 
 import jakarta.persistence.Column;
