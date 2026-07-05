@@ -12,7 +12,7 @@
 	<modules>
 <!--		<module>repository</module>-->
 		<module>restApi</module>
-<!--		<module>authentication</module>-->
+		<module>authentication</module>
 	</modules>
 
 	<properties>
