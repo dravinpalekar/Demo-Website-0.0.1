@@ -10,7 +10,7 @@
 	<packaging>pom</packaging>
 
 	<modules>
-<!--		<module>repository</module>-->
+		<module>repository</module>
 		<module>restApi</module>
 		<module>authentication</module>
 	</modules>
