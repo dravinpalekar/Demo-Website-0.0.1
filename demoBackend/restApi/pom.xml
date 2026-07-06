@@ -11,8 +11,8 @@
 	<groupId>dravin.com</groupId>
 	<artifactId>restApi</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name/>
-	<description/>
+	<name>restApi</name>
+	<description>restApi module for all manipulation process</description>
 
 	<properties>
 		<java.version>25</java.version>

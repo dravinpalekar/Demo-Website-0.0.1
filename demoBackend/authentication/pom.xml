@@ -11,8 +11,8 @@
 	<groupId>dravin.com</groupId>
 	<artifactId>authentication</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name/>
-	<description/>
+	<name>authentication</name>
+	<description>authentication module for login or register</description>
 
 	<properties>
 		<java.version>25</java.version>
