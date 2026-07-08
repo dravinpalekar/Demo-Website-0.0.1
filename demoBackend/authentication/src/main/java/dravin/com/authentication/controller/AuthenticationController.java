@@ -2,6 +2,8 @@ package dravin.com.authentication.controller;
 
 
 import dravin.com.authentication.requestmodel.LoginRequestModel;
+import dravin.com.authentication.requestmodel.SignupRequestModel;
+import dravin.com.authentication.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -13,8 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static dravin.com.authentication.constant.RoutesFile.API_AUTH;
-import static dravin.com.authentication.constant.RoutesFile.SIGN_IN;
+import static dravin.com.authentication.constant.RoutesFile.*;
 
 @RestController
 @RequestMapping(API_AUTH)
@@ -22,6 +23,12 @@ import static dravin.com.authentication.constant.RoutesFile.SIGN_IN;
 public class AuthenticationController {
 
     private static final Logger logger = LoggerFactory.getLogger( AuthenticationController.class );
+
+    private final AuthenticationService authenticationService;
+
+    public AuthenticationController(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
+    }
 
     @PostMapping(SIGN_IN)
     @Operation(
@@ -32,5 +39,17 @@ public class AuthenticationController {
 
         logger.info("Attempt user for authenticate and UserName is {}", loginRequest.getUserName());
         return authenticationService.authenticateUser(loginRequest);
+    }
+
+
+    @PostMapping(SIGN_UP)
+    @Operation(
+            summary = "Register API for User Or Guest User",
+            description = "Create Admin Features as well."
+    )
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequestModel signUpRequest) {
+
+        logger.info("Attempt user for register and email is {}", signUpRequest.getEmail());
+        return authenticationService.registerUser(signUpRequest);
     }
 }
