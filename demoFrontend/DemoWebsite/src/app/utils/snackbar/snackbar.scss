@@ -1,0 +1,16 @@
+::ng-deep .cdk-overlay-container {
+  z-index: 1030 !important; /* higher than navbar */
+//   background-color:brown !important;
+}
+
+::ng-deep .red .mat-mdc-snackbar-surface {
+  background-color: #f44336 !important; /* red */
+  color: white !important;
+    border-radius: 8px;
+}
+
+::ng-deep .green .mat-mdc-snackbar-surface {
+  background-color: #4caf50  !important; /* red */
+  color: white !important;
+  border-radius: 8px;
+}
