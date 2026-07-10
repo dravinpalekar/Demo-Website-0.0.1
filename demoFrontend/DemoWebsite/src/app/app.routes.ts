@@ -15,6 +15,10 @@ export const routes: Routes = [
       path: allRoutes.superAdminLogin,
       loadChildren: () => import('./module/superAdmin/login-super-admin/login-super-admin-module').then((m) => m.LoginSuperAdminModule),
    },
+    {
+      path: allRoutes.superAdminSignUp,
+      loadChildren: () => import('./module/superAdmin/sign-up-super-admin/sign-up-super-admin-module').then((m) => m.SignUpSuperAdminModule),
+   },
 
    {
       path: allRoutes.superAdminDashboard,

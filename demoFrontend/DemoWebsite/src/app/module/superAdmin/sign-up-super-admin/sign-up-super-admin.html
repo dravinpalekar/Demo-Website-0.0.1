@@ -1,1 +1,131 @@
-<p>sign-up-super-admin works!</p>
+<div class="login-container">
+  <div class="container-fluid h-100">
+    <div class="row justify-content-center align-items-center h-100">
+      <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5 col-xxl-4">
+        <div class="login-card">
+
+          <div class="text-center mb-4">
+            <div class="logo-container">
+              <div>
+                <img src="assets/logo/logos/symbol.png" alt="" width="90px" height="50px" style="margin-top: -20px" />
+              </div>
+            </div>
+          </div>
+
+          <div class="social-login-section">
+            
+            <div class="row g-3 mb-4 ">
+
+              <div class="col-6">
+                <button type="button" class="btn btn-outline-primary w-100 social-btn google-btn"
+                  style="white-space: nowrap;">
+                  <!-- <i class="fab fa-google me-2"></i> -->
+                  <img src="assets/svgs/google-icon.svg" alt="google" width="16" height="22" class="m-r-8"
+                    style="margin-left: -4px;margin-top: -5px;" />
+                  Sign in with Google
+                </button>
+              </div>
+              <div class="col-6">
+                <button type="button" class="btn btn-outline-primary w-100 social-btn facebook-btn"
+                  style="white-space: nowrap;">
+                  <!-- <i class="fab fa-facebook-f me-2"></i> -->
+                  <img src="assets/svgs/facebook-icon.svg" alt="facebook" width="30" class="m-r-4"
+                    style="margin-left: -16px; height: 25px; margin-top: -5px;" />
+                  <span style="margin-left: -4px;">Sign in with facebook</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="divider-section">
+              <div class="divider-line"></div>
+              <span class="divider-text">or sign in with</span>
+              <div class="divider-line"></div>
+            </div>
+          </div>
+
+          <form id="superAdminSignUpForm" class="login-form" [formGroup]="superAdminSignUpForm" novalidate (ngSubmit)="onSubmit()">
+
+            <div class="mb-3">
+              <label for="emailAddress" class="form-label">Email Address</label>
+              <input type="text" class="form-control" id="emailAddress" name="emailAddress" required="" formControlName="emailAddress" />
+            </div>
+
+            @if (submittedForm && f['emailAddress'].errors) {
+                    <div class="remove-mat-form-field-hint">
+                        @if (f['emailAddress'].errors['required']) {
+                            <div class="remove-mat-form-field-hint">
+                                <strong>Email Address is required.</strong>
+                            </div>
+                        }
+                        @if (f['emailAddress'].errors['minlength']) {
+                            <div class="remove-mat-form-field-hint" style="padding-top: 5px;">
+                                <strong>Minimum length of Email Address is 4</strong>
+                            </div>
+                        }
+                        @if (f['emailAddress'].errors['email']) {
+                            <div class="remove-mat-form-field-hint" style="padding-top: 5px;">
+                                <strong>Please enter valid Email.</strong>
+                            </div>
+                        }
+                    </div>
+            }
+
+
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input type="password" class="form-control" id="password" name="password" required="" formControlName="password" />
+            </div>
+
+            @if (submittedForm && f['password'].errors) {
+                    <div class="remove-mat-form-field-hint">
+                      @if (f['password'].errors['required']) {
+                          <div class="remove-mat-form-field-hint">
+                            <strong>password is required.</strong>
+                          </div>
+                      }
+                      @if (f['password'].errors['pattern']) {
+                          <div class="remove-mat-form-field-hint" style="padding-top: 5px;">
+                            <strong>At least 1 uppercase letter , At least 1 lowercase letter , At least 1 digit. , At least 1
+                              special character , At least 8 characters long.</strong>
+                          </div>
+                      }
+                    </div>
+            }
+                
+            @if (f['password'].value.length >=8){
+                    <div class="mb-3">
+                    <label for="confirmPassword" class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required="" formControlName="confirmPassword" />
+                    </div>
+
+                    @if (submittedForm && f['confirmPassword'].errors) {
+                            <div class="remove-mat-form-field-hint">
+                                    @if (f['confirmPassword'].errors['required']) {
+                                        <div class="remove-mat-form-field-hint">
+                                            <strong>Confirm password is required.</strong>
+                                        </div>
+                                    }
+                                    @if (f['confirmPassword'].errors['matching']) {
+                                        <div class="remove-mat-form-field-hint" style="padding-top: 5px;">
+                                            <strong>Confirm Password should be Matched.</strong>
+                                        </div>
+                                    }
+                            </div>
+                    }
+            }
+
+            <button [disabled]="!f['emailAddress'].value || !f['password'].value" type="submit" class="btn btn-primary w-100 signin-btn mb-4">
+              Sign Up
+            </button>
+
+            <div class="text-center">
+              <span class="signup-text">Already have an Account? </span>
+              <a [routerLink]="['/superAdminLogin']" class="signup-link">Sign In</a>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

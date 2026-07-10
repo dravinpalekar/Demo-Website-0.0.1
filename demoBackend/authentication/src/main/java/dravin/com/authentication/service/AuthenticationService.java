@@ -11,6 +11,7 @@ import dravin.com.repository.repository.RoleRepository;
 import dravin.com.repository.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -95,7 +96,7 @@ public class AuthenticationService {
         }
 
         if(roles.isEmpty()){
-            return ResponseEntity.ok(Map.of("message","Super Admin is already exists."));
+            return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(Map.of("message","Super Admin is already exists."));
         }
         UserEntity userEntity = new UserEntity(requestObject.getEmail(),requestObject.getEmail(),encoder.encode(requestObject.getPassword()),roles);
         userRepository.save(userEntity);

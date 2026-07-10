@@ -6,8 +6,8 @@ import { LoginModel } from '../../../model/requestModel/LoginModel';
 import { allRoutes } from '../../../utils/allRoutes/allRoutes';
 import { AuthenticationAuthorizationService } from '../../../service/authentication-authorization-service';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { Snackbar } from '../../../utils/snackbar/snackbar';
 import { Errors } from '../../../utils/helper/Errors';
+import { CommonFunction } from '../../../utils/helper/CommonFunction';
 
 @Component({
   selector: 'app-login-super-admin',
@@ -21,9 +21,8 @@ export class LoginSuperAdmin {
   submitted = false;
 
   constructor(
-    private errorObject: Errors, 
-    private snackBarObject: MatSnackBar, private fb: FormBuilder, private authServiceServiceObject: AuthenticationAuthorizationService, private router: Router) {
-    if (this.authServiceServiceObject.currentUserValue) {
+    private errorObject: Errors,  private commonFunctionObject: CommonFunction, private snackBarObject: MatSnackBar, private fb: FormBuilder, private authenticationAuthorizationServiceObject: AuthenticationAuthorizationService, private router: Router) {
+    if (this.authenticationAuthorizationServiceObject.currentUserValue) {
       this.router.navigate([allRoutes.superAdminDashboard]);
     }
   }
@@ -46,9 +45,9 @@ export class LoginSuperAdmin {
 
     const loginModelObject: LoginModel = new LoginModel(this.loginForm.get('userName')?.value, this.loginForm.get('password')?.value);
 
-    this.authServiceServiceObject.loginUser(loginModelObject).subscribe({
+    this.authenticationAuthorizationServiceObject.loginUser(loginModelObject).subscribe({
       next: (res) => {
-        console.log(res);
+        // console.log(res);
         res.roles.forEach((element: any) => {
           this.router.navigate([allRoutes.superAdminDashboard]);
         });
@@ -56,25 +55,12 @@ export class LoginSuperAdmin {
       error: (e) => {
         //bad credentials
         if (e.status == 401) {
-          this.openSnackBar(e.error.detail,'danger');
+          this.commonFunctionObject.openSnackBar(e.error.detail,'danger');
         }
         else if (e.status == 406) {
-          this.openSnackBar(this.errorObject.errorStatus406(JSON.parse(JSON.stringify(e.error))),'danger');
+          this.commonFunctionObject.openSnackBar(this.errorObject.errorStatus406(JSON.parse(JSON.stringify(e.error))),'danger');
         }
       }
-    });
-  }
-
-  public openSnackBar(data: any,css: any) {
-    let sb = this.snackBarObject.openFromComponent(Snackbar,{
-      data: data,
-      panelClass: [css],
-      horizontalPosition: 'right',
-      verticalPosition: 'top',
-      duration: 1000 * 4
-    });
-    sb.onAction().subscribe(() => {
-      sb.dismiss();
     });
   }
 
