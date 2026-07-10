@@ -5,29 +5,29 @@ import { allRoutes } from '../utils/allRoutes/allRoutes';
 import { signUpModel } from '../model/requestModel/signUpModel';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 
 export enum Role {
-  User = 'ROLE_USER',
-  Admin = 'ROLE_USER',
-  SuperAdmin = 'ROLE_SUPER_ADMIN',
+    User = 'ROLE_USER',
+    Admin = 'ROLE_USER',
+    SuperAdmin = 'ROLE_SUPER_ADMIN',
 }
 
 export class UserValidateModel {
-  roles: Role | undefined;
-  Subject: string | undefined;
-  token?: string;
+    roles: Role | undefined;
+    Subject: string | undefined;
+    token?: string;
 }
 
 export interface JwtPayload {
-  // iss?: string;
-  sub?: string;
-  // aud?: string[] | string;
-  exp?: number;
-  // nbf?: number;
-  iat?: number;
-  // jti?: string;
-  roles?: string[] ;
+    // iss?: string;
+    sub?: string;
+    // aud?: string[] | string;
+    exp?: number;
+    // nbf?: number;
+    iat?: number;
+    // jti?: string;
+    roles?: string[];
 }
 
 @Service()

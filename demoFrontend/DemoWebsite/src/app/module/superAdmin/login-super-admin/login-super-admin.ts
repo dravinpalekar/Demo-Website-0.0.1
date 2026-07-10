@@ -7,6 +7,7 @@ import { allRoutes } from '../../../utils/allRoutes/allRoutes';
 import { AuthenticationAuthorizationService } from '../../../service/authentication-authorization-service';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Snackbar } from '../../../utils/snackbar/snackbar';
+import { Errors } from '../../../utils/helper/Errors';
 
 @Component({
   selector: 'app-login-super-admin',
@@ -20,7 +21,7 @@ export class LoginSuperAdmin {
   submitted = false;
 
   constructor(
-    // private errorObject: Errors, 
+    private errorObject: Errors, 
     private snackBarObject: MatSnackBar, private fb: FormBuilder, private authServiceServiceObject: AuthenticationAuthorizationService, private router: Router) {
     if (this.authServiceServiceObject.currentUserValue) {
       this.router.navigate([allRoutes.superAdminDashboard]);
@@ -55,22 +56,25 @@ export class LoginSuperAdmin {
       error: (e) => {
         //bad credentials
         if (e.status == 401) {
-          this.openSnackBar(e.error.detail);
+          this.openSnackBar(e.error.detail,'danger');
         }
-        // else if (e.status == 406) {
-        //   this.openSnackBar(this.errorObject.errorStatus406(JSON.parse(JSON.stringify(e.error))));
-        // }
+        else if (e.status == 406) {
+          this.openSnackBar(this.errorObject.errorStatus406(JSON.parse(JSON.stringify(e.error))),'danger');
+        }
       }
     });
   }
 
-  public openSnackBar(data: any) {
-    this.snackBarObject.openFromComponent(Snackbar, {
+  public openSnackBar(data: any,css: any) {
+    let sb = this.snackBarObject.openFromComponent(Snackbar,{
       data: data,
-      panelClass: ['redNoMatch'],
+      panelClass: [css],
       horizontalPosition: 'right',
       verticalPosition: 'top',
       duration: 1000 * 4
+    });
+    sb.onAction().subscribe(() => {
+      sb.dismiss();
     });
   }
 
