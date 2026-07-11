@@ -28,6 +28,6 @@ export const routes: Routes = [
       data: { roles: [Role.SuperAdmin, Role.Admin] },
    },
 
-   { path: 'notFound', component: PageNotFound },
-   { path: '**', redirectTo: 'notFound', pathMatch: 'full', }
+   // { path: 'notFound', component: PageNotFound },
+   // { path: '**', redirectTo: 'notFound', pathMatch: 'full', }
 ];

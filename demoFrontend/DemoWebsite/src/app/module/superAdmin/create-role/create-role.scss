@@ -1,0 +1,29 @@
+.roleName{
+    // font-weight: bold;
+    font-size: 1.0rem;
+    margin-top: 7px;
+}
+
+/* Change mouse-over color *//* For select dropdown */
+::ng-deep .choices__list--dropdown .choices__item--choice:hover {
+  background-color: #9e6de0 !important;
+  color: white !important;
+}
+
+/* Change selected item color *//* For select dropdown */
+::ng-deep .choices__item--selectable.is-highlighted {
+  background-color: #9e6de0 !important;
+  color: white !important;
+}
+
+// select dropdown size  /* For select dropdown */
+::ng-deep .choices__inner {
+  min-height: 24px !important; /* Change height */
+  padding: 4px 4px !important; /* Adjust padding */
+} 
+
+// select dropdown item size  /* For select dropdown */
+::ng-deep .choices__item{
+  font-size: 0.7rem !important;
+  font-weight:bold !important;
+}

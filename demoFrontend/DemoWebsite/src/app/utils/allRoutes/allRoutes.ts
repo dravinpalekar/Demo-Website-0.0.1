@@ -24,10 +24,16 @@ export class allRoutes{
     static readonly permission = "permission/";
     static readonly get = "get";
     static readonly create = "create";
-
+    static readonly getMyImage = "getMyImage";
 
     static readonly loginBackendUrl = this.backendBaseUrl + this.api + this.auth + this.signIn;
     static readonly signUpBackendUrl = this.backendBaseUrl + this.api + this.auth + this.signUp;
-
+    static readonly createRoleBackendUrl = this.backendBaseUrl + this.api + this.super + this.role + this.create;
+    static readonly getRoleBackendUrl = this.backendBaseUrl + this.api + this.super + this.role + this.get;
+    static readonly createPermissionBackendUrl = this.backendBaseUrl + this.api + this.super + this.permission + this.create;
+    static readonly getPermissionBackendUrl = this.backendBaseUrl + this.api + this.super + this.permission + this.get;
+    static readonly updateMyProfileBackendUrl = this.backendBaseUrl + this.api + this.super + this.myProfile + this.create;
+    static readonly getMyProfileBackendUrl = this.backendBaseUrl + this.api + this.super + this.myProfile + this.get;
+    static readonly getMyImageBackendUrl = this.backendBaseUrl + this.api + this.super + this.myProfile + this.getMyImage;
     // Define all the routes used in the application for backend
 }

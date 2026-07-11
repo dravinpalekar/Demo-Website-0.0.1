@@ -1,4 +1,4 @@
-import { inject, PLATFORM_ID, Service } from '@angular/core';
+import { inject, Injectable, PLATFORM_ID, Service } from '@angular/core';
 import { BehaviorSubject, map, Observable } from 'rxjs';
 import { LoginModel } from '../model/requestModel/LoginModel';
 import { allRoutes } from '../utils/allRoutes/allRoutes';
@@ -6,6 +6,7 @@ import { signUpModel } from '../model/requestModel/signUpModel';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { jwtDecode } from 'jwt-decode';
+import { Router } from '@angular/router';
 
 export enum Role {
     User = 'ROLE_USER',
@@ -30,7 +31,9 @@ export interface JwtPayload {
     roles?: string[];
 }
 
-@Service()
+@Injectable({
+  providedIn: 'root'
+})
 export class AuthenticationAuthorizationService {
 
     isBrowser: boolean = false;
@@ -41,8 +44,10 @@ export class AuthenticationAuthorizationService {
     private currentUserSubject: BehaviorSubject<UserValidateModel>;
     public currentUser: Observable<UserValidateModel>;
     private roles: string[] = [];
+    // private isAuthenticated = false;
 
-    constructor() {
+    constructor(private router: Router) {
+
         this.isBrowser = isPlatformBrowser(this.platformId);
 
         let storedUser: UserValidateModel = new UserValidateModel();
@@ -80,6 +85,7 @@ export class AuthenticationAuthorizationService {
                     userValidateModel.roles = this.roles;
                     // store user details and jwt token in local storage to keep user logged in between page refreshes
                     sessionStorage.setItem('currentUser', JSON.stringify(userValidateModel));
+                    // sessionStorage.setItem('loggedIn', 'true');
                     this.currentUserSubject.next(userValidateModel);
                 }
                 return userValidateModel;
@@ -93,6 +99,7 @@ export class AuthenticationAuthorizationService {
     logout() {
         // remove user from local storage to log user out
         sessionStorage.removeItem('currentUser');
+        // sessionStorage.removeItem('loggedIn');
         this.currentUserSubject.next(null!);
     }
 
