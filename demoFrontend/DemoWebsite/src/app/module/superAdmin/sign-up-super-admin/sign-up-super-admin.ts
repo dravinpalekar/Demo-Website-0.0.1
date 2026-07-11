@@ -8,7 +8,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { Router, RouterModule } from '@angular/router';
 import PasswordMatcherValidation from '../../../utils/formValidation/PasswordMatcherValidation';
 import { allRoutes } from '../../../utils/allRoutes/allRoutes';
-import { delay } from 'rxjs';
 
 @Component({
   selector: 'app-sign-up-super-admin',
@@ -18,7 +17,7 @@ import { delay } from 'rxjs';
 })
 export class SignUpSuperAdmin {
 
-   superAdminSignUpForm!: FormGroup;
+  superAdminSignUpForm!: FormGroup;
   submittedForm = false;
 
   constructor(
@@ -52,24 +51,24 @@ export class SignUpSuperAdmin {
   onSubmit() {
 
     this.submittedForm = true;
-    if (this.superAdminSignUpForm.invalid) {  return;  }
+    if (this.superAdminSignUpForm.invalid) { return; }
 
     const signUpModelObject: signUpModel = new signUpModel(this.superAdminSignUpForm.get('emailAddress')?.value, this.superAdminSignUpForm.get('password')?.value, ['superAdmin']);
 
     this.authenticationAuthorizationServiceObject.signUpUser(signUpModelObject).subscribe({
       next: (res) => {
         // console.log(res);
-        this.commonFunctionObject.openSnackBar(JSON.parse(JSON.stringify(res)).message,'success');
+        this.commonFunctionObject.openSnackBar(JSON.parse(JSON.stringify(res)).message, 'success');
         this.router.navigate([allRoutes.superAdminLogin]);
       },
       error: (e) => {
         // console.log(e);
         if (e.status == 422) {
           this.commonFunctionObject.openSnackBar(e.error.error, 'danger');
-        } else if (e.status == 405){
+        } else if (e.status == 405) {
           this.commonFunctionObject.openSnackBar(e.error.message, 'danger');
         } else if (e.status == 406) {
-          this.commonFunctionObject.openSnackBar(this.errorObject.errorStatus406(JSON.parse(JSON.stringify(e.error))),'danger');
+          this.commonFunctionObject.openSnackBar(this.errorObject.errorStatus406(JSON.parse(JSON.stringify(e.error))), 'danger');
         }
       },
     });
