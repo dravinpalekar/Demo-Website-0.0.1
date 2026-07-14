@@ -1,0 +1,137 @@
+.remove-mat-form-field-hint {
+    font-size: 13px;
+    margin-left: 8px;
+    margin-top: -1.25em;
+    margin-bottom: 0.5em;
+    color: red;
+}
+
+.form-label {
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.form-control {
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  background-color: #ffffff;
+}
+
+.form-control:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  outline: none;
+}
+
+.form-check-label {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+
+.signin-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  padding: 14px 24px;
+  font-weight: 600;
+  font-size: 16px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.signin-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+.signin-btn:active {
+  transform: translateY(0);
+}
+
+
+@media (max-width: 768px) {
+  .row.g-3 .col-6 {
+    margin-bottom: 12px;
+  }
+}
+
+
+
+///////// css for select dropdown /////////////
+
+/* Change mouse-over color *//* For select dropdown */
+::ng-deep .choices__list--dropdown .choices__item--choice:hover {
+  background-color: #9e6de0 !important;
+  color: white !important;
+}
+
+/* Change selected item color *//* For select dropdown */
+::ng-deep .choices__item--selectable.is-highlighted {
+  background-color: #9e6de0 !important;
+  color: white !important;
+}
+
+// select dropdown size  /* For select dropdown */
+::ng-deep .choices__inner {
+  min-height: 42px !important; /* Change height */
+  padding: 7px 7px !important; /* Adjust padding */
+} 
+
+// select dropdown item size  /* For select dropdown */
+::ng-deep .choices__item{
+  font-size: 0.7rem !important;
+  font-weight:bold !important;
+}
+
+///////// css for select dropdown /////////////
+
+
+.form-control::placeholder {
+  color: #adb5bd; 
+  opacity: 1;
+  font-size: 0.8rem;
+}
+
+
+////file upload css////
+
+.file-upload-wrapper {
+  border: 2px dashed #007bff;
+  border-radius: 10px;
+  padding: 40px;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+  background: #f8f9fa;
+}
+
+.file-upload-wrapper:hover {
+  background: #eef6ff;
+}
+
+.file-upload-message {
+  color: #6c757d;
+  font-size: 16px;
+}
+
+.cloud-icon {
+  font-size: 32px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.preview img {
+  max-width: 200px;
+  margin: 10px auto;
+  display: block;
+  border-radius: 8px;
+}
+////file upload css////

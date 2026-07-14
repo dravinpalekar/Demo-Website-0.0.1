@@ -1,0 +1,48 @@
+@if (showAlert) {
+   @if (submittedForm) {
+    <div class="remove-mat-form-field-hint">
+      <div class="remove-mat-form-field-hint">
+        <app-alert-message [message]="displayAlertErrorList" (closed)="onAlertClosed()"></app-alert-message>
+      </div>
+    </div>
+  } 
+}
+
+
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card card-default">
+      <div class="card-body">
+        <form [formGroup]="createPermissionForm" novalidate (ngSubmit)="onSubmit()">
+          <div class="row mb-2">
+            <div class="col-lg-1"></div>
+            <div class="col-lg-2">
+              <div class="form-group text-center">
+                <label class="permissionName" for="permissionName">Permission Name</label>
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="form-group">
+                <select #dropdown id="permissionName" class="form-control" formControlName="permissionName">
+                  <option value="CREATE">Create</option>
+                  <option value="UPDATE">Update</option>
+                  <option value="DELETE">Delete</option>
+                  <option value="VIEW">View</option>
+                  <option value="ALL">All</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-lg-3">
+               <button type="submit" class="btn btn-primary mb-2 btn-pill" style="margin-left: 4.8rem;">
+                  Submit
+                </button>
+            </div>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
