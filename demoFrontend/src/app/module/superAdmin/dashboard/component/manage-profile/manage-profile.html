@@ -1,0 +1,142 @@
+<div class="card card-default card-profile">
+    <div class="card-header-bg"></div>
+    <div class="card-body card-profile-body">
+        <div class="profile-avata">
+            <img class="rounded-circle" src="assets/superAdminModule/images/user/user-md-01.jpg" alt="Avata Image" />
+            <a class="h5 d-block mt-3 mb-2" href="#">Albrecht Straub</a>
+            <a class="d-block text-color" href="#">{{ displayEmail }}</a>
+        </div>
+    </div>
+
+    <div class="card-footer card-profile-footer">
+        <ul class="nav nav-border-top justify-content-center">
+            <li class="nav-item">
+                <a class="nav-link active" href="user-profile.html">Profile</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+@if (showAlert ) {
+   @if (submittedForm) {
+    <div class="remove-mat-form-field-hint">
+      <div class="remove-mat-form-field-hint">
+        <app-alert-message [message]="displayAlertErrorList" (closed)="onAlertClosed()"></app-alert-message>
+      </div>
+    </div>
+  } 
+}
+
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card card-default">
+
+            <div class="card-body">
+                <form id="myProfileForm" class="login-form" [formGroup]="myProfileForm" novalidate (ngSubmit)="onSubmit()">
+                    <div class="row">
+
+                        <div class="col-2 d-flex align-items-center justify-content-center">
+                            <label for="firstName" class="form-label mb-4">First Name</label>
+                        </div>
+                        <div class="col-4 mb-4">
+                            <input type="text" class="form-control" formControlName="firstName" id="firstName" name="firstName" required="" placeholder="Please enter first name" />
+                        </div>
+
+                        <div class="col-2 d-flex align-items-center justify-content-center">
+                            <label for="middleName" class="form-label mb-4">Middle Name</label>
+                        </div>
+                        <div class="col-4">
+                            <input type="text" class="form-control" formControlName="middleName" id="middleName" name="middleName" placeholder="!Optional (enter middle name)"/>
+                        </div>
+
+                        <div class="col-2 d-flex align-items-center justify-content-center">
+                            <label for="lastName" class="form-label mb-4">Last Name</label>
+                        </div>
+                        <div class="col-4 mb-4">
+                            <input type="text" class="form-control" id="lastName" name="lastName" required="" formControlName="lastName" placeholder="Please enter last name"/>
+                        </div>
+
+                        <div class="col-2 d-flex align-items-center justify-content-center">
+                            <label for="gender" class="form-label mb-4">Gender</label>
+                        </div>
+                        <div class="col-4">
+                             <select #dropdownGender id="gender" class="form-control" formControlName="gender">
+                                <option value="MALE" >Male</option>
+                                <option value="FEMALE" >Female</option>
+                                <option value="OTHER" >Other</option>
+                             </select>
+                        </div>
+
+                        <div class="col-2 d-flex align-items-center justify-content-center">
+                            <label for="age" class="form-label mb-4">Age</label>
+                        </div>
+                        <div class="col-4 mb-4">
+                            <input type="text" class="form-control" formControlName="age" id="age" name="age" required="" placeholder="Please enter age"/>
+                        </div>
+
+                        <div class="col-2 d-flex align-items-center justify-content-center">
+                            <label for="country" class="form-label mb-4">Country</label>
+                        </div>
+                        <div class="col-4 mb-4">
+                             <select #dropdownCountry id="country" class="form-control" formControlName="country">
+                                <option value="India" >India</option>
+                                <option value="US" >US</option>
+                                <option value="Poland" >Poland</option>
+                             </select>
+                        </div>
+
+                        <div class="col-2 d-flex align-items-center justify-content-center">
+                            <label for="city" class="form-label mb-4">City</label>
+                        </div>
+                        <div class="col-4 mb-4">
+                            <input type="text" class="form-control" formControlName="city" id="city" name="city" required="" placeholder="Please enter city"/>
+                        </div>
+
+                        <div class="col-2 d-flex align-items-center justify-content-center">
+                            <label for="pinCode" class="form-label mb-4">Pin-Code</label>
+                        </div>
+                        <div class="col-4 mb-4">
+                            <input type="text" class="form-control" formControlName="pinCode" id="pinCode" name="pinCode" required="" placeholder="Please enter pin-code"/>
+                        </div>
+
+                        <div class="col-2 d-flex align-items-center justify-content-center">
+                            <label for="address" class="form-label mb-4">Address</label>
+                        </div>
+                        <div class="col-10 mb-4">
+                            <textarea  type="area" class="form-control" formControlName="address" id="address" name="address" required="" placeholder="Please enter full address"></textarea>
+                        </div>
+
+                        <div class="col-2 d-flex align-items-center justify-content-center">
+                            <label for="uploadImage" class="form-label mb-4">Upload Image</label>
+                        </div>
+                        <div class="col-10 mb-4">
+                            <div class="file-upload-wrapper" (drop)="onFileDropped($event)" (dragover)="onDragOver($event)" (click)="fileInput.click()">
+
+                                <input type="file" class="form-control" id="uploadImage" name="uploadImage" accept="image/*" (change)="onFileSelected($event)" hidden #fileInput>
+
+                                @if (showFileUploadOption) {
+                                <div class="file-upload-message">
+                                    <i class="cloud-icon">☁️⬆️</i>
+                                    <p>Drag and drop a file here or click</p>
+                                </div>
+                                }
+
+                                @if (showFileUploadPreviewOption) {
+                                <div class="preview" >
+                                    <img [src]="preview" />
+                                    <p>{{ file?.name }}</p>
+                                </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="col-2"></div>
+                        <div class="col-10">
+                            <button [disabled]="!myProfileForm.dirty" type="submit" class="btn btn-primary w-100 signin-btn mb-4">Save</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

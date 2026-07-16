@@ -1,0 +1,434 @@
+<header id="header" class="header d-flex align-items-center fixed-top">
+  <div class="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
+    <a href="index.html" class="logo d-flex align-items-center">
+      <img src="assets/landingPageModule/logo/logos.png" alt="" />
+      <h1 class="sitename">Palekar</h1>
+    </a>
+
+    <nav id="navmenu" class="navmenu">
+      <ul>
+        <li><a href="#hero" class="active">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#services">Services</a></li>
+        <!-- <li><a href="#portfolio">Portfolio</a></li>
+        <li><a href="#team">Team</a></li> -->
+        <li class="dropdown">
+          <a href="#"><span>Tools</span>
+            <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+          <ul>
+            <li><a href="#">Chat</a></li>
+            <li><a href="#">Object Detection</a></li>
+            <!-- <li class="dropdown">
+              <a href="#"><span>Deep Dropdown</span>
+                <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+              <ul>
+                <li><a href="#">Deep Dropdown 1</a></li>
+                <li><a href="#">Deep Dropdown 2</a></li>
+                <li><a href="#">Deep Dropdown 3</a></li>
+                <li><a href="#">Deep Dropdown 4</a></li>
+                <li><a href="#">Deep Dropdown 5</a></li>
+              </ul>
+            </li> -->
+            <!-- <li><a href="#">Dropdown 2</a></li>
+            <li><a href="#">Dropdown 3</a></li>
+            <li><a href="#">Dropdown 4</a></li> -->
+          </ul>
+        </li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a [routerLink]="['/login']">Login</a></li>
+      </ul>
+      <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+    </nav>
+  </div>
+</header>
+
+<main class="main">
+  <!-- Hero Section -->
+  <section id="hero" class="hero section dark-background">
+    <img src="assets/landingPageModule/img/hero-bg.jpg" alt="" data-aos="fade-in" />
+
+    <div class="container text-center" data-aos="fade-up">
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <h2>Welcome to Our Creative Hub</h2>
+          <p>
+            A team of creative minds focused on building high-quality websites
+            and tools tailored to your success
+          </p>
+          <a href="#about" class="btn-get-started">Get Started</a>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- /Hero Section -->
+
+  <!-- About Section -->
+  <section id="about" class="about section">
+    <div class="container">
+      <div class="row gy-4">
+        <div class="col-lg-6 position-relative d-flex align-items-center order-lg-last" data-aos="fade-up"
+          data-aos-delay="200">
+          <img src="assets/landingPageModule/img/about.jpg" class="img-fluid flex-shrink-0" alt="" />
+          <a href="https://www.youtube.com/" class="glightbox pulsating-play-btn"></a>
+        </div>
+
+        <div class="col-lg-6 content" data-aos="fade-up" data-aos-delay="100">
+          <h3>About Us</h3>
+          <p>
+            Palekar's research-driven approach and proven track record of
+            innovation have enabled the company to build strong relationships
+            across diverse client segments. Offering web design and website
+            development services to a wide range of customers—alongside custom
+            software solutions and web applications Palekar's has successfully
+            expanded its reach to serve a broad client base. Today, the company
+            proudly maintains a nationwide presence.
+          </p>
+          <ul>
+            <h3>Our mission</h3>
+            <li>
+              <i class="bi bi-diagram-3"></i>
+              <div>
+                <p>
+                  We are committed to delivering high-quality, value-driven IT
+                  services and solutions that enhance the customer experience
+                  and support long-term, sustainable growth.
+                </p>
+              </div>
+            </li>
+            <li>
+              <i class="bi bi-fullscreen-exit"></i>
+              <div>
+                <p>
+                  We develop solutions that automate business processes and
+                  simplify daily operations for organizations in the logistics
+                  sectors.
+                </p>
+              </div>
+            </li>
+            <li>
+              <i class="bi bi-broadcast"></i>
+              <div>
+                <p>
+                  Our developers leverage the latest and trending technologies
+                  to deliver user-centric, requirement-specific applications
+                  tailored to meet the unique needs of each business.
+                </p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- /About Section -->
+
+  <!-- Stats Section -->
+  <section id="stats" class="stats section light-background">
+    <div class="container" data-aos="fade-up" data-aos-delay="100">
+      <div class="row gy-4">
+        <div class="col-lg-3 col-md-6">
+          <div class="stats-item text-center w-100 h-100">
+            <span data-purecounter-start="0" data-purecounter-end="2" data-purecounter-duration="1"
+              class="purecounter"></span>
+            <p>Clients</p>
+          </div>
+        </div>
+        <!-- End Stats Item -->
+
+        <div class="col-lg-3 col-md-6">
+          <div class="stats-item text-center w-100 h-100">
+            <span data-purecounter-start="0" data-purecounter-end="4" data-purecounter-duration="1"
+              class="purecounter"></span>
+            <p>Projects</p>
+          </div>
+        </div>
+        <!-- End Stats Item -->
+
+        <div class="col-lg-3 col-md-6">
+          <div class="stats-item text-center w-100 h-100">
+            <span data-purecounter-start="0" data-purecounter-end="2" data-purecounter-duration="1"
+              class="purecounter"></span>
+            <p>Years</p>
+          </div>
+        </div>
+        <!-- End Stats Item -->
+
+        <div class="col-lg-3 col-md-6">
+          <div class="stats-item text-center w-100 h-100">
+            <span data-purecounter-start="0" data-purecounter-end="4" data-purecounter-duration="1"
+              class="purecounter"></span>
+            <p>Workers</p>
+          </div>
+        </div>
+        <!-- End Stats Item -->
+      </div>
+    </div>
+  </section>
+  <!-- /Stats Section -->
+
+  <!-- Services Section -->
+  <section id="services" class="services section">
+    <!-- Section Title -->
+    <div class="container section-title" data-aos="fade-up">
+      <h2>Services we offer</h2>
+      <p>End-to-End Solutions: Custom Development</p>
+    </div>
+    <!-- End Section Title -->
+
+    <div class="container">
+      <div class="row gy-4">
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+          <div class="service-item position-relative">
+            <div class="icon">
+              <i class="bi bi-activity"></i>
+            </div>
+            <a href="service-details.html" class="stretched-link">
+              <h3>Software Development</h3>
+            </a>
+            <p>
+              With years of proven experience in the industry, we provide
+              comprehensive software solutions that drive digital innovation and
+              ensure long-term reliability.
+              <br />
+              <br />
+              <br />
+            </p>
+          </div>
+        </div>
+        <!-- End Service Item -->
+
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+          <div class="service-item position-relative">
+            <div class="icon">
+              <i class="bi bi-broadcast"></i>
+            </div>
+            <a href="service-details.html" class="stretched-link">
+              <h3>Application Development</h3>
+            </a>
+            <p>
+              Leverage next-generation application development to enhance
+              agility and drive business growth. Backed by our expertise in
+              Application Modernization.
+              <br />
+              <br />
+              <br />
+            </p>
+          </div>
+        </div>
+        <!-- End Service Item -->
+
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="500">
+          <div class="service-item position-relative">
+            <div class="icon">
+              <i class="bi bi-calendar4-week"></i>
+            </div>
+            <a href="service-details.html" class="stretched-link">
+              <h3>Application Maintenance & Support Services</h3>
+            </a>
+            <p>
+              We deliver continuous maintenance, routine quality assurance, and
+              proactive support to eliminate performance bottlenecks, strengthen
+              security, and ensure optimal system efficiency.
+            </p>
+            <a href="service-details.html" class="stretched-link"></a>
+          </div>
+        </div>
+        <!-- End Service Item -->
+
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
+          <div class="service-item position-relative">
+            <div class="icon">
+              <i class="bi bi-bounding-box-circles"></i>
+            </div>
+            <a href="service-details.html" class="stretched-link">
+              <h3>DevOps Services</h3>
+            </a>
+            <p>
+              Enhance your cloud operations and streamline workloads by
+              optimizing costs, improving operational efficiency, and
+              accelerating release cycles. Our DevOps services are designed to
+              deliver increased throughput, robust system reliability, and
+              faster time-to-market for SaaS and other digital solutions.
+            </p>
+            <a href="service-details.html" class="stretched-link"></a>
+          </div>
+        </div>
+        <!-- End Service Item -->
+
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+          <div class="service-item position-relative">
+            <div class="icon">
+              <i class="bi bi-easel"></i>
+            </div>
+            <a href="service-details.html" class="stretched-link">
+              <h3>Cloud Application Development</h3>
+            </a>
+            <p>
+              Cloud-based solutions are gaining significant traction across
+              industries. Palekar provides comprehensive cloud application
+              development services to help businesses optimize and fully
+              leverage cloud technologies, including Software as a Service
+              (SaaS).
+              <br />
+              <br />
+            </p>
+          </div>
+        </div>
+        <!-- End Service Item -->
+
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="600">
+          <div class="service-item position-relative">
+            <div class="icon">
+              <i class="bi bi-chat-square-text"></i>
+            </div>
+            <a href="service-details.html" class="stretched-link">
+              <h3>Cloud Integration and Cloud Migration</h3>
+            </a>
+            <p>
+              We craft cloud migration strategies that balance performance,
+              cost-efficiency, and security. Our team provides end-to-end
+              guidance throughout your data integration journey, ensuring a
+              seamless and efficient transition to the cloud.
+            </p>
+            <a href="service-details.html" class="stretched-link"></a>
+          </div>
+        </div>
+        <!-- End Service Item -->
+      </div>
+    </div>
+  </section>
+  <!-- /Services Section -->
+
+  <!-- Call To Action Section -->
+  <section id="call-to-action" class="call-to-action section dark-background">
+    <img src="assets/landingPageModule/img/cta-bg.jpg" alt="" />
+
+    <div class="container">
+      <div class="row" data-aos="zoom-in" data-aos-delay="100">
+        <div class="col-xl-9 text-center text-xl-start">
+          <h3>Call To Action</h3>
+          <p>
+            Let our experts craft powerful solutions tailored to your business.
+            Take the first step today
+          </p>
+        </div>
+        <div class="col-xl-3 cta-btn-container text-center">
+          <a class="cta-btn align-middle" href="#contact">Call To Action</a>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- /Call To Action Section -->
+
+  <!-- Contact Section -->
+  <section id="contact" class="contact section">
+    <!-- Section Title -->
+    <div class="container section-title" data-aos="fade-up">
+      <h2>Contact</h2>
+      <p>
+        Get in touch with us today and let’s transform your next big software
+        idea into a powerful opportunity for innovation and growth
+      </p>
+    </div>
+    <!-- End Section Title -->
+
+    <div class="container" data-aos="fade-up" data-aos-delay="100">
+      <div class="mb-4" data-aos="fade-up" data-aos-delay="200">
+        <iframe style="border: 0; width: 100%; height: 270px"
+          src="https://www.google.com/maps?q=hazratganj&output=embed" frameborder="0" allowfullscreen="" loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+      <!-- End Google Maps -->
+
+      <div class="row gy-4">
+        <div class="col-lg-4">
+          <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="300">
+            <i class="bi bi-geo-alt flex-shrink-0"></i>
+            <div>
+              <h3>Address</h3>
+              <p>Hazratganj, Lucknow - 226017</p>
+            </div>
+          </div>
+          <!-- End Info Item -->
+
+          <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="400">
+            <i class="bi bi-telephone flex-shrink-0"></i>
+            <div>
+              <h3>Call Us</h3>
+              <p>+91 8546 0445 84</p>
+            </div>
+          </div>
+          <!-- End Info Item -->
+
+          <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="500">
+            <i class="bi bi-envelope flex-shrink-0"></i>
+            <div>
+              <h3>Email Us</h3>
+              <p>dravin.palekar&#64;outlook.in</p>
+            </div>
+          </div>
+          <!-- End Info Item -->
+        </div>
+
+        <div class="col-lg-8">
+          <form action="forms/contact.php" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="200">
+            <div class="row gy-4">
+              <div class="col-md-6">
+                <input type="text" name="name" class="form-control" placeholder="Your Name" required="" />
+              </div>
+
+              <div class="col-md-6">
+                <input type="email" class="form-control" name="email" placeholder="Your Email" required="" />
+              </div>
+
+              <div class="col-md-12">
+                <input type="text" class="form-control" name="subject" placeholder="Subject" required="" />
+              </div>
+
+              <div class="col-md-12">
+                <textarea class="form-control" name="message" rows="6" placeholder="Message" required=""></textarea>
+              </div>
+
+              <div class="col-md-12 text-center">
+                <div class="loading">Loading</div>
+                <div class="error-message"></div>
+                <div class="sent-message">
+                  Your message has been sent. Thank you!
+                </div>
+
+                <button type="submit">Send Message</button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <!-- End Contact Form -->
+      </div>
+    </div>
+  </section>
+  <!-- /Contact Section -->
+</main>
+
+<footer id="footer" class="footer dark-background">
+  <div class="container">
+    <img src="assets/landingPageModule/logo/logo.png" alt="" width="200px" height="130px" style="margin-top: -40px; margin-bottom: 0px" />
+    <div class="social-links d-flex justify-content-center">
+      <a href=""><i class="bi bi-twitter-x"></i></a>
+      <a href=""><i class="bi bi-facebook"></i></a>
+      <a href=""><i class="bi bi-instagram"></i></a>
+      <a href=""><i class="bi bi-skype"></i></a>
+      <a href=""><i class="bi bi-linkedin"></i></a>
+    </div>
+    <div class="container">
+      <div class="copyright">
+        <span>Copyright</span> <strong class="px-1 sitename">Palekar</strong>
+        <span>All Rights Reserved</span>
+      </div>
+      <div class="credits">
+        Designed by <a href="#">Dravin Palekar</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Scroll Top -->
+<a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>

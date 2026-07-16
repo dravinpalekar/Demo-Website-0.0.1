@@ -1,0 +1,17 @@
+<div class="row" id="alertMessageShowAndHide" [class.alert-enter]="!isLeaving" [class.alert-leave]="isLeaving"  (animationend)="onAnimationEnd($event)">
+    <div class="col-xl-12">
+        <div class="card card-default">
+            <div class="alert alert-danger align-items-center"
+                style="margin-bottom: 0rem; background-color: #f8d7da; color: #58151c" role="alert">
+                @for(loop of message; track loop){
+                        <i class="mdi mdi-alert"></i>
+                        {{ loop }}
+                        <br>
+                }
+               <button (click)="close()" class="position-absolute end-0 me-4 top-50 translate-middle-y">
+    <span style="font-size: 1.2rem; font-weight: 900; line-height: 1;">×</span>
+</button>
+            </div>
+        </div>
+    </div>
+</div>

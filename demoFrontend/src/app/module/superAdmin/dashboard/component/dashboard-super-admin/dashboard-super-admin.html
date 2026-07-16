@@ -1,0 +1,23 @@
+<div class="navbar-fixed sidebar-fixed" id="body">
+  <div class="wrapper">
+
+    <!-- LEFT SIDEBAR WITH OUT FOOTER -->
+    <app-side-bar (pageTitle)="updateTitle($event)"></app-side-bar>
+
+    <div class="page-wrapper">
+      <!-- Nav bar -->
+      <app-nav-bar [navBarPageTitle]="pageTitle"></app-nav-bar>
+
+      <div class="content-wrapper">
+        <div class="content">
+          <!-- Main content Area -->
+           <router-outlet></router-outlet>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <app-footer></app-footer>
+    </div>
+
+  </div>
+</div>
