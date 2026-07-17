@@ -112,7 +112,7 @@ public class MyProfileService {
     public ResponseEntity<?> getMyImage() {
         String token = jwtUtils.getIdFromJwtToken(jwtUtils.parseJwt(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest()));
         UserEntity user = userRepository.findById(Long.valueOf(token)).orElseThrow(() -> new NullPointerException("User not found with ID: " + token));
-        if(user.getUserOtherInformation() != null)
+        if(user.getUserOtherInformation() != null && user.getUserOtherInformation().getPhotoUrl() !=null)
             try {
                 String uploadDir = System.getProperty("user.dir") + "/uploadData/user/saveProfile/";
                 Path filePath = Paths.get(uploadDir).resolve(user.getUserOtherInformation().getPhotoUrl()).normalize();
@@ -125,7 +125,6 @@ public class MyProfileService {
                 String contentType = Files.probeContentType(filePath);
                 String base64Image = "data:" + contentType + ";base64," + Base64.getEncoder().encodeToString(imageBytes);
                 return ResponseEntity.ok().body(Map.of("image",base64Image,"firstName",user.getUserOtherInformation().getFirstName(),"middleName",user.getUserOtherInformation().getMiddleName(),"lastName",user.getUserOtherInformation().getLastName(),"gender",user.getUserOtherInformation().getGender()));
-
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }

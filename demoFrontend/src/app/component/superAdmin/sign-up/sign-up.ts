@@ -58,14 +58,17 @@ export class SignUp implements OnInit{
     this.AuthenticationServiceObject.signUpUser(signUpModelObject).subscribe({
       next: (res) => {
         // console.log(res);
-        this.commonFunObject.openSnackBar(JSON.parse(JSON.stringify(res)).message,'redNoMatch');
+        this.commonFunObject.openSnackBar(JSON.parse(JSON.stringify(res)).message,'success');
       },
       error: (e) => {
         // console.log(e);
         if (e.status == 400) {
-          this.commonFunObject.openSnackBar(e.error.error, 'redNoMatch');
-        } else if (e.status == 406) {
-          this.commonFunObject.openSnackBar(this.errorObject.errorStatus406(JSON.parse(JSON.stringify(e.error))),'redNoMatch');
+          this.commonFunObject.openSnackBar(e.error.error, 'danger');
+        } else if (e.status == 422) {
+          this.commonFunObject.openSnackBar(e.error.error,'danger');
+        }
+        else if (e.status == 405) {
+          this.commonFunObject.openSnackBar(e.error.message,'danger');
         }
       },
     });

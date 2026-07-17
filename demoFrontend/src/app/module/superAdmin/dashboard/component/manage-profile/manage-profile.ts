@@ -102,12 +102,12 @@ this.displayEmail = this.authenticationServiceObject.currentUserValue.Subject;
 
     this.SuperAdminServiceObject.updateMyProfile(updateMyProfileModelObject).subscribe({
       next: (res) => {// console.log(res);
-        this.commonFunctionObject.openSnackBar(JSON.parse(JSON.stringify(res)).message, 'green');
+        this.commonFunctionObject.openSnackBar(JSON.parse(JSON.stringify(res)).message, 'success');
       },
       error: (e) => {// console.log(e);
-        if (e.status == 400) { this.commonFunctionObject.openSnackBar(e.error.detail, 'red'); }
+        if (e.status == 400) { this.commonFunctionObject.openSnackBar(e.error.detail, 'danger'); }
         else
-          if (e.status == 422) { this.commonFunctionObject.openSnackBar(this.errorObject.directDisplayErrorMessageStatus406(JSON.parse(JSON.stringify(e.error))), 'red'); }
+          if (e.status == 422) { this.commonFunctionObject.openSnackBar(this.errorObject.directDisplayErrorMessageStatus406(JSON.parse(JSON.stringify(e.error))), 'danger'); }
       },
     });
     this.myProfileForm.get('uploadImage')?.reset();

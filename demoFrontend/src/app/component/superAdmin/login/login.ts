@@ -9,6 +9,7 @@ import { Errors } from '../../../utils/helper/Errors';
 import { AuthenticationService } from '../../../service/authentication-service';
 import { Snackbar } from '../../../utils/snackbar/snackbar';
 import { isPlatformBrowser } from '@angular/common';
+import { CommonFun } from '../../../utils/helper/CommonFun';
 
 @Component({
   selector: 'app-login',
@@ -23,7 +24,7 @@ export class Login implements OnInit{
   submitted = false;
  isBrowser: boolean = false;
   private platformId = inject(PLATFORM_ID);
-  constructor(private errorObject: Errors, private snackBarObject: MatSnackBar, private fb: FormBuilder, private authServiceServiceObject: AuthenticationService, private router: Router) {
+  constructor(private errorObject: Errors, private snackBarObject: MatSnackBar, private fb: FormBuilder, private authServiceServiceObject: AuthenticationService, private router: Router,private commonFunObject: CommonFun) {
     
  this.isBrowser = isPlatformBrowser(this.platformId);
     if (isPlatformBrowser(this.platformId)) {
@@ -62,22 +63,24 @@ export class Login implements OnInit{
       error: (e) => {
         //bad credentials
         if (e.status == 401) {
-          this.openSnackBar(e.error.detail);
+          // this.openSnackBar(e.error.detail);
+          this.commonFunObject.openSnackBar(e.error.detail, 'danger');
         }
         else if (e.status == 406) {
-          this.openSnackBar(this.errorObject.errorStatus406(JSON.parse(JSON.stringify(e.error))));
+          // this.openSnackBar(this.errorObject.errorStatus406(JSON.parse(JSON.stringify(e.error))));
+          this.commonFunObject.openSnackBar(this.errorObject.errorStatus406(JSON.parse(JSON.stringify(e.error))), 'danger');
         }
       }
     });
   }
 
-  public openSnackBar(data: any) {
-    this.snackBarObject.openFromComponent(Snackbar, {
-      data: data,
-      panelClass: ['red'],
-      horizontalPosition: 'right',
-      verticalPosition: 'top',
-      duration: 1000 * 4
-    });
-  }
+  // public openSnackBar(data: any) {
+  //   this.snackBarObject.openFromComponent(Snackbar, {
+  //     data: data,
+  //     panelClass: ['red'],
+  //     horizontalPosition: 'right',
+  //     verticalPosition: 'top',
+  //     duration: 1000 * 4
+  //   });
+  // }
 }

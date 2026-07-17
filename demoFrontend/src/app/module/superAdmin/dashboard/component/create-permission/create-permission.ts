@@ -13,9 +13,9 @@ import { AlertMessage } from '../layout/alert-message/alert-message';
   templateUrl: './create-permission.html',
   styleUrl: './create-permission.scss',
 })
-export class CreatePermission implements OnInit{
+export class CreatePermission implements OnInit {
 
-    @ViewChild('dropdown') dropdownElement!: ElementRef<HTMLSelectElement>;
+  @ViewChild('dropdown') dropdownElement!: ElementRef<HTMLSelectElement>;
   @Input() closed: Boolean = false;
 
   createPermissionForm!: FormGroup;
@@ -23,20 +23,20 @@ export class CreatePermission implements OnInit{
   showAlert = true;
   private choicesInstance: any;
   private isBrowser: boolean;
-  displayAlertErrorList:string[] = [];
+  displayAlertErrorList: string[] = [];
 
   constructor(
     @Inject(PLATFORM_ID) platformId: object, private formBuilderObject: FormBuilder,
-    private superAdminServiceObject: SuperAdminService, private commonFunctionObject: CommonFun,  private errorObject: Errors) {
+    private superAdminServiceObject: SuperAdminService, private commonFunctionObject: CommonFun, private errorObject: Errors) {
     this.isBrowser = isPlatformBrowser(platformId);
   }
 
   ngOnInit() {
 
-    console.log('----Create-permission-Super-Admin module running--------ngOnInit------');
+    console.log('----Create-permission-Super-Admin component running--------ngOnInit------');
     this.createPermissionForm = this.formBuilderObject.group({
-        permissionName: new FormControl('', [Validators.required]),
-      });
+      permissionName: new FormControl('', [Validators.required]),
+    });
   }
 
 
@@ -53,30 +53,30 @@ export class CreatePermission implements OnInit{
 
     this.superAdminServiceObject.createPermission(createPermissionModelObject).subscribe({
       next: (res) => {// console.log(res);
-        this.commonFunctionObject.openSnackBar(JSON.parse(JSON.stringify(res)).message, 'green');
+        this.commonFunctionObject.openSnackBar(JSON.parse(JSON.stringify(res)).message, 'success');
       },
       error: (e) => {// console.log(e);
         if (e.status == 400) {
-          this.commonFunctionObject.openSnackBar(e.error.detail, 'red');
+          this.commonFunctionObject.openSnackBar(e.error.accessDeniedReason, 'danger');
         } else if (e.status == 406) {
-          this.commonFunctionObject.openSnackBar(this.errorObject.errorStatus406(JSON.parse(JSON.stringify(e.error))), 'red');
+          this.commonFunctionObject.openSnackBar(this.errorObject.errorStatus406(JSON.parse(JSON.stringify(e.error))), 'danger');
         }
       },
     });
 
     // remove selected item from dropdown
     if (this.choicesInstance) {
-        this.createPermissionForm.reset();
-        this.choicesInstance.removeActiveItems();
-        // this.choicesInstance.setChoiceByValue('');
-         this.showAlert = false;
-      }
+      this.createPermissionForm.reset();
+      this.choicesInstance.removeActiveItems();
+      // this.choicesInstance.setChoiceByValue('');
+      this.showAlert = false;
+    }
   }
 
 
   async ngAfterViewInit() {
     if (this.isBrowser) {
-     this.choicesInstance = await this.commonFunctionObject.selectDropDownConfigWithChoicesJs(this.dropdownElement, "Please select Permission Name", "Type to search here...");
+      this.choicesInstance = await this.commonFunctionObject.selectDropDownConfigWithChoicesJs(this.dropdownElement, "Please select Permission Name", "Type to search here...");
     }
   }
 
@@ -84,15 +84,15 @@ export class CreatePermission implements OnInit{
 
   private calculateDisplayErrorsForAlertBox() {
     this.displayAlertErrorList = [];
-    Object.keys(this.createPermissionForm.controls).forEach( controlsName =>{
+    Object.keys(this.createPermissionForm.controls).forEach(controlsName => {
       const errors = this.f[controlsName]?.errors;
-        if (errors) {
-          switch (controlsName){
-            case 'permissionName':
-            errors['required'] ? this.displayAlertErrorList.push('Permission Name is required.') :null;
+      if (errors) {
+        switch (controlsName) {
+          case 'permissionName':
+            errors['required'] ? this.displayAlertErrorList.push('Permission Name is required.') : null;
             break;
-          }
         }
+      }
     });
   }
 

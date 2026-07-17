@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { SuperAdminService } from '../../../../../service/superAdmin/super-admin-service';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -13,10 +13,10 @@ import { getRolesResponseModel } from '../../../../../model/responseModel/getRol
   templateUrl: './manage-permission.html',
   styleUrl: './manage-permission.scss',
 })
-export class ManagePermission {
+export class ManagePermission implements OnInit {
 
 
-    displayedColumns: string[] = ['id', 'permissionName', 'created'];
+  displayedColumns: string[] = ['id', 'permissionName', 'created'];
   dataSource = new MatTableDataSource<getRolesResponseModel>([]);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -33,7 +33,7 @@ export class ManagePermission {
 
 
   ngOnInit() {
-    console.log('----Manage-permission-Super-Admin module running--------ngOnInit------');
+    console.log('----Manage-permission-Super-Admin component running--------ngOnInit------');
 
   }
 

@@ -30,7 +30,7 @@ export class CreateRole implements OnInit, OnDestroy {
 
   createRoleForm!: FormGroup;
   submittedForm = false;
-  showAlert = true;
+  showAlert = false;
   showSecondOption = false;
   displayAlertErrorList:string[] = [];
   private choicesInstance: any;
@@ -53,7 +53,7 @@ export class CreateRole implements OnInit, OnDestroy {
 
     // Use valueChanges just for show/hide toggle
     this.createRoleForm.get('roleList')?.valueChanges.subscribe(value => {
-      this.showSecondOption = !!value;
+      this.showSecondOption = value;
 
       // Reset permission when role changes
       if (!this.showSecondOption) {
@@ -61,6 +61,7 @@ export class CreateRole implements OnInit, OnDestroy {
         if (this.choicesInstanceTwo) {
           this.choicesInstanceTwo.clearStore();
           this.choicesInstanceTwo = null; // force re-init next time
+          this.showAlert = false;
         }
       }
     });
@@ -80,12 +81,12 @@ export class CreateRole implements OnInit, OnDestroy {
 
     this.superAdminServiceObject.createRole(createRoleModelObject).subscribe({
       next: (res) => {// console.log(res);
-        this.commonFunctionObject.openSnackBar(JSON.parse(JSON.stringify(res)).message, 'green');
+        this.commonFunctionObject.openSnackBar(JSON.parse(JSON.stringify(res)).message, 'success');
       },
       error: (e) => {// console.log(e);
-        if (e.status == 400) { this.commonFunctionObject.openSnackBar(e.error.detail, 'red'); }
+        if (e.status == 400) { this.commonFunctionObject.openSnackBar(e.error.detail, 'danger'); }
         else 
-        if (e.status == 422) { this.commonFunctionObject.openSnackBar(this.errorObject.directDisplayErrorMessageStatus406(JSON.parse(JSON.stringify(e.error))), 'red'); }
+        if (e.status == 422) { this.commonFunctionObject.openSnackBar(this.errorObject.directDisplayErrorMessageStatus406(JSON.parse(JSON.stringify(e.error))), 'danger'); }
       },
     });
 
@@ -107,7 +108,7 @@ export class CreateRole implements OnInit, OnDestroy {
 
   get f(): { [key: string]: AbstractControl } { return this.createRoleForm.controls; }
 
-    private calculateDisplayErrorsForAlertBox() {
+  private calculateDisplayErrorsForAlertBox() {
     this.displayAlertErrorList = [];
     Object.keys(this.createRoleForm.controls).forEach( controlsName =>{
       const errors = this.f[controlsName]?.errors;

@@ -3,6 +3,7 @@ package dravin.com.authentication.controller.superAdmin;
 
 import dravin.com.authentication.requestmodel.superAdmin.UpdateMyProfileRequestModel;
 import dravin.com.authentication.service.superAdmin.MyProfileService;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -25,8 +26,9 @@ public class MyProfileController {
     }
 
     @PostMapping(value =CREATE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> updateMyProfile(@RequestParam("file") MultipartFile file, @RequestPart("updateMyProfileRequest") UpdateMyProfileRequestModel updateMyProfileRequest) {
-        this.validateImageFile(file);
+    public ResponseEntity<?> updateMyProfile(@RequestPart(value = "file", required = false) MultipartFile file, @RequestPart("updateMyProfileRequest") @Valid UpdateMyProfileRequestModel updateMyProfileRequest) {
+        if (file != null && !file.isEmpty())
+            this.validateImageFile(file);
         return myProfileService.updateMyProfile(updateMyProfileRequest,file);
     }
 

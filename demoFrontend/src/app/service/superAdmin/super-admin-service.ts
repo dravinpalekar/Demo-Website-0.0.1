@@ -40,22 +40,33 @@ export class SuperAdminService {
     }
 
     public updateMyProfile(updateMyProfileModelObject: UpdateMyProfileModel) {
-        const formData = new FormData();
-        formData.append('firstName', updateMyProfileModelObject.firstName);
-        formData.append('middleName', updateMyProfileModelObject.middleName);
-        formData.append('lastName', updateMyProfileModelObject.lastName);
-        formData.append('gender', updateMyProfileModelObject.gender);
-        formData.append('country', updateMyProfileModelObject.country);
-        formData.append('city', updateMyProfileModelObject.city);
-        formData.append('age', updateMyProfileModelObject.age.toString());
-        formData.append('pinCode', updateMyProfileModelObject.pinCode.toString());
-        formData.append('address', updateMyProfileModelObject.address);
+        // const formData = new FormData();
+        // formData.append('firstName', updateMyProfileModelObject.firstName);
+        // formData.append('middleName', updateMyProfileModelObject.middleName);
+        // formData.append('lastName', updateMyProfileModelObject.lastName);
+        // formData.append('gender', updateMyProfileModelObject.gender);
+        // formData.append('country', updateMyProfileModelObject.country);
+        // formData.append('city', updateMyProfileModelObject.city);
+        // formData.append('age', updateMyProfileModelObject.age.toString());
+        // formData.append('pinCode', updateMyProfileModelObject.pinCode.toString());
+        // formData.append('address', updateMyProfileModelObject.address);
         // formData.append('file', updateMyProfileModelObject.file!);
-        if (updateMyProfileModelObject.file) {
-            formData.append('file', updateMyProfileModelObject.file);
-        }
-        this.headers.delete('Content-Type')
-        return this.http.post(allRoutes.updateMyProfileBackendUrl, formData, { headers: this.headers });
+        // if (updateMyProfileModelObject.file) {
+        //     formData.append('file', updateMyProfileModelObject.file);
+        // }
+        const formDataTemp = new FormData();
+        const profileData = {
+            "firstName":updateMyProfileModelObject.firstName, "middleName":updateMyProfileModelObject.middleName, "lastName":updateMyProfileModelObject.lastName,
+            "gender":updateMyProfileModelObject.gender, "country":updateMyProfileModelObject.country, "city":updateMyProfileModelObject.city,
+            "age":updateMyProfileModelObject.age, "pinCode":updateMyProfileModelObject.pinCode, "address":updateMyProfileModelObject.address,
+        };
+        
+        formDataTemp.append('updateMyProfileRequest', new Blob([JSON.stringify(profileData)],{ type: 'application/json' }));
+        formDataTemp.append('file', updateMyProfileModelObject.file!);
+
+        // this.headers.delete('Content-Type');
+        const headers = this.headers.delete('Content-Type');
+        return this.http.post(allRoutes.updateMyProfileBackendUrl, formDataTemp, { headers: headers });
     }
 
     public getMyProfile() {
