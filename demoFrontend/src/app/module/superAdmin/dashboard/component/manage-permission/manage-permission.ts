@@ -9,16 +9,21 @@ import { getRolesResponseModel } from '../../../../../model/responseModel/getRol
 import { MatIconButton } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonFun } from '../../../../../utils/helper/CommonFun';
+import { DialogBox } from '../../../../../utils/dialog-box/dialog-box';
+
 
 @Component({
   selector: 'app-manage-permission',
-  imports: [MatTableModule, MatPaginatorModule, MatSortModule, MatFormFieldModule, MatInputModule, MatIconModule,],
+  imports: [MatTableModule, MatPaginatorModule, MatSortModule, MatFormFieldModule, MatInputModule, MatIconModule, DialogBox],
   templateUrl: './manage-permission.html',
   styleUrl: './manage-permission.scss',
 })
 export class ManagePermission implements OnInit {
 
-
+  showModal = false;
+  modalTitle = 'Delete Record';
+  modalMessage = 'Are you sure you want to delete this record?';
+  selectedId: number | null = null;
   displayedColumns: string[] = ['id', 'permissionName', 'created', 'actions'];
   dataSource = new MatTableDataSource<getRolesResponseModel>([]);
 
@@ -34,10 +39,8 @@ export class ManagePermission implements OnInit {
     });
   }
 
-
   ngOnInit() {
     console.log('----Manage-permission-Super-Admin component running--------ngOnInit------');
-
   }
 
   applyFilter(event: Event) {
@@ -62,15 +65,35 @@ export class ManagePermission implements OnInit {
     this.dataSource.sort = this.sort;
   }
 
-
-  startEdit(id: number) {
+  openDailogForEditItem(id: number) {
+    // this.selectedId = id;
+    // this.showModal = true;
     alert(id);
   }
 
-  deleteItem(id: number) {
+  openDailogForDeteteItem(id: number) {
+    this.selectedId = id;
+    this.showModal = true;
+  }
+
+  onConfirm(result: boolean) {
+    this.showModal = false;
+    if (result && this.selectedId !== null) {
+      this.deleteItem(this.selectedId);
+    }
+    this.selectedId = null;
+  }
+
+  closeModal() {
+    this.showModal = false;
+    this.selectedId = null;
+  }
+
+  private deleteItem(id: number) {
 
     this.SuperAdminServiceObject.deletePermission(id).subscribe({
-      next:(res) => {
+      next: (res) => {
+        this.commonFunctionObject.openSnackBar(JSON.parse(JSON.stringify(res)).message, 'success');
         // Filter out the deleted record from the current dataset
         const currentData = this.dataSource.data;
         this.dataSource.data = currentData.filter(item => item.id !== id);
