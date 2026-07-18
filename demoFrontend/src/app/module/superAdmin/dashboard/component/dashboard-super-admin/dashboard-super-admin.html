@@ -11,7 +11,7 @@
       <div class="content-wrapper">
         <div class="content">
           <!-- Main content Area -->
-           <router-outlet></router-outlet>
+           <router-outlet (activate)="$event.pageTitle ? $event.pageTitle.subscribe(updateTitle.bind(this)) : null"></router-outlet>
         </div>
       </div>
 

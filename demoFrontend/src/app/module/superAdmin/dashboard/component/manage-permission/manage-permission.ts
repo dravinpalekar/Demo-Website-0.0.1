@@ -10,6 +10,8 @@ import { MatIconButton } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonFun } from '../../../../../utils/helper/CommonFun';
 import { DialogBox } from '../../../../../utils/dialog-box/dialog-box';
+import { Router } from '@angular/router';
+import { allRoutes } from '../../../../../utils/allRoutes/allRoutes';
 
 
 @Component({
@@ -30,7 +32,7 @@ export class ManagePermission implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private SuperAdminServiceObject: SuperAdminService, private commonFunctionObject: CommonFun) {
+  constructor(private SuperAdminServiceObject: SuperAdminService, private commonFunctionObject: CommonFun, private router: Router,) {
 
     this.SuperAdminServiceObject.getPermissions().subscribe((data) => {
       this.dataSource = new MatTableDataSource(JSON.parse(JSON.stringify(data)).data);
@@ -66,9 +68,7 @@ export class ManagePermission implements OnInit {
   }
 
   openDailogForEditItem(id: number) {
-    // this.selectedId = id;
-    // this.showModal = true;
-    alert(id);
+   this.router.navigate([allRoutes.superAdminDashboard + "/editPermission/"+id]);
   }
 
   openDailogForDeteteItem(id: number) {

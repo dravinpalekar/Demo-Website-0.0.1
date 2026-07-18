@@ -34,6 +34,7 @@ export class allRoutes{
     static readonly createRoleBackendUrl = this.backendBaseUrl + this.api + this.super + this.role + this.create;
     static readonly getRoleBackendUrl = this.backendBaseUrl + this.api + this.super + this.role + this.get;
     static readonly createPermissionBackendUrl = this.backendBaseUrl + this.api + this.super + this.permission + this.create;
+    static readonly updatePermissionByIdBackendUrl = this.backendBaseUrl + this.api + this.super + this.permission + this.update;
     static readonly getPermissionBackendUrl = this.backendBaseUrl + this.api + this.super + this.permission + this.get;
     static readonly deletePermissionBackendUrl = this.backendBaseUrl + this.api + this.super + this.permission + this.delete;
     static readonly updateMyProfileBackendUrl = this.backendBaseUrl + this.api + this.super + this.myProfile + this.create;

@@ -34,14 +34,24 @@ export class SuperAdminService {
         return this.http.post(allRoutes.createPermissionBackendUrl, createPermissionModelObject, { headers: this.headers });
     }
 
+    public updatePermissionById(id:number, createPermissionModelObject: createNameModel) {
+
+        return this.http.put(allRoutes.updatePermissionByIdBackendUrl + "/" + id, createPermissionModelObject, { headers: this.headers });
+    }
+
     public getPermissions() {
 
         return this.http.get<any[]>(allRoutes.getPermissionBackendUrl, { headers: this.headers });
     }
 
+    public getPermissionById(id:number) {
+
+        return this.http.get<any[]>(allRoutes.getPermissionBackendUrl + "/" + id , { headers: this.headers });
+    }
+
     public deletePermission(id:number){
      
-        return this.http.delete(allRoutes.deletePermissionBackendUrl + "/" +id, { headers: this.headers });
+        return this.http.delete(allRoutes.deletePermissionBackendUrl + "/" + id, { headers: this.headers });
     }
 
     public updateMyProfile(updateMyProfileModelObject: UpdateMyProfileModel) {

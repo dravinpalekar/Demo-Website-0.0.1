@@ -1,4 +1,4 @@
-import { Component, ElementRef, Inject, Input, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Inject, Input, OnInit, Output, PLATFORM_ID, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonFun } from '../../../../../utils/helper/CommonFun';
 import { Errors } from '../../../../../utils/helper/Errors';
@@ -6,6 +6,8 @@ import { SuperAdminService } from '../../../../../service/superAdmin/super-admin
 import { isPlatformBrowser } from '@angular/common';
 import { createNameModel } from '../../../../../model/requestModel/superAdmin/createNameModel';
 import { AlertMessage } from '../layout/alert-message/alert-message';
+import { ActivatedRoute, Router } from '@angular/router';
+import { allRoutes } from '../../../../../utils/allRoutes/allRoutes';
 
 @Component({
   selector: 'app-create-permission',
@@ -17,7 +19,9 @@ export class CreatePermission implements OnInit {
 
   @ViewChild('dropdown') dropdownElement!: ElementRef<HTMLSelectElement>;
   @Input() closed: Boolean = false;
-
+  @Output() pageTitle = new EventEmitter<string>();
+  isEditMode: boolean = false;
+  editModeId: number | undefined;
   createPermissionForm!: FormGroup;
   submittedForm = false;
   showAlert = true;
@@ -26,7 +30,7 @@ export class CreatePermission implements OnInit {
   displayAlertErrorList: string[] = [];
 
   constructor(
-    @Inject(PLATFORM_ID) platformId: object, private formBuilderObject: FormBuilder,
+    @Inject(PLATFORM_ID) platformId: object, private formBuilderObject: FormBuilder, private router: Router, private route: ActivatedRoute,
     private superAdminServiceObject: SuperAdminService, private commonFunctionObject: CommonFun, private errorObject: Errors) {
     this.isBrowser = isPlatformBrowser(platformId);
   }
@@ -37,6 +41,7 @@ export class CreatePermission implements OnInit {
     this.createPermissionForm = this.formBuilderObject.group({
       permissionName: new FormControl('', [Validators.required]),
     });
+
   }
 
 
@@ -51,18 +56,34 @@ export class CreatePermission implements OnInit {
 
     const createPermissionModelObject: createNameModel = new createNameModel(this.createPermissionForm.get('permissionName')?.value);
 
-    this.superAdminServiceObject.createPermission(createPermissionModelObject).subscribe({
-      next: (res) => {// console.log(res);
-        this.commonFunctionObject.openSnackBar(JSON.parse(JSON.stringify(res)).message, 'success');
-      },
-      error: (e) => {// console.log(e);
-        if (e.status == 400) {
-          this.commonFunctionObject.openSnackBar(e.error.accessDeniedReason, 'danger');
-        } else if (e.status == 406) {
-          this.commonFunctionObject.openSnackBar(this.errorObject.errorStatus406(JSON.parse(JSON.stringify(e.error))), 'danger');
-        }
-      },
-    });
+    if (this.isEditMode) {
+      this.superAdminServiceObject.updatePermissionById(Number(this.editModeId), createPermissionModelObject).subscribe({
+        next: (res) => {// console.log(res);
+          this.commonFunctionObject.openSnackBar(JSON.parse(JSON.stringify(res)).message, 'success');
+        },
+        error: (e) => {// console.log(e);
+          if (e.status == 400) {
+            this.commonFunctionObject.openSnackBar(e.error.accessDeniedReason, 'danger');
+          } else if (e.status == 406) {
+            this.commonFunctionObject.openSnackBar(this.errorObject.errorStatus406(JSON.parse(JSON.stringify(e.error))), 'danger');
+          }
+        },
+      })
+    } else {
+      this.superAdminServiceObject.createPermission(createPermissionModelObject).subscribe({
+        next: (res) => {// console.log(res);
+          this.commonFunctionObject.openSnackBar(JSON.parse(JSON.stringify(res)).message, 'success');
+        },
+        error: (e) => {// console.log(e);
+          if (e.status == 400) {
+            this.commonFunctionObject.openSnackBar(e.error.accessDeniedReason, 'danger');
+          } else if (e.status == 406) {
+            this.commonFunctionObject.openSnackBar(this.errorObject.errorStatus406(JSON.parse(JSON.stringify(e.error))), 'danger');
+          }
+        },
+      });
+    }
+
 
     // remove selected item from dropdown
     if (this.choicesInstance) {
@@ -77,6 +98,23 @@ export class CreatePermission implements OnInit {
   async ngAfterViewInit() {
     if (this.isBrowser) {
       this.choicesInstance = await this.commonFunctionObject.selectDropDownConfigWithChoicesJs(this.dropdownElement, "Please select Permission Name", "Type to search here...");
+
+      this.route.paramMap.subscribe(params => {
+        const id = params.get('id');
+        if (id) {
+          this.isEditMode = true;
+          this.editModeId = Number(id);
+          this.pageTitle.emit("Edit Permission");
+          this.superAdminServiceObject.getPermissionById(Number(id)).subscribe({
+            next: (res) => {
+              this.choicesInstance.setChoiceByValue(JSON.parse(JSON.stringify(res)).data.name);
+            },
+            error: (e) => {
+              this.router.navigate([allRoutes.notFound]);
+            },
+          });
+        }
+      });
     }
   }
 
