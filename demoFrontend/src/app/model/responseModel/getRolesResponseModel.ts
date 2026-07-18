@@ -1,9 +1,11 @@
 export class getRolesResponseModel{
 
-    private name: String | undefined;
-    private createdAt: String | undefined;
+    public id: number | undefined;
+    public name: String | undefined;
+    public createdAt: String | undefined;
 
-    constructor(name: string, createdAt: string){
+    constructor(id:number, name: string, createdAt: string){
+        this.id = this.id;
         this.name = name;
         this.createdAt = createdAt;
     }

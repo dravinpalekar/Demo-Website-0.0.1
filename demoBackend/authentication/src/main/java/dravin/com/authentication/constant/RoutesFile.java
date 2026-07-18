@@ -15,6 +15,8 @@ public class RoutesFile {
     public static final String GET_MY_IMAGE = "/getMyImage";
     public static final String USER = API + "/user";
 
+    public static final String ID = "/{id}";
+
 
 
 
@@ -22,5 +24,7 @@ public class RoutesFile {
     public static final String SIGN_IN = "/signIn";
     public static final String SIGN_UP = "/signUp";
     public static final String CREATE = "/create";
+    public static final String UPDATE = "/update";
     public static final String GET = "/get";
+    public static final String DELETE = "/delete";
 }

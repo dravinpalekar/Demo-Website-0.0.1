@@ -39,6 +39,11 @@ export class SuperAdminService {
         return this.http.get<any[]>(allRoutes.getPermissionBackendUrl, { headers: this.headers });
     }
 
+    public deletePermission(id:number){
+     
+        return this.http.delete(allRoutes.deletePermissionBackendUrl + "/" +id, { headers: this.headers });
+    }
+
     public updateMyProfile(updateMyProfileModelObject: UpdateMyProfileModel) {
         // const formData = new FormData();
         // formData.append('firstName', updateMyProfileModelObject.firstName);

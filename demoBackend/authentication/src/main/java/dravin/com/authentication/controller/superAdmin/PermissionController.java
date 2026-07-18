@@ -28,9 +28,27 @@ public class PermissionController {
         return permissionService.createPermission(createPermissionRequest);
     }
 
+    @PutMapping(UPDATE + ID)
+    public ResponseEntity<?> updatePermissionById(@PathVariable Long id, @Valid @RequestBody CreatePermissionRequestModel createPermissionRequest){
+
+        return permissionService.updatePermissionById(id, createPermissionRequest);
+    }
+
     @GetMapping(GET)
     public ResponseEntity<?> getAllPermission(){
 
         return permissionService.getAllPermission();
+    }
+
+    @GetMapping(GET + ID)
+    public ResponseEntity<?> getPermissionById(@PathVariable Long id){
+
+        return permissionService.getPermissionById(id);
+    }
+
+    @DeleteMapping(DELETE + ID)
+    public ResponseEntity<?> deletePermission(@PathVariable Long id){
+
+        return permissionService.deletePermission(id);
     }
 }
