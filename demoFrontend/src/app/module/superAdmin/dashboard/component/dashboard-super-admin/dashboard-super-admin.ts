@@ -12,27 +12,25 @@ import { constant } from '../../../../../utils/allRoutes/constant';
   templateUrl: './dashboard-super-admin.html',
   styleUrl: './dashboard-super-admin.scss',
 })
-export class DashboardSuperAdmin implements OnInit{
+export class DashboardSuperAdmin implements OnInit {
 
-   pageTitle: string = ''; // "global" for this scope
+  pageTitle: string = ''; // "global" for this scope
 
-  constructor(
-    private commonFunctionObject: CommonFun,
-    private renderer: Renderer2,
-    private router: Router
-  ) { }
+  constructor(private commonFunctionObject: CommonFun, private renderer: Renderer2, private router: Router) {
+
+  }
 
   ngOnInit(): void {
 
     console.log('----Dashboard-Super-Admin module running--------ngOnInit------');
 
-    this.commonFunctionObject.loadStyle( this.renderer, 'assets/superAdminModule/css/material/css/materialdesignicons.min.css' );
-    this.commonFunctionObject.loadStyle( this.renderer, 'assets/superAdminModule/simplebar/simplebar.css' );
-    this.commonFunctionObject.loadStyleAndStoreStyleId( this.renderer, 'assets/superAdminModule/css/style.css', 'dashboard-super-admin-style' );
+    this.commonFunctionObject.loadStyle(this.renderer, 'assets/superAdminModule/css/material/css/materialdesignicons.min.css');
+    this.commonFunctionObject.loadStyle(this.renderer, 'assets/superAdminModule/simplebar/simplebar.css');
+    this.commonFunctionObject.loadStyleAndStoreStyleId(this.renderer, 'assets/superAdminModule/css/style.css', 'dashboard-super-admin-style');
 
-    this.commonFunctionObject.loadScriptWithOnLoadCallback( this.renderer, 'assets/superAdminModule/js/jquery.min.js', () => {
-        this.commonFunctionObject.loadScriptWithOnLoadCallback( this.renderer, 'assets/superAdminModule/js/mono.js');
-      }
+    this.commonFunctionObject.loadScriptWithOnLoadCallback(this.renderer, 'assets/superAdminModule/js/jquery.min.js', () => {
+      this.commonFunctionObject.loadScriptWithOnLoadCallback(this.renderer, 'assets/superAdminModule/js/mono.js');
+    }
     );
     // this.commonFunctionObject.loadScript( this.renderer, 'assets/superAdminModule/simplebar/simplebar.min.js' );
 

@@ -36,3 +36,8 @@
     color: #dc3545;   /* Bootstrap danger red */
     transition: color 0.2s ease-in-out;
 }
+
+.chnageColourMouseOverBlue:hover i {
+    color: blue;   /* Bootstrap danger red */
+    transition: color 0.2s ease-in-out;
+}

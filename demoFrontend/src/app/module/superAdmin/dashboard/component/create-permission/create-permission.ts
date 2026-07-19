@@ -36,14 +36,20 @@ export class CreatePermission implements OnInit {
   }
 
   ngOnInit() {
-
     console.log('----Create-permission-Super-Admin component running--------ngOnInit------');
     this.createPermissionForm = this.formBuilderObject.group({
       permissionName: new FormControl('', [Validators.required]),
     });
 
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id) {
+        this.pageTitle.emit("Edit Permission");
+        this.isEditMode = true;
+        this.editModeId = Number(id);
+      }
+    });
   }
-
 
   onSubmit() {
 
@@ -60,6 +66,7 @@ export class CreatePermission implements OnInit {
       this.superAdminServiceObject.updatePermissionById(Number(this.editModeId), createPermissionModelObject).subscribe({
         next: (res) => {// console.log(res);
           this.commonFunctionObject.openSnackBar(JSON.parse(JSON.stringify(res)).message, 'success');
+          this.router.navigate([allRoutes.managePermissions]);
         },
         error: (e) => {// console.log(e);
           if (e.status == 400) {
@@ -84,7 +91,6 @@ export class CreatePermission implements OnInit {
       });
     }
 
-
     // remove selected item from dropdown
     if (this.choicesInstance) {
       this.createPermissionForm.reset();
@@ -99,22 +105,16 @@ export class CreatePermission implements OnInit {
     if (this.isBrowser) {
       this.choicesInstance = await this.commonFunctionObject.selectDropDownConfigWithChoicesJs(this.dropdownElement, "Please select Permission Name", "Type to search here...");
 
-      this.route.paramMap.subscribe(params => {
-        const id = params.get('id');
-        if (id) {
-          this.isEditMode = true;
-          this.editModeId = Number(id);
-          this.pageTitle.emit("Edit Permission");
-          this.superAdminServiceObject.getPermissionById(Number(id)).subscribe({
-            next: (res) => {
-              this.choicesInstance.setChoiceByValue(JSON.parse(JSON.stringify(res)).data.name);
-            },
-            error: (e) => {
-              this.router.navigate([allRoutes.notFound]);
-            },
-          });
-        }
-      });
+      if (this.isEditMode) {
+        this.superAdminServiceObject.getPermissionById(Number(this.editModeId)).subscribe({
+          next: (res) => {
+            this.choicesInstance.setChoiceByValue(JSON.parse(JSON.stringify(res)).data.name);
+          },
+          error: (e) => {
+            this.router.navigate([allRoutes.notFound]);
+          },
+        });
+      }
     }
   }
 

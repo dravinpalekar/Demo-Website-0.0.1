@@ -1,6 +1,7 @@
 package dravin.com.authentication.controller.superAdmin;
 
 
+import dravin.com.authentication.requestmodel.superAdmin.CreatePermissionRequestModel;
 import dravin.com.authentication.requestmodel.superAdmin.CreateRoleRequestModel;
 import dravin.com.authentication.service.superAdmin.RoleService;
 import jakarta.validation.Valid;
@@ -17,22 +18,41 @@ public class RoleController {
 
     private static final Logger logger = LoggerFactory.getLogger( RoleController.class );
 
-    private final RoleService superAdminService;
+    private final RoleService roleService;
 
-    public RoleController(RoleService superAdminService) {
-        this.superAdminService = superAdminService;
+    public RoleController(RoleService roleService) {
+        this.roleService = roleService;
     }
 
 
     @PostMapping(CREATE)
     public ResponseEntity<?> createRole(@Valid @RequestBody CreateRoleRequestModel createRoleRequest) {
 
-        return superAdminService.createRole(createRoleRequest);
+        return roleService.createRole(createRoleRequest);
     }
+
+    @PutMapping(UPDATE + ID)
+    public ResponseEntity<?> updateRoleById(@PathVariable Long id, @Valid @RequestBody CreateRoleRequestModel createRoleRequestModel){
+
+        return roleService.updateRoleById(id, createRoleRequestModel);
+    }
+
 
     @GetMapping(GET)
     public ResponseEntity<?> getAllRoles() {
 
-        return superAdminService.getAllRoles();
+        return roleService.getAllRoles();
+    }
+
+    @GetMapping(GET + ID)
+    public ResponseEntity<?> getRoleById(@PathVariable Long id){
+
+        return roleService.getRoleById(id);
+    }
+
+    @DeleteMapping(DELETE + ID)
+    public ResponseEntity<?> deleteRole(@PathVariable Long id){
+
+        return roleService.deleteRole(id);
     }
 }

@@ -21,9 +21,29 @@
                         <td mat-cell *matCellDef="let element">{{element.name}}</td>
                     </ng-container>
 
+                    <ng-container matColumnDef="permissionName">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Permission Name</th>
+                        <td mat-cell *matCellDef="let element">{{element.permission[0].name}}</td>
+                    </ng-container>
+
                     <ng-container matColumnDef="created">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header>Created</th>
                         <td mat-cell *matCellDef="let element">{{element.createdAt }}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="actions">
+
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Action</th>
+                        <td mat-cell *matCellDef="let element">
+
+                            <button class="me-4 chnageColourMouseOverBlue" mat-icon-button color="accent" title="Edit" (click)="openDailogForEditItem(element.id)">
+                                <i class="bi bi-pencil-fill fs-5"></i>
+                            </button>
+
+                            <button class="chnageColourMouseOver" mat-icon-button color="accent" title="Delete" (click)="openDailogForDeteteItem(element.id)">
+                                <i class="bi bi-trash-fill fs-5"></i>
+                            </button>
+                        </td>
                     </ng-container>
 
                     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -37,3 +57,21 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" [class.show]="showModal" [style.display]="showModal ? 'block' : 'none'" tabindex="-1"
+    (click)="closeModal()">
+
+    <div class="modal-dialog modal-dialog-centered mt-n8" (click)="$event.stopPropagation()">
+        <div class="modal-content">
+
+            <app-dialog-box [title]="modalTitle" [message]="modalMessage" [btnOkText]="'Yes'" [btnCancelText]="'No'"
+                (confirmed)="onConfirm($event)" (closed)="closeModal()">
+            </app-dialog-box>
+
+        </div>
+    </div>
+</div>
+<!-- Backdrop -->
+@if (showModal) {
+<div class="modal-backdrop fade show"></div>
+}

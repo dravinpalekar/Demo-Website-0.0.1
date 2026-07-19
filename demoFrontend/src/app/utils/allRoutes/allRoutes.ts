@@ -9,6 +9,16 @@ export class allRoutes{
     static readonly superAdminLogin = "superAdminLogin";
     static readonly superAdminSignUp = "superAdminSignUp";
     static readonly superAdminDashboard = "superAdminDashboard";
+    static readonly createRole = "createRole";
+    static readonly createPermission = "createPermission";
+    static readonly managePermission = "managePermission";
+    static readonly manageRole = "manageRole";
+    static readonly manageProfile = "myProfile";
+    static readonly manageRoles = this.superAdminDashboard + "/" + this.manageRole;
+    static readonly managePermissions = this.superAdminDashboard + "/" + this.managePermission;
+    static readonly editPermission = this.superAdminDashboard + "/editPermission/";
+    static readonly editRole = this.superAdminDashboard + "/editRole/";
+
 
     // Define all the routes used in the application for frontend 
 
@@ -31,12 +41,17 @@ export class allRoutes{
 
     static readonly loginBackendUrl = this.backendBaseUrl + this.api + this.auth + this.signIn;
     static readonly signUpBackendUrl = this.backendBaseUrl + this.api + this.auth + this.signUp;
+
     static readonly createRoleBackendUrl = this.backendBaseUrl + this.api + this.super + this.role + this.create;
     static readonly getRoleBackendUrl = this.backendBaseUrl + this.api + this.super + this.role + this.get;
+    static readonly deleteRoleByIdBackendUrl = this.backendBaseUrl + this.api + this.super + this.role + this.delete;
+    static readonly updateRoleByIdBackendUrl = this.backendBaseUrl + this.api + this.super + this.role + this.update;
+
     static readonly createPermissionBackendUrl = this.backendBaseUrl + this.api + this.super + this.permission + this.create;
     static readonly updatePermissionByIdBackendUrl = this.backendBaseUrl + this.api + this.super + this.permission + this.update;
     static readonly getPermissionBackendUrl = this.backendBaseUrl + this.api + this.super + this.permission + this.get;
     static readonly deletePermissionBackendUrl = this.backendBaseUrl + this.api + this.super + this.permission + this.delete;
+
     static readonly updateMyProfileBackendUrl = this.backendBaseUrl + this.api + this.super + this.myProfile + this.create;
     static readonly getMyProfileBackendUrl = this.backendBaseUrl + this.api + this.super + this.myProfile + this.get;
     static readonly getMyImageBackendUrl = this.backendBaseUrl + this.api + this.super + this.myProfile + this.getMyImage;

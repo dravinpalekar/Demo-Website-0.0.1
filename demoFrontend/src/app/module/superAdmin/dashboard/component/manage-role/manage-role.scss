@@ -31,3 +31,14 @@
 ::ng-deep .custom-search input {
   color: black !important;          /* text color */
 }
+
+
+.chnageColourMouseOver:hover i {
+    color: #dc3545;   /* Bootstrap danger red */
+    transition: color 0.2s ease-in-out;
+}
+
+.chnageColourMouseOverBlue:hover i {
+    color: blue;   /* Bootstrap danger red */
+    transition: color 0.2s ease-in-out;
+}

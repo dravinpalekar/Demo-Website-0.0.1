@@ -24,9 +24,24 @@ export class SuperAdminService {
         return this.http.post(allRoutes.createRoleBackendUrl, createRoleModelObject, { headers: this.headers });
     }
 
+    public updateRoleById(id:number, createRoleModelObject: createRoleModel) {
+
+        return this.http.put(allRoutes.updateRoleByIdBackendUrl + "/" + id, createRoleModelObject, { headers: this.headers });
+    }
+
     public getRoles() {
 
         return this.http.get<any[]>(allRoutes.getRoleBackendUrl, { headers: this.headers });
+    }
+
+    public getRoleById(id:number) {
+
+        return this.http.get<any[]>(allRoutes.getRoleBackendUrl + "/" + id, { headers: this.headers });
+    }
+    
+    public deleteRole(id:number){
+
+        return this.http.delete(allRoutes.deleteRoleByIdBackendUrl + "/" + id, { headers: this.headers });
     }
 
     public createPermission(createPermissionModelObject: createNameModel) {

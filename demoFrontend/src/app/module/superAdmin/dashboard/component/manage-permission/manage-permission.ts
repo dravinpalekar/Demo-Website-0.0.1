@@ -68,7 +68,7 @@ export class ManagePermission implements OnInit {
   }
 
   openDailogForEditItem(id: number) {
-   this.router.navigate([allRoutes.superAdminDashboard + "/editPermission/"+id]);
+   this.router.navigate([allRoutes.editPermission + id]);
   }
 
   openDailogForDeteteItem(id: number) {

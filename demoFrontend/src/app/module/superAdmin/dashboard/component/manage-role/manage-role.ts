@@ -6,22 +6,30 @@ import { getRolesResponseModel } from '../../../../../model/responseModel/getRol
 import { SuperAdminService } from '../../../../../service/superAdmin/super-admin-service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { allRoutes } from '../../../../../utils/allRoutes/allRoutes';
+import { Router } from '@angular/router';
+import { DialogBox } from '../../../../../utils/dialog-box/dialog-box';
+import { CommonFun } from '../../../../../utils/helper/CommonFun';
 
 @Component({
   selector: 'app-manage-role',
-  imports: [MatTableModule, MatPaginatorModule, MatSortModule, MatFormFieldModule, MatInputModule],
+  imports: [MatTableModule, MatPaginatorModule, MatSortModule, MatFormFieldModule, MatInputModule, DialogBox],
   templateUrl: './manage-role.html',
   styleUrl: './manage-role.scss',
 })
 export class ManageRole {
 
-  displayedColumns: string[] = ['id', 'roleName', 'created'];
+  showModal = false;
+  selectedId: number | null = null;
+  modalTitle = 'Delete Record';
+  modalMessage = 'Are you sure you want to delete this record?';
+  displayedColumns: string[] = ['id', 'roleName', 'permissionName', 'created', 'actions'];
   dataSource = new MatTableDataSource<getRolesResponseModel>([]);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private SuperAdminServiceObject: SuperAdminService) {
+  constructor(private SuperAdminServiceObject: SuperAdminService, private router: Router, private commonFunctionObject: CommonFun) {
 
     this.SuperAdminServiceObject.getRoles().subscribe((data) => {
       this.dataSource = new MatTableDataSource(JSON.parse(JSON.stringify(data)).data);
@@ -57,4 +65,46 @@ export class ManageRole {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
+
+  openDailogForEditItem(id: number) {
+    this.router.navigate([allRoutes.editRole + id]);
+  }
+
+  openDailogForDeteteItem(id: number) {
+    this.selectedId = id;
+    this.showModal = true;
+  }
+
+
+  onConfirm(result: boolean) {
+    this.showModal = false;
+    if (result && this.selectedId !== null) {
+      this.deleteItem(this.selectedId);
+    }
+    this.selectedId = null;
+  }
+
+  closeModal() {
+    this.showModal = false;
+    this.selectedId = null;
+  }
+
+  private deleteItem(id: number) {
+    this.SuperAdminServiceObject.deleteRole(id).subscribe({
+      next: (res) => {
+        this.commonFunctionObject.openSnackBar(JSON.parse(JSON.stringify(res)).message, 'success');
+        // Filter out the deleted record from the current dataset
+        const currentData = this.dataSource.data;
+        this.dataSource.data = currentData.filter(item => item.id !== id);
+
+        // Re-assign paginator and sort to keep them working properly
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+      },
+      error: (e) => {
+        if (e.status == 400) { this.commonFunctionObject.openSnackBar(e.error.error, 'danger'); }
+      }
+    });
+  }
+
 }
