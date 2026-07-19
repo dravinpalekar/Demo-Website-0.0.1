@@ -23,10 +23,10 @@ export class ManageProfile {
 
   displayEmail?: string = "";
   showAlert = false;
-
+  fullName = "";
   myProfileForm!: FormGroup;
   submittedForm = false;
-
+  image!:any;
   private choicesInstanceGender: any;
   private choicesInstanceCountry: any;
   private isBrowser: boolean;
@@ -38,11 +38,10 @@ export class ManageProfile {
   showFileUploadPreviewOption = false;
 
   constructor(private authenticationServiceObject: AuthenticationService, private fb: FormBuilder, @Inject(PLATFORM_ID) platformId: object, private commonFunctionObject: CommonFun, private SuperAdminServiceObject: SuperAdminService, private errorObject: Errors, private cd: ChangeDetectorRef) {
-     this.isBrowser = isPlatformBrowser(platformId);
-     if (isPlatformBrowser(platformId))
-     {
-this.displayEmail = this.authenticationServiceObject.currentUserValue.Subject;
-     }
+    this.isBrowser = isPlatformBrowser(platformId);
+    if (isPlatformBrowser(platformId)) {
+      this.displayEmail = this.authenticationServiceObject.currentUserValue.Subject;
+    }
   }
 
   ngOnInit(): void {
@@ -60,6 +59,12 @@ this.displayEmail = this.authenticationServiceObject.currentUserValue.Subject;
       address: new FormControl('', [Validators.required, Validators.minLength(10)]),
       uploadImage: new FormControl(null, [FileValidation(['image/jpeg', 'image/jpg', 'image/jpe', 'image/png'], 1)])
     });
+
+    this.SuperAdminServiceObject.getMyImage().subscribe({
+      next: (res) => {
+        this.image = JSON.parse(JSON.stringify(res)).image;
+      }
+    })
   }
 
   async ngAfterViewInit() {
@@ -82,6 +87,7 @@ this.displayEmail = this.authenticationServiceObject.currentUserValue.Subject;
               city: responseData.city,
               address: responseData.address
             });
+            this.fullName = responseData.firstName + " " + responseData.middleName + " " + responseData.lastName;
             this.choicesInstanceGender.setChoiceByValue(responseData.gender);
             this.choicesInstanceCountry.setChoiceByValue(responseData.country);
           }
@@ -98,7 +104,7 @@ this.displayEmail = this.authenticationServiceObject.currentUserValue.Subject;
     this.submittedForm = true;
     if (this.myProfileForm.invalid) { this.showAlert = true; this.calculateDisplayErrorsForAlertBox(); return; }
 
-    const updateMyProfileModelObject: UpdateMyProfileModel = new UpdateMyProfileModel(this.myProfileForm.get('firstName')?.value, this.myProfileForm.get('middleName')?.value, this.myProfileForm.get('lastName')?.value, this.myProfileForm.get('gender')?.value, this.myProfileForm.get('age')?.value, this.myProfileForm.get('country')?.value, this.myProfileForm.get('city')?.value, this.myProfileForm.get('pinCode')?.value, this.myProfileForm.get('address')?.value,this.file!);
+    const updateMyProfileModelObject: UpdateMyProfileModel = new UpdateMyProfileModel(this.myProfileForm.get('firstName')?.value, this.myProfileForm.get('middleName')?.value, this.myProfileForm.get('lastName')?.value, this.myProfileForm.get('gender')?.value, this.myProfileForm.get('age')?.value, this.myProfileForm.get('country')?.value, this.myProfileForm.get('city')?.value, this.myProfileForm.get('pinCode')?.value, this.myProfileForm.get('address')?.value, this.file!);
 
     this.SuperAdminServiceObject.updateMyProfile(updateMyProfileModelObject).subscribe({
       next: (res) => {// console.log(res);
@@ -113,6 +119,7 @@ this.displayEmail = this.authenticationServiceObject.currentUserValue.Subject;
     this.myProfileForm.get('uploadImage')?.reset();
     this.showFileUploadOption = true;
     this.showFileUploadPreviewOption = false;
+    this.file = null;
   }
 
   onAlertClosed() {

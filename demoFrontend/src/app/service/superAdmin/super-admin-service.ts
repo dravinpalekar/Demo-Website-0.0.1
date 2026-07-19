@@ -1,10 +1,11 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { inject, Service } from '@angular/core';
+import { inject, Service, signal } from '@angular/core';
 import { AuthenticationService } from '../authentication-service';
 import { allRoutes } from '../../utils/allRoutes/allRoutes';
 import { createRoleModel } from '../../model/requestModel/superAdmin/createRoleModel';
 import { createNameModel } from '../../model/requestModel/superAdmin/createNameModel';
 import { UpdateMyProfileModel } from '../../model/requestModel/superAdmin/UpdateMyProfileModel';
+import { Observable, of, tap } from 'rxjs';
 
 @Service()
 export class SuperAdminService {
@@ -13,6 +14,9 @@ export class SuperAdminService {
     private headers: HttpHeaders;
     private http = inject(HttpClient);
     private authenticationServiceObject = inject(AuthenticationService);
+
+    //Define variable for storing cache data
+    private cachedData = signal<any>(null);
 
     constructor() {
         this.jwtToken = this.authenticationServiceObject.currentUserValue?.token;
@@ -24,7 +28,7 @@ export class SuperAdminService {
         return this.http.post(allRoutes.createRoleBackendUrl, createRoleModelObject, { headers: this.headers });
     }
 
-    public updateRoleById(id:number, createRoleModelObject: createRoleModel) {
+    public updateRoleById(id: number, createRoleModelObject: createRoleModel) {
 
         return this.http.put(allRoutes.updateRoleByIdBackendUrl + "/" + id, createRoleModelObject, { headers: this.headers });
     }
@@ -34,12 +38,12 @@ export class SuperAdminService {
         return this.http.get<any[]>(allRoutes.getRoleBackendUrl, { headers: this.headers });
     }
 
-    public getRoleById(id:number) {
+    public getRoleById(id: number) {
 
         return this.http.get<any[]>(allRoutes.getRoleBackendUrl + "/" + id, { headers: this.headers });
     }
-    
-    public deleteRole(id:number){
+
+    public deleteRole(id: number) {
 
         return this.http.delete(allRoutes.deleteRoleByIdBackendUrl + "/" + id, { headers: this.headers });
     }
@@ -49,7 +53,7 @@ export class SuperAdminService {
         return this.http.post(allRoutes.createPermissionBackendUrl, createPermissionModelObject, { headers: this.headers });
     }
 
-    public updatePermissionById(id:number, createPermissionModelObject: createNameModel) {
+    public updatePermissionById(id: number, createPermissionModelObject: createNameModel) {
 
         return this.http.put(allRoutes.updatePermissionByIdBackendUrl + "/" + id, createPermissionModelObject, { headers: this.headers });
     }
@@ -59,13 +63,13 @@ export class SuperAdminService {
         return this.http.get<any[]>(allRoutes.getPermissionBackendUrl, { headers: this.headers });
     }
 
-    public getPermissionById(id:number) {
+    public getPermissionById(id: number) {
 
-        return this.http.get<any[]>(allRoutes.getPermissionBackendUrl + "/" + id , { headers: this.headers });
+        return this.http.get<any[]>(allRoutes.getPermissionBackendUrl + "/" + id, { headers: this.headers });
     }
 
-    public deletePermission(id:number){
-     
+    public deletePermission(id: number) {
+
         return this.http.delete(allRoutes.deletePermissionBackendUrl + "/" + id, { headers: this.headers });
     }
 
@@ -86,13 +90,17 @@ export class SuperAdminService {
         // }
         const formDataTemp = new FormData();
         const profileData = {
-            "firstName":updateMyProfileModelObject.firstName, "middleName":updateMyProfileModelObject.middleName, "lastName":updateMyProfileModelObject.lastName,
-            "gender":updateMyProfileModelObject.gender, "country":updateMyProfileModelObject.country, "city":updateMyProfileModelObject.city,
-            "age":updateMyProfileModelObject.age, "pinCode":updateMyProfileModelObject.pinCode, "address":updateMyProfileModelObject.address,
+            "firstName": updateMyProfileModelObject.firstName, "middleName": updateMyProfileModelObject.middleName, "lastName": updateMyProfileModelObject.lastName,
+            "gender": updateMyProfileModelObject.gender, "country": updateMyProfileModelObject.country, "city": updateMyProfileModelObject.city,
+            "age": updateMyProfileModelObject.age, "pinCode": updateMyProfileModelObject.pinCode, "address": updateMyProfileModelObject.address,
         };
-        
-        formDataTemp.append('updateMyProfileRequest', new Blob([JSON.stringify(profileData)],{ type: 'application/json' }));
-        formDataTemp.append('file', updateMyProfileModelObject.file!);
+
+        formDataTemp.append('updateMyProfileRequest', new Blob([JSON.stringify(profileData)], { type: 'application/json' }));
+        if(updateMyProfileModelObject.file && updateMyProfileModelObject.file.size > 0)
+        {
+            formDataTemp.append('file', updateMyProfileModelObject.file);
+            this.clearCache();
+        }
 
         // this.headers.delete('Content-Type');
         const headers = this.headers.delete('Content-Type');
@@ -106,7 +114,16 @@ export class SuperAdminService {
 
     public getMyImage() {
 
-        return this.http.get<any[]>(allRoutes.getMyImageBackendUrl, { headers: this.headers });
+        if (this.cachedData()) {
+            // Agar data pehle se cache me hai, to bina API call kiye wahi return kar do
+            return of(this.cachedData());
+        }
+        // Agar cache khali hai, to API call karo aur tap() ke jariye use cache me save kar lo
+        return this.http.get<any>(allRoutes.getMyImageBackendUrl, { headers: this.headers }).pipe(tap(data => this.cachedData.set(data)));
+    }
+
+    clearCache(): void {
+        this.cachedData.set(null);
     }
 
 }
