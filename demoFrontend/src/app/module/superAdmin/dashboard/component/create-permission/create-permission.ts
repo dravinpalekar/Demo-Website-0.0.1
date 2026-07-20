@@ -70,7 +70,7 @@ export class CreatePermission implements OnInit {
         },
         error: (e) => {// console.log(e);
           if (e.status == 400) {
-            this.commonFunctionObject.openSnackBar(e.error.accessDeniedReason, 'danger');
+            this.commonFunctionObject.openSnackBar(e.error.message, 'danger');
           } else if (e.status == 406) {
             this.commonFunctionObject.openSnackBar(this.errorObject.errorStatus406(JSON.parse(JSON.stringify(e.error))), 'danger');
           }
@@ -83,7 +83,7 @@ export class CreatePermission implements OnInit {
         },
         error: (e) => {// console.log(e);
           if (e.status == 400) {
-            this.commonFunctionObject.openSnackBar(e.error.accessDeniedReason, 'danger');
+            this.commonFunctionObject.openSnackBar(e.error.message, 'danger');
           } else if (e.status == 406) {
             this.commonFunctionObject.openSnackBar(this.errorObject.errorStatus406(JSON.parse(JSON.stringify(e.error))), 'danger');
           }

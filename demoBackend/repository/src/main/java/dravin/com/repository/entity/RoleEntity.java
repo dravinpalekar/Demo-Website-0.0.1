@@ -13,10 +13,7 @@ import java.util.Set;
 
 
 @Entity
-@Table(name = "roles",
-        uniqueConstraints = {
-                @UniqueConstraint(name = "roleName", columnNames = "name")
-        })
+@Table(name = "roles")
 @Getter
 @Setter
 @NoArgsConstructor

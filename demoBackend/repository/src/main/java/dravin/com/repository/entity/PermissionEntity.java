@@ -11,10 +11,7 @@ import java.io.Serializable;
 
 
 @Entity
-@Table(name = "permission",
-        uniqueConstraints = {
-                @UniqueConstraint(name = "permissionName", columnNames = "name")
-        })
+@Table(name = "permission")
 @Getter
 @Setter
 @NoArgsConstructor

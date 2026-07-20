@@ -117,7 +117,7 @@ export class CreateRole implements OnInit, OnDestroy {
           this.router.navigate([allRoutes.manageRoles]);
         },
         error: (e) => {// console.log(e);
-          if (e.status == 400) { this.commonFunctionObject.openSnackBar(e.error.detail, 'danger'); }
+          if (e.status == 400) { this.commonFunctionObject.openSnackBar(e.error.message, 'danger'); }
           else
             if (e.status == 422) { this.commonFunctionObject.openSnackBar(this.errorObject.directDisplayErrorMessageStatus406(JSON.parse(JSON.stringify(e.error))), 'danger'); }
         },
@@ -128,7 +128,7 @@ export class CreateRole implements OnInit, OnDestroy {
           this.commonFunctionObject.openSnackBar(JSON.parse(JSON.stringify(res)).message, 'success');
         },
         error: (e) => {// console.log(e);
-          if (e.status == 400) { this.commonFunctionObject.openSnackBar(e.error.accessDeniedReason, 'danger'); }
+          if (e.status == 400) { this.commonFunctionObject.openSnackBar(e.error.message, 'danger'); }
           else
             if (e.status == 422) { this.commonFunctionObject.openSnackBar(this.errorObject.directDisplayErrorMessageStatus406(JSON.parse(JSON.stringify(e.error))), 'danger'); }
         },

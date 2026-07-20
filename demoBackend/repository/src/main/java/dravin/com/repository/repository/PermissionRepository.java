@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -14,4 +15,10 @@ import java.util.Optional;
 public interface PermissionRepository extends JpaRepository<PermissionEntity, Long> {
 
     Optional<PermissionEntity> findByName(Permissions name);
+
+    Optional<PermissionEntity> findByNameAndDeletedAtIsNull(Permissions name);
+
+    Optional<PermissionEntity> findByIdAndDeletedAtIsNull(Long id);
+
+    List<PermissionEntity> findByDeletedAtIsNull();
 }
