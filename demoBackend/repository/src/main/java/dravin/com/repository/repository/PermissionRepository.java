@@ -14,8 +14,6 @@ import java.util.Optional;
 @EnableJpaRepositories
 public interface PermissionRepository extends JpaRepository<PermissionEntity, Long> {
 
-    Optional<PermissionEntity> findByName(Permissions name);
-
     Optional<PermissionEntity> findByNameAndDeletedAtIsNull(Permissions name);
 
     Optional<PermissionEntity> findByIdAndDeletedAtIsNull(Long id);

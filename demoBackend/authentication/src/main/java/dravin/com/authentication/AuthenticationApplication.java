@@ -36,13 +36,13 @@ public class AuthenticationApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) {
 
-		Optional<PermissionEntity> permissionCheck = permissionRepository.findByName(Permissions.ALL);
+		Optional<PermissionEntity> permissionCheck = permissionRepository.findByNameAndDeletedAtIsNull(Permissions.ALL);
 
 		PermissionEntity permissionEntity;
 
 		permissionEntity = permissionCheck.orElseGet(() -> permissionRepository.save(new PermissionEntity(Permissions.ALL)));
 
-		Optional<RoleEntity> roleCheck = roleRepository.findByName(Roles.ROLE_SUPER_ADMIN);
+		Optional<RoleEntity> roleCheck = roleRepository.findByNameAndDeletedAtIsNull(Roles.ROLE_SUPER_ADMIN);
 
 		if(roleCheck.isEmpty())
 		{
