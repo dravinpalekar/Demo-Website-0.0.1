@@ -2,6 +2,7 @@ package dravin.com.repository.repository;
 
 
 import dravin.com.repository.constant.enumConstant.Roles;
+import dravin.com.repository.constant.enumConstant.Status;
 import dravin.com.repository.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,7 +17,7 @@ import java.util.Optional;
 @EnableJpaRepositories
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
-    Optional<UserEntity> findByUserName(String username);
+    Optional<UserEntity> findByUserNameAndDeletedAtIsNullAndActive(String username, Status status);
 
     Optional<UserEntity> findByIdAndDeletedAtIsNull(Long id);
 

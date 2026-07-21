@@ -1,5 +1,6 @@
 package dravin.com.authentication.service.loaduser;
 
+import dravin.com.repository.constant.enumConstant.Status;
 import dravin.com.repository.entity.UserEntity;
 import dravin.com.repository.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -21,7 +22,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        UserEntity user = userRepository.findByUserName(username).orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
+        UserEntity user = userRepository.findByUserNameAndDeletedAtIsNullAndActive(username, Status.ENABLE).orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
 
         return UserDetailsImpl.build(user);
     }
