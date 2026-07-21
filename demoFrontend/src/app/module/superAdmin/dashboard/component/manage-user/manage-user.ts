@@ -11,10 +11,11 @@ import { SuperAdminService } from '../../../../../service/superAdmin/super-admin
 import { allRoutes } from '../../../../../utils/allRoutes/allRoutes';
 import { CommonFun } from '../../../../../utils/helper/CommonFun';
 import { Router } from '@angular/router';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-manage-user',
-  imports: [MatTableModule, MatPaginatorModule, MatSortModule, MatFormFieldModule, MatInputModule, MatIconModule, DialogBox],
+  imports: [MatTableModule, MatPaginatorModule, MatSortModule, MatFormFieldModule, MatInputModule, MatIconModule, DialogBox, DatePipe],
   templateUrl: './manage-user.html',
   styleUrl: './manage-user.scss',
 })

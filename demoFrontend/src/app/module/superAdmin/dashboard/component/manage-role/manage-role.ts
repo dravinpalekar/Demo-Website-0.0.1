@@ -10,10 +10,11 @@ import { allRoutes } from '../../../../../utils/allRoutes/allRoutes';
 import { Router } from '@angular/router';
 import { DialogBox } from '../../../../../utils/dialog-box/dialog-box';
 import { CommonFun } from '../../../../../utils/helper/CommonFun';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-manage-role',
-  imports: [MatTableModule, MatPaginatorModule, MatSortModule, MatFormFieldModule, MatInputModule, DialogBox],
+  imports: [MatTableModule, MatPaginatorModule, MatSortModule, MatFormFieldModule, MatInputModule, DialogBox, DatePipe],
   templateUrl: './manage-role.html',
   styleUrl: './manage-role.scss',
 })

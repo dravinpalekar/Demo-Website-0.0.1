@@ -12,11 +12,12 @@ import { CommonFun } from '../../../../../utils/helper/CommonFun';
 import { DialogBox } from '../../../../../utils/dialog-box/dialog-box';
 import { Router } from '@angular/router';
 import { allRoutes } from '../../../../../utils/allRoutes/allRoutes';
+import { DatePipe } from '@angular/common';
 
 
 @Component({
   selector: 'app-manage-permission',
-  imports: [MatTableModule, MatPaginatorModule, MatSortModule, MatFormFieldModule, MatInputModule, MatIconModule, DialogBox],
+  imports: [MatTableModule, MatPaginatorModule, MatSortModule, MatFormFieldModule, MatInputModule, MatIconModule, DialogBox, DatePipe],
   templateUrl: './manage-permission.html',
   styleUrl: './manage-permission.scss',
 })
