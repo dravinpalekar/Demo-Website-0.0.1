@@ -13,7 +13,7 @@ public class RoutesFile {
     public static final String PERMISSION = "/permission";
     public static final String MY_PROFILE = "/myProfile";
     public static final String GET_MY_IMAGE = "/getMyImage";
-    public static final String USER = API + "/user";
+    public static final String USER = "/user";
 
     public static final String ID = "/{id}";
 
@@ -27,4 +27,5 @@ public class RoutesFile {
     public static final String UPDATE = "/update";
     public static final String GET = "/get";
     public static final String DELETE = "/delete";
+    public static final String ACTIVE_DEACTIVATE = "/activateDeactivate";
 }

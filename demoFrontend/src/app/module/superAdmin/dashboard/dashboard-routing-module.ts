@@ -14,6 +14,7 @@ const routes: Routes = [
       { path: 'editPermission/:id', loadComponent: () => import('./component/create-permission/create-permission').then(m => m.CreatePermission)},
       { path: allRoutes.managePermission, loadComponent: () => import('./component/manage-permission/manage-permission').then(m => m.ManagePermission) },
       { path: allRoutes.manageProfile, loadComponent: () => import('./component/manage-profile/manage-profile').then(m => m.ManageProfile) },
+      { path: allRoutes.manageUser, loadComponent: () => import('./component/manage-user/manage-user').then(m => m.ManageUser) },
     ]
  }
 ];

@@ -6,7 +6,8 @@ export class constant{
     "/superAdminDashboard/createRole": "Create Role",
     "/superAdminDashboard/managePermission": "Manage Permission",
     "/superAdminDashboard/createPermission": "Create Permission",
-    "/superAdminDashboard/myProfile": "My Profile"
+    "/superAdminDashboard/myProfile": "My Profile",
+    "/superAdminDashboard/manageUser": "User"
   };
 
 }

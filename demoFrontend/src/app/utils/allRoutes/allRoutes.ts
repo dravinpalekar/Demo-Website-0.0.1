@@ -1,4 +1,4 @@
-export class allRoutes{
+export class allRoutes {
 
     // Define all the routes used in the application for frontend 
 
@@ -14,6 +14,7 @@ export class allRoutes{
     static readonly managePermission = "managePermission";
     static readonly manageRole = "manageRole";
     static readonly manageProfile = "myProfile";
+    static readonly manageUser = "manageUser";
     static readonly manageRoles = this.superAdminDashboard + "/" + this.manageRole;
     static readonly managePermissions = this.superAdminDashboard + "/" + this.managePermission;
     static readonly editPermission = this.superAdminDashboard + "/editPermission/";
@@ -38,6 +39,8 @@ export class allRoutes{
     static readonly update = "update";
     static readonly create = "create";
     static readonly getMyImage = "getMyImage";
+    static readonly user = "user/";
+    static readonly activateDeactivate = "activateDeactivate";
 
     static readonly loginBackendUrl = this.backendBaseUrl + this.api + this.auth + this.signIn;
     static readonly signUpBackendUrl = this.backendBaseUrl + this.api + this.auth + this.signUp;
@@ -55,5 +58,9 @@ export class allRoutes{
     static readonly updateMyProfileBackendUrl = this.backendBaseUrl + this.api + this.super + this.myProfile + this.create;
     static readonly getMyProfileBackendUrl = this.backendBaseUrl + this.api + this.super + this.myProfile + this.get;
     static readonly getMyImageBackendUrl = this.backendBaseUrl + this.api + this.super + this.myProfile + this.getMyImage;
+
+    static readonly getUserBackendUrl = this.backendBaseUrl + this.api + this.super + this.user + this.get;
+    static readonly deleteUserBackendUrl = this.backendBaseUrl + this.api + this.super + this.user + this.delete;
+    static readonly activateDeactivateUserBackendUrl = this.backendBaseUrl + this.api + this.super + this.user + this.activateDeactivate;
     // Define all the routes used in the application for backend
 }

@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -17,7 +18,11 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     Optional<UserEntity> findByUserName(String username);
 
+    Optional<UserEntity> findByIdAndDeletedAtIsNull(Long id);
+
     Boolean existsByEmail(String email);
+
+    List<UserEntity> findByDeletedAtIsNull();
 
     @Query("SELECT u FROM UserEntity u JOIN u.role r WHERE r.name = :role")
     Optional<UserEntity> findUsersByRole(@Param("role") Roles role);

@@ -1,6 +1,7 @@
 package dravin.com.repository.entity;
 
 
+import dravin.com.repository.constant.enumConstant.Status;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.Getter;
@@ -31,15 +32,18 @@ public class UserEntity extends AbstractDateTimeEntity implements Serializable {
     @Column(name="id", nullable = false, length = 20)
     private Long id;
 
-    @Column(name="user_name", nullable = true, length = 20)
+    @Column(name="user_name", nullable = true, length = 100)
     private String userName;
 
     @Email
-    @Column(name="email", nullable = false, length = 30)
+    @Column(name="email", nullable = false, length = 100)
     private String email;
 
     @Column(name="password", nullable = false, length = 255)
     private String password;
+
+    @Column(name="active", nullable = false)
+    private Status active;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_other_information_id", referencedColumnName = "id", nullable = true)
@@ -56,5 +60,6 @@ public class UserEntity extends AbstractDateTimeEntity implements Serializable {
         this.userName = username;
         this.password = password;
         this.role = role;
+        this.active = Status.ENABLE;
     }
 }

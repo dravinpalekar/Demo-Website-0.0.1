@@ -4,6 +4,9 @@ import { LoginModel } from '../../model/requestModel/LoginModel';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterModule } from '@angular/router';
 import PasswordMatcherValidation from '../../utils/formValidation/PasswordMatcherValidation';
+import { CommonFun } from '../../utils/helper/CommonFun';
+import { signUpModel } from '../../model/requestModel/signUpModel';
+import { AuthenticationService } from '../../service/authentication-service';
 
 @Component({
   selector: 'app-sign-up',
@@ -13,19 +16,17 @@ import PasswordMatcherValidation from '../../utils/formValidation/PasswordMatche
 })
 export class SignUp implements OnInit {
 
-  loginModelObject: LoginModel = new LoginModel("", "");
-
   signUpForm!: FormGroup;
-  submitted = false;
+  submittedForm = false;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private formBuilderObject: FormBuilder, private commonFunObject: CommonFun, private AuthenticationServiceObject: AuthenticationService) {
 
   }
 
 
   ngOnInit(): void {
     console.log("----SignUp component running--------ngOnInit------");
-    this.signUpForm = this.fb.group({
+    this.signUpForm = this.formBuilderObject.group({
       emailAddress: new FormControl('', [Validators.required, Validators.minLength(4), Validators.email]),
       password: new FormControl('', [Validators.required, Validators.pattern(/^(?=[^A-Z]*[A-Z])(?=[^a-z]*[a-z])(?=\D*\d).{8,}$/)]),
       confirmPassword: new FormControl('', [Validators.required]),
@@ -40,11 +41,27 @@ export class SignUp implements OnInit {
   }
 
   onSubmit() {
-    this.submitted = true;
+    this.submittedForm = true;
     if (this.signUpForm.invalid) { return; }
 
-    // console.log(this.signUpForm.get('userName')?.errors);
-    alert('SignUp successful!');
-    // console.log(this.signUpForm.value);
+    const signUpModelObject: signUpModel = new signUpModel(this.signUpForm.get('emailAddress')?.value, this.signUpForm.get('password')?.value);
+
+    this.AuthenticationServiceObject.signUpUser(signUpModelObject).subscribe({
+      next: (res) => {
+        // console.log(res);
+        this.commonFunObject.openSnackBar(JSON.parse(JSON.stringify(res)).message, 'success');
+      },
+      error: (e) => {
+        // console.log(e);
+        if (e.status == 400) {
+          this.commonFunObject.openSnackBar(e.error.error, 'danger');
+        } else if (e.status == 422) {
+          this.commonFunObject.openSnackBar(e.error.error, 'danger');
+        }
+        else if (e.status == 405) {
+          this.commonFunObject.openSnackBar(e.error.message, 'danger');
+        }
+      },
+    });
   }
 }

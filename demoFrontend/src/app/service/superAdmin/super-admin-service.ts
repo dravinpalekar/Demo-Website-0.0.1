@@ -126,4 +126,18 @@ export class SuperAdminService {
         this.cachedData.set(null);
     }
 
+    public getUsers(){
+        return this.http.get<any[]>(allRoutes.getUserBackendUrl, { headers: this.headers });
+    }
+
+     public deleteUserById(id: number) {
+
+        return this.http.delete(allRoutes.deleteUserBackendUrl + "/" + id, { headers: this.headers });
+    }
+
+    public activateDeactivate(requestData: any){
+        
+        return this.http.post(allRoutes.activateDeactivateUserBackendUrl, requestData, { headers: this.headers });
+    }
+
 }

@@ -124,7 +124,13 @@ public class MyProfileService {
                 byte[] imageBytes = Files.readAllBytes(filePath);
                 String contentType = Files.probeContentType(filePath);
                 String base64Image = "data:" + contentType + ";base64," + Base64.getEncoder().encodeToString(imageBytes);
-                return ResponseEntity.ok().body(Map.of("image",base64Image,"firstName",user.getUserOtherInformation().getFirstName(),"middleName",user.getUserOtherInformation().getMiddleName(),"lastName",user.getUserOtherInformation().getLastName(),"gender",user.getUserOtherInformation().getGender()));
+                return ResponseEntity.ok().body(Map.of(
+                        "image",base64Image,
+                        "firstName",user.getUserOtherInformation().getFirstName(),
+                        "middleName",user.getUserOtherInformation().getMiddleName() !=null ? user.getUserOtherInformation().getMiddleName() : " ",
+                        "lastName",user.getUserOtherInformation().getLastName(),
+                        "gender",user.getUserOtherInformation().getGender()));
+
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }

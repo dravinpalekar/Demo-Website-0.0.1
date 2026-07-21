@@ -17,6 +17,28 @@
                     </a>
                 </li>
 
+                <li class="section-title">Analysis Website</li>
+
+
+                <li class="has-sub" routerLinkActive="active">
+                    <a class="sidenav-item-link" data-bs-toggle="collapse" data-bs-target="#analysis"
+                        aria-expanded="false" aria-controls="analysis">
+                        <i class="bi bi-activity"></i>
+                        <span class="nav-text">Analysis</span> <b class="caret"></b>
+                    </a>
+                    <ul class="collapse" id="analysis" data-bs-parent="#sidebar-menu">
+                        <div class="sub-menu">
+                            <li routerLinkActive="active">
+                                <a class="sidenav-item-link" [routerLink]="['/superAdminDashboard/manageUser']"
+                                    (click)="changeTitle('User')">
+                                    <span class="nav-text">User</span>
+                                </a>
+                            </li>
+                        </div>
+                    </ul>
+                </li>
+
+
                 <li class="section-title">Website Settings</li>
 
                 <li class="has-sub" routerLinkActive="active">

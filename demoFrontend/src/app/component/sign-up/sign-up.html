@@ -47,7 +47,7 @@
               <input type="text" class="form-control" id="emailAddress" name="emailAddress" required="" formControlName="emailAddress" />
             </div>
 
-            @if (submitted && f['emailAddress'].errors) {
+            @if (submittedForm && f['emailAddress'].errors) {
                     <div class="remove-mat-form-field-hint">
                         @if (f['emailAddress'].errors['required']) {
                             <div class="remove-mat-form-field-hint">
@@ -73,7 +73,7 @@
               <input type="password" class="form-control" id="password" name="password" required="" formControlName="password" />
             </div>
 
-            @if (submitted && f['password'].errors) {
+            @if (submittedForm && f['password'].errors) {
                     <div class="remove-mat-form-field-hint">
                       @if (f['password'].errors['required']) {
                           <div class="remove-mat-form-field-hint">
@@ -95,7 +95,7 @@
                     <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required="" formControlName="confirmPassword" />
                     </div>
 
-                    @if (submitted && f['confirmPassword'].errors) {
+                    @if (submittedForm && f['confirmPassword'].errors) {
                             <div class="remove-mat-form-field-hint">
                                     @if (f['confirmPassword'].errors['required']) {
                                         <div class="remove-mat-form-field-hint">
