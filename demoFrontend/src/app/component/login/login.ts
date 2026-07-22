@@ -1,8 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { LoginModel } from '../../model/requestModel/LoginModel';
 import { MatButtonModule } from '@angular/material/button';
+import { isPlatformBrowser } from '@angular/common';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { AuthenticationService } from '../../service/authentication-service';
+import { allRoutes } from '../../utils/allRoutes/allRoutes';
+import { CommonFun } from '../../utils/helper/CommonFun';
+import { Errors } from '../../utils/helper/Errors';
 
 @Component({
   selector: 'app-login',
@@ -12,15 +18,20 @@ import { MatButtonModule } from '@angular/material/button';
 })
 export class Login implements OnInit {
 
-  loginModelObject: LoginModel = new LoginModel("", "");
-
   loginForm!: FormGroup;
   submitted = false;
+  isBrowser: boolean = false;
+  private platformId = inject(PLATFORM_ID);
+  constructor(private errorObject: Errors, private snackBarObject: MatSnackBar, private fb: FormBuilder, private authServiceServiceObject: AuthenticationService, private router: Router, private commonFunObject: CommonFun, private route: ActivatedRoute,) {
 
-
-  constructor(private fb: FormBuilder) {
-
+    this.isBrowser = isPlatformBrowser(this.platformId);
+    if (isPlatformBrowser(this.platformId)) {
+      if (this.authServiceServiceObject.currentUserValue?.token != undefined) {
+        this.router.navigate([this.route.snapshot.queryParams['returnUrl'] || allRoutes.userDashboard]);
+      }
+    }
   }
+
 
   ngOnInit(): void {
     console.log("----Login component running--------ngOnInit------");
@@ -38,8 +49,26 @@ export class Login implements OnInit {
     this.submitted = true;
     if (this.loginForm.invalid) { return; }
 
-    console.log(this.loginForm.get('userName')?.errors);
-    alert('Login successful!');
-    console.log(this.loginForm.value);
+    const loginModelObject: LoginModel = new LoginModel(this.loginForm.get('userName')?.value, this.loginForm.get('password')?.value);
+
+    this.authServiceServiceObject.loginUser(loginModelObject).subscribe({
+      next: (res) => {
+        console.log(res);
+        res.roles.forEach((element: any) => {
+          this.router.navigate([this.route.snapshot.queryParams['returnUrl'] || allRoutes.userDashboard]);
+        });
+      },
+      error: (e) => {
+        //bad credentials
+        if (e.status == 401) {
+          // this.openSnackBar(e.error.detail);
+          this.commonFunObject.openSnackBar(e.error.detail, 'danger');
+        }
+        else if (e.status == 406) {
+          // this.openSnackBar(this.errorObject.errorStatus406(JSON.parse(JSON.stringify(e.error))));
+          this.commonFunObject.openSnackBar(this.errorObject.errorStatus406(JSON.parse(JSON.stringify(e.error))), 'danger');
+        }
+      }
+    });
   }
 }

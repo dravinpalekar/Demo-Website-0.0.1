@@ -17,19 +17,19 @@ import { CommonFun } from '../../../utils/helper/CommonFun';
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
-export class Login implements OnInit{
+export class Login implements OnInit {
 
-  
+
   loginForm!: FormGroup;
   submitted = false;
- isBrowser: boolean = false;
+  isBrowser: boolean = false;
   private platformId = inject(PLATFORM_ID);
-  constructor(private errorObject: Errors, private snackBarObject: MatSnackBar, private fb: FormBuilder, private authServiceServiceObject: AuthenticationService, private router: Router,private commonFunObject: CommonFun, private route: ActivatedRoute,) {
-    
- this.isBrowser = isPlatformBrowser(this.platformId);
+  constructor(private errorObject: Errors, private snackBarObject: MatSnackBar, private fb: FormBuilder, private authServiceServiceObject: AuthenticationService, private router: Router, private commonFunObject: CommonFun, private route: ActivatedRoute,) {
+
+    this.isBrowser = isPlatformBrowser(this.platformId);
     if (isPlatformBrowser(this.platformId)) {
       if (this.authServiceServiceObject.currentUserValue?.token != undefined) {
-        this.router.navigate([ this.route.snapshot.queryParams['returnUrl'] || allRoutes.superAdminDashboard]);
+        this.router.navigate([this.route.snapshot.queryParams['returnUrl'] || allRoutes.superAdminDashboard]);
       }
     }
   }
@@ -74,13 +74,4 @@ export class Login implements OnInit{
     });
   }
 
-  // public openSnackBar(data: any) {
-  //   this.snackBarObject.openFromComponent(Snackbar, {
-  //     data: data,
-  //     panelClass: ['red'],
-  //     horizontalPosition: 'right',
-  //     verticalPosition: 'top',
-  //     duration: 1000 * 4
-  //   });
-  // }
 }

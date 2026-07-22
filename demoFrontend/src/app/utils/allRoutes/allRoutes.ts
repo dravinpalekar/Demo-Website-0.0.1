@@ -9,6 +9,7 @@ export class allRoutes {
     static readonly superAdminLogin = "superAdminLogin";
     static readonly superAdminSignUp = "superAdminSignUp";
     static readonly superAdminDashboard = "superAdminDashboard";
+    static readonly userDashboard = "dashboard";
     static readonly createRole = "createRole";
     static readonly createPermission = "createPermission";
     static readonly managePermission = "managePermission";

@@ -17,6 +17,12 @@ export const routes: Routes = [
         loadComponent: () => import('./component/sign-up/sign-up').then(m => m.SignUp)
     },
     {
+        path: allRoutes.userDashboard,
+        loadChildren: () => import('./module/user/dashboard/dashboard-module').then(m => m.DashboardModule),
+        canActivate: [authGuard],
+        data: { roles: [Role.User] },
+    },
+    {
         path: allRoutes.superAdminLogin,
         loadComponent: () => import('./component/superAdmin/login/login').then(m => m.Login)
     },
