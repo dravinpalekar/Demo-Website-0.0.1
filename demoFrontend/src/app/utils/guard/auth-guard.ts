@@ -37,7 +37,16 @@ const platformId = inject(PLATFORM_ID);
     {
       // router.navigate([allRoutes.superAdminLogin]);
       // return false;
-      return router.createUrlTree([allRoutes.superAdminLogin]);
+      // return router.createUrlTree([allRoutes.superAdminLogin]);
+      return router.createUrlTree(
+    [allRoutes.superAdminLogin],
+    {
+      queryParams: {
+        returnUrl: state.url
+      }
+    }
+  );
+      
     }
     else
     {

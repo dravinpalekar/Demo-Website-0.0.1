@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { LoginModel } from '../../../model/requestModel/LoginModel';
 import { allRoutes } from '../../../utils/allRoutes/allRoutes';
 import { MatButtonModule } from '@angular/material/button';
@@ -24,12 +24,12 @@ export class Login implements OnInit{
   submitted = false;
  isBrowser: boolean = false;
   private platformId = inject(PLATFORM_ID);
-  constructor(private errorObject: Errors, private snackBarObject: MatSnackBar, private fb: FormBuilder, private authServiceServiceObject: AuthenticationService, private router: Router,private commonFunObject: CommonFun) {
+  constructor(private errorObject: Errors, private snackBarObject: MatSnackBar, private fb: FormBuilder, private authServiceServiceObject: AuthenticationService, private router: Router,private commonFunObject: CommonFun, private route: ActivatedRoute,) {
     
  this.isBrowser = isPlatformBrowser(this.platformId);
     if (isPlatformBrowser(this.platformId)) {
-      if (this.authServiceServiceObject.currentUserValue) {
-        this.router.navigate([allRoutes.superAdminDashboard]);
+      if (this.authServiceServiceObject.currentUserValue?.token != undefined) {
+        this.router.navigate([ this.route.snapshot.queryParams['returnUrl'] || allRoutes.superAdminDashboard]);
       }
     }
   }
@@ -57,7 +57,7 @@ export class Login implements OnInit{
       next: (res) => {
         console.log(res);
         res.roles.forEach((element: any) => {
-          this.router.navigate([allRoutes.superAdminDashboard]);
+          this.router.navigate([this.route.snapshot.queryParams['returnUrl'] || allRoutes.superAdminDashboard]);
         });
       },
       error: (e) => {
