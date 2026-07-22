@@ -1,6 +1,5 @@
 package dravin.com.authentication.controller;
 
-
 import dravin.com.authentication.requestmodel.LoginRequestModel;
 import dravin.com.authentication.requestmodel.SignupRequestModel;
 import dravin.com.authentication.service.AuthenticationService;
@@ -19,7 +18,7 @@ import static dravin.com.authentication.constant.RoutesFile.*;
 
 @RestController
 @RequestMapping(API_AUTH)
-@Tag(name = "Authentication and Authorization Controller")
+@Tag(name = "This controller is for authentication or authorisation and will be for all types of users.")
 public class AuthenticationController {
 
     private static final Logger logger = LoggerFactory.getLogger( AuthenticationController.class );
@@ -45,7 +44,7 @@ public class AuthenticationController {
     @PostMapping(SIGN_UP)
     @Operation(
             summary = "Register API for User Or Guest User",
-            description = "Create Admin Features as well."
+            description = "Register Super-Admin as well."
     )
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequestModel signUpRequest) {
 
