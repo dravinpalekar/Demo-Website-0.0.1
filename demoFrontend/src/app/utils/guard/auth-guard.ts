@@ -13,16 +13,23 @@ export const authGuard: CanActivateFn = (route, state) => {
     const router = inject(Router);
     const currentUser = authenticationService.currentUserValue;
 
-    if (currentUser?.token !== undefined) {
-      // check if route is restricted by role
-      const isSuperAdmin = currentUser.roles?.includes(Role.SuperAdmin) ?? false;
+    // 1. Check ki user logged in hai ya nahi
+    if (currentUser && currentUser.token) {
+      const routeRoles = route.data['roles'] as Role[] | undefined;
 
-      if (route.data['roles'] && route.data['roles'].length > 0 && !isSuperAdmin) {
-        // for normal user or guest user
-        return true;
+      // Explicitly cast user roles to Role[]
+      const userRoles = (currentUser.roles as Role) || [];
+
+      if (routeRoles && routeRoles.length > 0) {
+        // Ab userRoles.includes(role) bina kisi TypeScript error ke chalega
+        const hasRequiredRole = routeRoles.some((role: Role) => userRoles.includes(role));
+
+        if (!hasRequiredRole) {
+          // Access Denied: Route allow nahi hai toh Page Not Found ya Dashboard par redirect karein
+          return router.createUrlTree([allRoutes.notFound]);
+        }
       }
-      // authorized so return true
-      // for admin and super-admin user
+
       return true;
     }
 
