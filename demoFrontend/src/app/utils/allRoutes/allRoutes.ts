@@ -1,3 +1,5 @@
+import { readonly } from "@angular/forms/signals";
+
 export class allRoutes {
 
     // Define all the routes used in the application for frontend 
@@ -20,6 +22,8 @@ export class allRoutes {
     static readonly managePermissions = this.superAdminDashboard + "/" + this.managePermission;
     static readonly editPermission = this.superAdminDashboard + "/editPermission/";
     static readonly editRole = this.superAdminDashboard + "/editRole/";
+    static readonly findFriend = "findFriend";
+    static readonly chatBox = "chat";
 
 
     // Define all the routes used in the application for frontend 

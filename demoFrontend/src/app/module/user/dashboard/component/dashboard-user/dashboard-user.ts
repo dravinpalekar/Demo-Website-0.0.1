@@ -2,9 +2,10 @@ import { Component, Renderer2 } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { constant } from '../../../../../utils/allRoutes/constant';
 import { CommonFun } from '../../../../../utils/helper/CommonFun';
-import { Footer } from '../../../../superAdmin/dashboard/component/layout/footer/footer';
-import { NavBar } from '../../../../superAdmin/dashboard/component/layout/nav-bar/nav-bar';
-import { SideBar } from '../../../../superAdmin/dashboard/component/layout/side-bar/side-bar';
+import { SideBar } from '../layout/side-bar/side-bar';
+import { NavBar } from '../layout/nav-bar/nav-bar';
+import { Footer } from '../layout/footer/footer';
+
 
 @Component({
   selector: 'app-dashboard-user',

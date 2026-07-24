@@ -1,0 +1,111 @@
+<aside class="left-sidebar sidebar-dark" id="left-sidebar">
+    <div id="sidebar" class="sidebar sidebar-with-footer">
+        <div class="app-brand">
+            <a href="index.html" class="logo d-flex align-items-center">
+                <img src="assets/logo/logos.png" alt="" style="width: 40px; height: 40px" />
+                <span class="brand-name">Palekar</span>
+            </a>
+        </div>
+
+        <div class="sidebar-left" data-simplebar style="height: 100%">
+            <ul class="nav sidebar-inner" id="sidebar-menu">
+                <li>
+                    <a class="sidenav-item-link" [routerLink]="['/dashboard']"
+                        (click)="changeTitle('Dashboard')">
+                        <i class="mdi mdi-chart-line"></i>
+                        <span class="nav-text">Dashboard</span>
+                    </a>
+                </li>
+
+                <li class="section-title">Search</li>
+
+
+                <li class="has-sub" routerLinkActive="active">
+                    <a class="sidenav-item-link" data-bs-toggle="collapse" data-bs-target="#search"
+                        aria-expanded="false" aria-controls="search">
+                        <i class="bi bi-activity"></i>
+                        <span class="nav-text">Find</span> <b class="caret"></b>
+                    </a>
+                    <ul class="collapse" id="search" data-bs-parent="#sidebar-menu">
+                        <div class="sub-menu">
+                            <li routerLinkActive="active">
+                                <a class="sidenav-item-link" [routerLink]="['/dashboard/findFriend']"
+                                    (click)="changeTitle('Find Friends')">
+                                    <span class="nav-text">Find Friends</span>
+                                </a>
+                            </li>
+                        </div>
+                    </ul>
+                </li>
+
+
+                <li class="section-title">Chat Dashboard</li>
+
+                <li class="has-sub" routerLinkActive="active">
+                    <a class="sidenav-item-link" data-bs-toggle="collapse" data-bs-target="#chat"
+                        aria-expanded="false" aria-controls="chat">
+                        <i class="mdi mdi-key"></i>
+                        <span class="nav-text">Chat</span> <b class="caret"></b>
+                    </a>
+                    <ul class="collapse" id="chat" data-bs-parent="#sidebar-menu">
+                        <div class="sub-menu">
+                            <li routerLinkActive="active">
+                                <a class="sidenav-item-link" [routerLink]="['/dashboard/chat']"
+                                    (click)="changeTitle('Chat')">
+                                    <span class="nav-text">chat</span>
+                                </a>
+                            </li>
+                            <!-- <li routerLinkActive="active">
+                                <a class="sidenav-item-link" [routerLink]="['/superAdminDashboard/createPermission']"
+                                    (click)="changeTitle('Create Permission')">
+                                    <span class="nav-text">Create Permission</span>
+                                </a>
+                            </li> -->
+                        </div>
+                    </ul>
+                </li>
+
+                <!-- <li class="has-sub" routerLinkActive="active">
+                    <a class="sidenav-item-link" data-bs-toggle="collapse" data-bs-target="#role" aria-expanded="false"
+                        aria-controls="role">
+                        <i class="mdi mdi-shield-account"></i>
+                        <span class="nav-text">Role</span> <b class="caret"></b>
+                    </a>
+                    <ul class="collapse" id="role" data-bs-parent="#sidebar-menu">
+                        <div class="sub-menu">
+                            <li routerLinkActive="active">
+                                <a class="sidenav-item-link" [routerLink]="['/superAdminDashboard/manageRole']"
+                                    (click)="changeTitle('Manage Role')">
+                                    <span class="nav-text">Manage Role</span>
+                                </a>
+                            </li>
+                            <li routerLinkActive="active">
+                                <a class="sidenav-item-link" [routerLink]="['/superAdminDashboard/createRole']"
+                                    (click)="changeTitle('Create Role')">
+                                    <span class="nav-text">Create Role</span>
+                                </a>
+                            </li>
+                        </div>
+                    </ul>
+                </li> -->
+
+                <li class="section-title">Pages</li>
+            </ul>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-footer-content">
+                <ul class="d-flex">
+                    <li>
+                        <a href="user-account-settings.html" data-toggle="tooltip" title="Account settings"><i
+                                class="mdi mdi-settings"></i></a>
+                    </li>
+                    <li>
+                        <a href="#" data-toggle="tooltip" title="No chat messages"><i
+                                class="mdi mdi-chat-processing"></i></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</aside>
