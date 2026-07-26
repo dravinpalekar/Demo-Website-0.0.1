@@ -25,6 +25,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     List<UserEntity> findByDeletedAtIsNull();
 
-    @Query("SELECT u FROM UserEntity u JOIN u.role r WHERE r.name = :role")
-    Optional<UserEntity> findUsersByRole(@Param("role") Roles role);
+    @Query("SELECT u FROM UserEntity u JOIN u.role r WHERE r.name = :role AND r.deletedAt IS NULL")
+    Optional<UserEntity> findUsersByRoleAndDeletedAtIsNull(@Param("role") Roles role);
+
 }

@@ -68,28 +68,28 @@ public class AuthenticationService {
 
         if(requestObject.getRoles() == null)
         {
-            roles.add(roleRepository.findByName(Roles.ROLE_USER).orElseThrow(() -> new NullPointerException(ROLE_NOT_FOUND)));
+            roles.add(roleRepository.findByNameAndDeletedAtIsNull(Roles.ROLE_USER).orElseThrow(() -> new NullPointerException(ROLE_NOT_FOUND)));
         }
         else
         {
             for(String loopObject:requestObject.getRoles()){
                 switch (loopObject){
                     case "admin":
-                        roles.add(roleRepository.findByName(Roles.ROLE_ADMIN).orElseThrow(() -> new NullPointerException(loopObject + ROLE_NOT_FOUND)));
+                        roles.add(roleRepository.findByNameAndDeletedAtIsNull(Roles.ROLE_ADMIN).orElseThrow(() -> new NullPointerException(loopObject + ROLE_NOT_FOUND)));
                         break;
 
                     case "guest":
-                        roles.add(roleRepository.findByName(Roles.ROLE_GUEST).orElseThrow(() -> new NullPointerException(loopObject + ROLE_NOT_FOUND)));
+                        roles.add(roleRepository.findByNameAndDeletedAtIsNull(Roles.ROLE_GUEST).orElseThrow(() -> new NullPointerException(loopObject + ROLE_NOT_FOUND)));
                         break;
 
                     case "superAdmin":
-                        Optional<UserEntity> checkAlreadySuperAdmin= userRepository.findUsersByRole(Roles.ROLE_SUPER_ADMIN);
+                        Optional<UserEntity> checkAlreadySuperAdmin = userRepository.findUsersByRoleAndDeletedAtIsNull(Roles.ROLE_SUPER_ADMIN);
                         if(checkAlreadySuperAdmin.isEmpty())
-                            roles.add(roleRepository.findByName(Roles.ROLE_SUPER_ADMIN).orElseThrow(() -> new NullPointerException(loopObject + ROLE_NOT_FOUND)));
+                            roles.add(roleRepository.findByNameAndDeletedAtIsNull(Roles.ROLE_SUPER_ADMIN).orElseThrow(() -> new NullPointerException(loopObject + ROLE_NOT_FOUND)));
                         break;
 
                     default:
-                        roles.add(roleRepository.findByName(Roles.ROLE_USER).orElseThrow(() -> new NullPointerException(loopObject + ROLE_NOT_FOUND)));
+                        roles.add(roleRepository.findByNameAndDeletedAtIsNull(Roles.ROLE_USER).orElseThrow(() -> new NullPointerException(loopObject + ROLE_NOT_FOUND)));
                         break;
                 }
             }
