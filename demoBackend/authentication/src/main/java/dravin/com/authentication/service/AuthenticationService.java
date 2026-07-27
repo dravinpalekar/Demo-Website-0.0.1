@@ -47,7 +47,7 @@ public class AuthenticationService {
         this.roleRepository = roleRepository;
     }
 
-    public ResponseEntity<?> authenticateUser(LoginRequestModel requestObject){
+    public ResponseEntity<Map<String,String>> authenticateUser(LoginRequestModel requestObject){
 
         Authentication authenticationObject = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(requestObject.getUserName(), requestObject.getPassword()));
 
@@ -57,7 +57,7 @@ public class AuthenticationService {
     }
 
 
-    public ResponseEntity<?> registerUser(SignupRequestModel requestObject){
+    public ResponseEntity<Map<String,String>> registerUser(SignupRequestModel requestObject){
 
         if(Boolean.TRUE.equals(userRepository.existsByEmail(requestObject.getEmail())))
         {

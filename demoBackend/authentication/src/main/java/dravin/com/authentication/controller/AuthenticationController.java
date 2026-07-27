@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 import static dravin.com.authentication.constant.RoutesFile.*;
 
 @RestController
@@ -34,7 +36,7 @@ public class AuthenticationController {
             summary = "Authenticate API for User Or Guest User",
             description = "Authenticate Admin and Super-AdminFeatures as well."
     )
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequestModel loginRequest) {
+    public ResponseEntity<Map<String,String>> authenticateUser(@Valid @RequestBody LoginRequestModel loginRequest) {
 
         logger.info("Attempt user for authenticate and UserName is {}", loginRequest.getUserName());
         return authenticationService.authenticateUser(loginRequest);
@@ -46,7 +48,7 @@ public class AuthenticationController {
             summary = "Register API for User Or Guest User",
             description = "Register Super-Admin as well."
     )
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequestModel signUpRequest) {
+    public ResponseEntity<Map<String,String>> registerUser(@Valid @RequestBody SignupRequestModel signUpRequest) {
 
         logger.info("Attempt user for register and email is {}", signUpRequest.getEmail());
         return authenticationService.registerUser(signUpRequest);

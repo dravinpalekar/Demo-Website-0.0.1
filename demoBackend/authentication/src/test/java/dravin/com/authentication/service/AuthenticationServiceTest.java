@@ -61,12 +61,11 @@
 
             when(authenticationManager.authenticate(any())).thenReturn(authentication);
             when(jwtUtils.generateJwtToken(authentication)).thenReturn("jwt-token");
-            ResponseEntity<?> response = authenticationService.authenticateUser(prepareLoginRequestFunction("admin@gamil.com", "Admin@123"));
+            ResponseEntity<Map<String, String>> response = authenticationService.authenticateUser(prepareLoginRequestFunction("admin@gamil.com", "Admin@123"));
             assertEquals(HttpStatus.OK, response.getStatusCode());
-            Map<String, String> body = (Map<String, String>) response.getBody();
 
-            assertNotNull(body);
-            assertEquals("jwt-token", body.get("token"));
+            assertNotNull(response.getBody());
+            assertEquals("jwt-token", response.getBody().get("token"));
 
             verify(authenticationManager).authenticate(any());
             verify(jwtUtils).generateJwtToken(authentication);
@@ -121,12 +120,11 @@
             when(roleRepository.findByNameAndDeletedAtIsNull(Roles.ROLE_USER)).thenReturn(Optional.of(role));
             when(encoder.encode(anyString())).thenReturn("encodedPassword");
 
-            ResponseEntity<?> response = authenticationService.registerUser(request);
+            ResponseEntity<Map<String,String>> response = authenticationService.registerUser(request);
 
             assertEquals(HttpStatus.OK, response.getStatusCode());
-            Map<String, String> body = (Map<String, String>) response.getBody();
 
-            assertEquals("User registered successfully.", body.get("message"));
+            assertEquals("User registered successfully.", response.getBody().get("message"));
             verify(userRepository).save(any(UserEntity.class));
         }
 
@@ -143,12 +141,11 @@
             when(roleRepository.findByNameAndDeletedAtIsNull(Roles.ROLE_ADMIN)).thenReturn(Optional.of(role));
             when(encoder.encode(anyString())).thenReturn("encodedPassword");
 
-            ResponseEntity<?> response = authenticationService.registerUser(request);
+            ResponseEntity<Map<String, String>> response = authenticationService.registerUser(request);
 
             assertEquals(HttpStatus.OK, response.getStatusCode());
-            Map<String, String> body = (Map<String, String>) response.getBody();
 
-            assertEquals("User registered successfully.", body.get("message"));
+            assertEquals("User registered successfully.", response.getBody().get("message"));
             verify(userRepository).save(any(UserEntity.class));
         }
 
@@ -165,12 +162,11 @@
             when(roleRepository.findByNameAndDeletedAtIsNull(Roles.ROLE_GUEST)).thenReturn(Optional.of(role));
             when(encoder.encode(anyString())).thenReturn("encodedPassword");
 
-            ResponseEntity<?> response = authenticationService.registerUser(request);
+            ResponseEntity<Map<String, String>> response = authenticationService.registerUser(request);
 
             assertEquals(HttpStatus.OK, response.getStatusCode());
-            Map<String, String> body = (Map<String, String>) response.getBody();
 
-            assertEquals("User registered successfully.", body.get("message"));
+            assertEquals("User registered successfully.", response.getBody().get("message"));
             verify(userRepository).save(any(UserEntity.class));
         }
 
@@ -188,12 +184,11 @@
             when(roleRepository.findByNameAndDeletedAtIsNull(Roles.ROLE_SUPER_ADMIN)).thenReturn(Optional.of(role));
             when(encoder.encode(anyString())).thenReturn("encodedPassword");
 
-            ResponseEntity<?> response = authenticationService.registerUser(request);
+            ResponseEntity<Map<String, String>> response = authenticationService.registerUser(request);
 
             assertEquals(HttpStatus.OK, response.getStatusCode());
-            Map<String, String> body = (Map<String, String>) response.getBody();
 
-            assertEquals("User registered successfully.", body.get("message"));
+            assertEquals("User registered successfully.", response.getBody().get("message"));
             verify(userRepository).save(any(UserEntity.class));
         }
 
@@ -206,12 +201,11 @@
 
             when(userRepository.existsByEmail(anyString())).thenReturn(false);
             when(userRepository.findUsersByRoleAndDeletedAtIsNull(Roles.ROLE_SUPER_ADMIN)).thenReturn(Optional.of(new UserEntity()));
-            ResponseEntity<?> response = authenticationService.registerUser(request);
+            ResponseEntity<Map<String, String>> response = authenticationService.registerUser(request);
 
             assertEquals(HttpStatus.METHOD_NOT_ALLOWED, response.getStatusCode());
 
-            Map<String, String> body = (Map<String, String>) response.getBody();
-            assertEquals("Super Admin is already exists.", body.get("message"));
+            assertEquals("Super Admin is already exists.", response.getBody().get("message"));
 
             verify(userRepository, never()).save(any());
         }
@@ -228,11 +222,10 @@
             when(userRepository.existsByEmail(anyString())).thenReturn(false);
             when(roleRepository.findByNameAndDeletedAtIsNull(Roles.ROLE_USER)).thenReturn(Optional.of(role));
             when(encoder.encode(anyString())).thenReturn("encodedPassword");
-            ResponseEntity<?> response = authenticationService.registerUser(request);
+            ResponseEntity<Map<String, String>> response = authenticationService.registerUser(request);
 
             assertEquals(HttpStatus.OK, response.getStatusCode());
-            Map<String, String> body = (Map<String, String>) response.getBody();
-            assertEquals("User registered successfully.", body.get("message"));
+            assertEquals("User registered successfully.", response.getBody().get("message"));
 
             verify(userRepository).save(any(UserEntity.class));
         }
