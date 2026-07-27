@@ -26,7 +26,7 @@ public class PermissionService {
         this.roleRepository = roleRepository;
     }
 
-    public ResponseEntity<?> createPermission(CreatePermissionRequestModel requestObject){
+    public ResponseEntity<Map<String,String>> createPermission(CreatePermissionRequestModel requestObject){
 
         Optional<PermissionEntity> permissionEntity = permissionRepository.findByNameAndDeletedAtIsNull(requestObject.getName());
         if(permissionEntity.isPresent())
@@ -39,7 +39,7 @@ public class PermissionService {
         }
     }
 
-    public ResponseEntity<?> updatePermissionById(Long id, CreatePermissionRequestModel requestObject){
+    public ResponseEntity<Map<String,String>> updatePermissionById(Long id, CreatePermissionRequestModel requestObject){
         return permissionRepository.findByIdAndDeletedAtIsNull(id)
                 .map(permission -> {
                     Optional<PermissionEntity> permissionEntity = permissionRepository.findByNameAndDeletedAtIsNull(requestObject.getName());
@@ -55,17 +55,17 @@ public class PermissionService {
                         .body(Map.of("message", "Permission not found")));
     }
 
-    public ResponseEntity<?> getAllPermission(){
+    public ResponseEntity<Map<String,Object>> getAllPermission(){
 
         return ResponseEntity.ok(Map.of("data",permissionRepository.findByDeletedAtIsNull()));
     }
 
-    public ResponseEntity<?> getPermissionById(Long id){
+    public ResponseEntity<Map<String,Object>> getPermissionById(Long id){
 
         return ResponseEntity.ok(Map.of("data",permissionRepository.findByIdAndDeletedAtIsNull(id).orElseThrow(() -> new NullPointerException("Permission not found."))));
     }
 
-    public ResponseEntity<?> deletePermission(Long id){
+    public ResponseEntity<Map<String,String>> deletePermission(Long id){
 
         Optional<PermissionEntity> permissionEntity = permissionRepository.findByIdAndDeletedAtIsNull(id);
         if(permissionEntity.isPresent())

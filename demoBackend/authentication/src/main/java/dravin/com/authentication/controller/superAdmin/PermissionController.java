@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 import static dravin.com.authentication.constant.RoutesFile.*;
 
 @RestController
@@ -30,7 +32,7 @@ public class PermissionController {
             summary = "Create permissions.",
             description = "This API is for creating permissions."
     )
-    public ResponseEntity<?> createPermission(@Valid @RequestBody CreatePermissionRequestModel createPermissionRequest){
+    public ResponseEntity<Map<String,String>> createPermission(@Valid @RequestBody CreatePermissionRequestModel createPermissionRequest){
 
         return permissionService.createPermission(createPermissionRequest);
     }
@@ -40,7 +42,7 @@ public class PermissionController {
             summary = "Update permission by id",
             description = "This API is for updating permission by id."
     )
-    public ResponseEntity<?> updatePermissionById(@PathVariable Long id, @Valid @RequestBody CreatePermissionRequestModel createPermissionRequest){
+    public ResponseEntity<Map<String,String>> updatePermissionById(@PathVariable Long id, @Valid @RequestBody CreatePermissionRequestModel createPermissionRequest){
 
         return permissionService.updatePermissionById(id, createPermissionRequest);
     }
@@ -50,7 +52,7 @@ public class PermissionController {
             summary = "Get all permissions of users",
             description = "This API is for getting all user permissions."
     )
-    public ResponseEntity<?> getAllPermission(){
+    public ResponseEntity<Map<String,Object>> getAllPermission(){
 
         return permissionService.getAllPermission();
     }
@@ -60,7 +62,7 @@ public class PermissionController {
             summary = "Get permission by id",
             description = "This API is for getting a user permission by ID."
     )
-    public ResponseEntity<?> getPermissionById(@PathVariable Long id){
+    public ResponseEntity<Map<String,Object>> getPermissionById(@PathVariable Long id){
 
         return permissionService.getPermissionById(id);
     }
@@ -70,7 +72,7 @@ public class PermissionController {
             summary = "Delete permission by id",
             description = "This API is for deleting a user permission by ID."
     )
-    public ResponseEntity<?> deletePermission(@PathVariable Long id){
+    public ResponseEntity<Map<String,String>> deletePermission(@PathVariable Long id){
 
         return permissionService.deletePermission(id);
     }
