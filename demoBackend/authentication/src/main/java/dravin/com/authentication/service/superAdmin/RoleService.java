@@ -30,7 +30,7 @@ public class RoleService {
     }
 
 
-    public ResponseEntity<?> createRole(CreateRoleRequestModel requestObject){
+    public ResponseEntity<Map<String,String>> createRole(CreateRoleRequestModel requestObject){
 
         Optional<RoleEntity> roleEntity = roleRepository.findByNameAndDeletedAtIsNull(requestObject.getRoleName());
         if(roleEntity.isPresent())
@@ -45,7 +45,7 @@ public class RoleService {
         }
     }
 
-    public ResponseEntity<?> updateRoleById(Long id, CreateRoleRequestModel requestObject){
+    public ResponseEntity<Map<String,String>> updateRoleById(Long id, CreateRoleRequestModel requestObject){
 
         return roleRepository.findByIdAndDeletedAtIsNull(id).map(roleEntity->{
             Optional<RoleEntity> roleEntityCheck = roleRepository.findByNameAndDeletedAtIsNull(requestObject.getRoleName());
@@ -65,16 +65,16 @@ public class RoleService {
                 .body(Map.of("message", "Role not found")));
     }
 
-    public ResponseEntity<?> getAllRoles() {
+    public ResponseEntity<Map<String,Object>> getAllRoles() {
 
         return ResponseEntity.ok(Map.of("data",roleRepository.findByDeletedAtIsNull()));
     }
 
-    public ResponseEntity<?> getRoleById(Long id){
+    public ResponseEntity<Map<String,Object>> getRoleById(Long id){
         return ResponseEntity.ok(Map.of("data",roleRepository.findByIdAndDeletedAtIsNull(id).orElseThrow(() -> new NullPointerException("Role not found."))));
     }
 
-    public ResponseEntity<?> deleteRole(Long id){
+    public ResponseEntity<Map<String,String>> deleteRole(Long id){
 
         Optional<RoleEntity> roleEntity = roleRepository.findByIdAndDeletedAtIsNull(id);
         if(roleEntity.isPresent()){

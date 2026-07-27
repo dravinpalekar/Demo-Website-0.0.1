@@ -1,6 +1,5 @@
 package dravin.com.authentication.controller.superAdmin;
 
-
 import dravin.com.authentication.requestmodel.superAdmin.CreateRoleRequestModel;
 import dravin.com.authentication.service.superAdmin.RoleService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 import static dravin.com.authentication.constant.RoutesFile.*;
 
@@ -32,7 +33,7 @@ public class RoleController {
             summary = "Create Roles",
             description = "This API is for creating roles."
     )
-    public ResponseEntity<?> createRole(@Valid @RequestBody CreateRoleRequestModel createRoleRequest) {
+    public ResponseEntity<Map<String,String>> createRole(@Valid @RequestBody CreateRoleRequestModel createRoleRequest) {
 
         return roleService.createRole(createRoleRequest);
     }
@@ -42,7 +43,7 @@ public class RoleController {
             summary = "Update role by id",
             description = "This API is for updating roles by id."
     )
-    public ResponseEntity<?> updateRoleById(@PathVariable Long id, @Valid @RequestBody CreateRoleRequestModel createRoleRequestModel){
+    public ResponseEntity<Map<String,String>> updateRoleById(@PathVariable Long id, @Valid @RequestBody CreateRoleRequestModel createRoleRequestModel){
 
         return roleService.updateRoleById(id, createRoleRequestModel);
     }
@@ -53,7 +54,7 @@ public class RoleController {
             summary = "Get all roles of users",
             description = "This API is for getting all user roles."
     )
-    public ResponseEntity<?> getAllRoles() {
+    public ResponseEntity<Map<String, Object>> getAllRoles() {
 
         return roleService.getAllRoles();
     }
@@ -63,7 +64,7 @@ public class RoleController {
             summary = "Get role by id",
             description = "This API is for getting a user role by ID."
     )
-    public ResponseEntity<?> getRoleById(@PathVariable Long id){
+    public ResponseEntity<Map<String,Object>> getRoleById(@PathVariable Long id){
 
         return roleService.getRoleById(id);
     }
@@ -73,7 +74,7 @@ public class RoleController {
             summary = "Delete role by id",
             description = "This API is for deleting a user role by ID."
     )
-    public ResponseEntity<?> deleteRole(@PathVariable Long id){
+    public ResponseEntity<Map<String,String>> deleteRole(@PathVariable Long id){
 
         return roleService.deleteRole(id);
     }
