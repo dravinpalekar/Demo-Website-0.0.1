@@ -42,10 +42,6 @@ public class JwtUtils {
                 .compact();
     }
 
-//    private Key key() {
-//        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecretKey));
-//    }
-
     private SecretKey key() {
         // Use SecretKey instead of the generic Key interface
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecretKey));

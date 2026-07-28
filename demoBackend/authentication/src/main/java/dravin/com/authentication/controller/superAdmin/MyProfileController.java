@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Map;
+
 import static dravin.com.authentication.constant.RoutesFile.*;
 
 @RestController
@@ -33,7 +35,7 @@ public class MyProfileController {
             summary = "Store other information of a users",
             description = "This API is for storing or updating users' other information, like full name, age, gender, address, country or display profile photo."
     )
-    public ResponseEntity<?> updateMyProfile(@RequestPart(value = "file", required = false) MultipartFile file, @RequestPart("updateMyProfileRequest") @Valid UpdateMyProfileRequestModel updateMyProfileRequest) {
+    public ResponseEntity<Map<String,String>> updateMyProfile(@RequestPart(value = "file", required = false) MultipartFile file, @RequestPart("updateMyProfileRequest") @Valid UpdateMyProfileRequestModel updateMyProfileRequest) {
         if (file != null && !file.isEmpty())
             this.validateImageFile(file);
         return myProfileService.updateMyProfile(updateMyProfileRequest,file);
@@ -44,7 +46,7 @@ public class MyProfileController {
             summary = "Getting other information of a user",
             description = "This API is for getting other information about a user, like full name, age, gender, address, and country."
     )
-    public ResponseEntity<?> getMyProfile() {
+    public ResponseEntity<Map<String,Object>> getMyProfile() {
         return myProfileService.getMyProfile();
     }
 
@@ -53,7 +55,7 @@ public class MyProfileController {
             summary = "Getting user image",
             description = "This API is for getting an image of the user and the image format in base64."
     )
-    public ResponseEntity<?> getMyImage() {
+    public ResponseEntity<Map<String,Object>> getMyImage() {
         return myProfileService.getMyImage();
     }
 

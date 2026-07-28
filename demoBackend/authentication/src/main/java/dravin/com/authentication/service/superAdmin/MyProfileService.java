@@ -8,13 +8,9 @@ import dravin.com.repository.repository.UserRepository;
 import net.coobird.thumbnailator.Thumbnails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
@@ -24,7 +20,6 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Base64;
 import java.util.Map;
 import java.util.Optional;
@@ -44,7 +39,7 @@ public class MyProfileService {
         this.jwtUtils = jwtUtils;
     }
 
-    public ResponseEntity<?> updateMyProfile(UpdateMyProfileRequestModel requestObject, MultipartFile file){
+    public ResponseEntity<Map<String,String>> updateMyProfile(UpdateMyProfileRequestModel requestObject, MultipartFile file){
 
         String token = this.jwtUtils.getIdFromJwtToken(this.jwtUtils.parseJwt(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest()));
 
@@ -98,7 +93,7 @@ public class MyProfileService {
         return ResponseEntity.ok(Map.of("message","Profile updated successfully."));
     }
 
-    public ResponseEntity<?> getMyProfile(){
+    public ResponseEntity<Map<String,Object>> getMyProfile(){
 
         String token = jwtUtils.getIdFromJwtToken(jwtUtils.parseJwt(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest()));
         UserEntity user = userRepository.findById(Long.valueOf(token)).orElseThrow(() -> new NullPointerException("User not found with ID: " + token));
@@ -109,7 +104,7 @@ public class MyProfileService {
     }
 
 
-    public ResponseEntity<?> getMyImage() {
+    public ResponseEntity<Map<String,Object>> getMyImage() {
         String token = jwtUtils.getIdFromJwtToken(jwtUtils.parseJwt(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest()));
         UserEntity user = userRepository.findById(Long.valueOf(token)).orElseThrow(() -> new NullPointerException("User not found with ID: " + token));
         if(user.getUserOtherInformation() != null && user.getUserOtherInformation().getPhotoUrl() !=null)
