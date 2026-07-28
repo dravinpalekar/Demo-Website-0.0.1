@@ -63,7 +63,7 @@ public class JwtAuthFilterTest {
 
     @Test
     @DisplayName("Should authenticate user when JWT is valid")
-    void testDoFilterInternal_ValidJwt() throws ServletException, IOException {
+    void testDoFilterInternalValidJwt() throws ServletException, IOException {
 
         String jwt = "valid-token";
         String username = "admin";
@@ -84,7 +84,7 @@ public class JwtAuthFilterTest {
 
     @Test
     @DisplayName("Should continue filter chain when JWT is null")
-    void testDoFilterInternal_NullJwt() throws ServletException, IOException {
+    void testDoFilterInternalNullJwt() throws ServletException, IOException {
 
         when(jwtUtils.parseJwt(request)).thenReturn(null);
 
@@ -96,7 +96,7 @@ public class JwtAuthFilterTest {
 
     @Test
     @DisplayName("Should continue filter chain when JWT is invalid")
-    void testDoFilterInternal_InvalidJwt() throws ServletException, IOException {
+    void testDoFilterInternalInvalidJwt() throws ServletException, IOException {
 
         String jwt = "invalid-token";
 
@@ -111,7 +111,7 @@ public class JwtAuthFilterTest {
 
     @Test
     @DisplayName("Should resolve ExpiredJwtException")
-    void testDoFilterInternal_ExpiredJwtException() throws ServletException, IOException {
+    void testDoFilterInternalExpiredJwtException() throws ServletException, IOException {
 
         ExpiredJwtException exception = mock(ExpiredJwtException.class);
 
@@ -124,7 +124,7 @@ public class JwtAuthFilterTest {
 
     @Test
     @DisplayName("Should resolve SignatureException")
-    void testDoFilterInternal_SignatureException() throws ServletException, IOException {
+    void testDoFilterInternalSignatureException() throws ServletException, IOException {
 
         SignatureException exception = mock(SignatureException.class);
 
@@ -137,7 +137,7 @@ public class JwtAuthFilterTest {
 
     @Test
     @DisplayName("Should resolve MalformedJwtException")
-    void testDoFilterInternal_MalformedJwtException() throws ServletException, IOException {
+    void testDoFilterInternalMalformedJwtException() throws ServletException, IOException {
 
         MalformedJwtException exception = new MalformedJwtException("Malformed JWT");
 

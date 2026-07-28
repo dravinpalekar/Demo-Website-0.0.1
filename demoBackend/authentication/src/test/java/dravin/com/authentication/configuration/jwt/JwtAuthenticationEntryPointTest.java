@@ -42,7 +42,7 @@ public class JwtAuthenticationEntryPointTest {
 
     @Test
     @DisplayName("We test jwt authentication entry point test")
-    void commence_ShouldDelegateExceptionToHandlerExceptionResolver() {
+    void commenceShouldDelegateExceptionToHandlerExceptionResolver() {
 
         jwtAuthenticationEntryPoint.commence(request, response, authenticationException);
 
