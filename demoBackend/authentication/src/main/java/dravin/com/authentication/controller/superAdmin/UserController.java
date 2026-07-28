@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 import static dravin.com.authentication.constant.RoutesFile.*;
 
 @RestController
@@ -31,7 +33,7 @@ public class UserController {
             summary = "Get all user lists",
             description = "This API is for getting all users of active or deactivate user."
     )
-    public ResponseEntity<?> getAllUser(){
+    public ResponseEntity<Map<String,Object>> getAllUser(){
 
         return userService.getAllUser();
     }
@@ -41,7 +43,7 @@ public class UserController {
             summary = "Delete user by Id",
             description = "This API is for deleting any user by ID."
     )
-    public ResponseEntity<?> deleteUserById(@PathVariable Long id){
+    public ResponseEntity<Map<String,String>> deleteUserById(@PathVariable Long id){
 
         return userService.deleteUserById(id);
     }
@@ -51,7 +53,7 @@ public class UserController {
             summary = "Enable or disable user by Id",
             description = "This API is for enabling or disabling any user by ID."
     )
-    public ResponseEntity<?> activeAndDeactivateUserByID(@Valid @RequestBody ActivateRequestModel requestModel){
+    public ResponseEntity<Map<String,String>> activeAndDeactivateUserByID(@Valid @RequestBody ActivateRequestModel requestModel){
         return userService.activeAndDeactivateUserByID(requestModel);
     }
 

@@ -26,12 +26,12 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public ResponseEntity<?> getAllUser(){
+    public ResponseEntity<Map<String,Object>> getAllUser(){
 
         return ResponseEntity.ok(Map.of("data", userRepository.findByDeletedAtIsNull()));
     }
 
-    public ResponseEntity<?> deleteUserById(Long id){
+    public ResponseEntity<Map<String,String>> deleteUserById(Long id){
 
         Optional<UserEntity> userEntity = userRepository.findByIdAndDeletedAtIsNull(id);
         if(userEntity.isPresent()){
@@ -43,7 +43,7 @@ public class UserService {
         }
     }
 
-    public ResponseEntity<?> activeAndDeactivateUserByID(ActivateRequestModel requestModel){
+    public ResponseEntity<Map<String,String>> activeAndDeactivateUserByID(ActivateRequestModel requestModel){
 
         Optional<UserEntity> userEntity = userRepository.findByIdAndDeletedAtIsNull(requestModel.getId());
 
