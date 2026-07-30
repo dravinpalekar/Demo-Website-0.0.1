@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import static dravin.com.authentication.constant.ConstantString.*;
 import static dravin.com.authentication.constant.Error.ROLE_NOT_FOUND;
 
 @Service
@@ -96,12 +97,12 @@ public class AuthenticationService {
         }
 
         if(roles.isEmpty()){
-            return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(Map.of("message","Super Admin is already exists."));
+            return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(Map.of(MESSAGE,SUPER_ADMIN_IS_ALREADY_EXISTS));
         }
         UserEntity userEntity = new UserEntity(requestObject.getEmail(),requestObject.getEmail(),encoder.encode(requestObject.getPassword()),roles);
         userRepository.save(userEntity);
 
-        return ResponseEntity.ok(Map.of("message","User registered successfully."));
+        return ResponseEntity.ok(Map.of(MESSAGE,USER_REGISTERED_SUCCESSFULLY));
     }
 
 

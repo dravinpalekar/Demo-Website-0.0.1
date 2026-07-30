@@ -27,6 +27,8 @@
     import java.util.Optional;
     import java.util.Set;
 
+    import static dravin.com.authentication.constant.ConstantString.SUPER_ADMIN_IS_ALREADY_EXISTS;
+    import static dravin.com.authentication.constant.ConstantString.USER_REGISTERED_SUCCESSFULLY;
     import static org.junit.jupiter.api.Assertions.*;
     import static org.mockito.ArgumentMatchers.any;
     import static org.mockito.Mockito.*;
@@ -124,7 +126,7 @@
 
             assertEquals(HttpStatus.OK, response.getStatusCode());
 
-            assertEquals("User registered successfully.", response.getBody().get("message"));
+            assertEquals(USER_REGISTERED_SUCCESSFULLY, response.getBody().get("message"));
             verify(userRepository).save(any(UserEntity.class));
         }
 
@@ -145,7 +147,7 @@
 
             assertEquals(HttpStatus.OK, response.getStatusCode());
 
-            assertEquals("User registered successfully.", response.getBody().get("message"));
+            assertEquals(USER_REGISTERED_SUCCESSFULLY, response.getBody().get("message"));
             verify(userRepository).save(any(UserEntity.class));
         }
 
@@ -166,7 +168,7 @@
 
             assertEquals(HttpStatus.OK, response.getStatusCode());
 
-            assertEquals("User registered successfully.", response.getBody().get("message"));
+            assertEquals(USER_REGISTERED_SUCCESSFULLY, response.getBody().get("message"));
             verify(userRepository).save(any(UserEntity.class));
         }
 
@@ -188,7 +190,7 @@
 
             assertEquals(HttpStatus.OK, response.getStatusCode());
 
-            assertEquals("User registered successfully.", response.getBody().get("message"));
+            assertEquals(USER_REGISTERED_SUCCESSFULLY, response.getBody().get("message"));
             verify(userRepository).save(any(UserEntity.class));
         }
 
@@ -205,7 +207,7 @@
 
             assertEquals(HttpStatus.METHOD_NOT_ALLOWED, response.getStatusCode());
 
-            assertEquals("Super Admin is already exists.", response.getBody().get("message"));
+            assertEquals(SUPER_ADMIN_IS_ALREADY_EXISTS, response.getBody().get("message"));
 
             verify(userRepository, never()).save(any());
         }
@@ -225,7 +227,7 @@
             ResponseEntity<Map<String, String>> response = authenticationService.registerUser(request);
 
             assertEquals(HttpStatus.OK, response.getStatusCode());
-            assertEquals("User registered successfully.", response.getBody().get("message"));
+            assertEquals(USER_REGISTERED_SUCCESSFULLY, response.getBody().get("message"));
 
             verify(userRepository).save(any(UserEntity.class));
         }

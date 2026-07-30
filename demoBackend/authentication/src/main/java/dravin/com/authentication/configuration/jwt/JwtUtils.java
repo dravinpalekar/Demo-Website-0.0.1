@@ -15,6 +15,9 @@ import org.springframework.util.StringUtils;
 import javax.crypto.SecretKey;
 import java.util.Date;
 
+import static dravin.com.authentication.constant.ConstantString.AUTHORIZATION;
+import static dravin.com.authentication.constant.ConstantString.BEARER;
+
 @Component
 public class JwtUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
@@ -24,9 +27,6 @@ public class JwtUtils {
 
     @Value("${jwtExpirationInMillisecond}")
     private int jwtExpirationMillisecond;
-
-    private static final String authorization = "Authorization";
-    private static final String bearer = "Bearer ";
 
     public String generateJwtToken(Authentication authentication) {
 
@@ -68,9 +68,9 @@ public class JwtUtils {
 
     public String parseJwt( HttpServletRequest request ) {
 
-        String headerAuth = request.getHeader( authorization );
+        String headerAuth = request.getHeader( AUTHORIZATION );
 
-        if ( StringUtils.hasText( headerAuth ) && headerAuth.startsWith( bearer ) ) {
+        if ( StringUtils.hasText( headerAuth ) && headerAuth.startsWith( BEARER ) ) {
             return headerAuth.substring( 7 );
         }
 

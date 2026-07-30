@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static dravin.com.authentication.constant.ConstantString.USER_DELETED_SUCCESSFULLY;
+import static dravin.com.authentication.constant.Error.USER_NOT_FOUND;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.AssertionsKt.assertNotNull;
 import static org.mockito.Mockito.*;
@@ -57,7 +59,7 @@ public class UserServiceTest {
         ResponseEntity<Map<String, String>> response = userService.deleteUserById(1L);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("User deleted successfully.", response.getBody().get("message"));
+        assertEquals(USER_DELETED_SUCCESSFULLY, response.getBody().get("message"));
 
         ArgumentCaptor<UserEntity> captor = ArgumentCaptor.forClass(UserEntity.class);
 
@@ -76,7 +78,7 @@ public class UserServiceTest {
         ResponseEntity<Map<String, String>> response = userService.deleteUserById(1L);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("User not found", response.getBody().get("message"));
+        assertEquals(USER_NOT_FOUND, response.getBody().get("message"));
 
         verify(userRepository, never()).save(any());
     }
@@ -122,7 +124,7 @@ public class UserServiceTest {
         ResponseEntity<Map<String, String>> response = userService.activeAndDeactivateUserByID(prepareActiveRequestFunction(Status.ENABLE));
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("User not found", response.getBody().get("message"));
+        assertEquals(USER_NOT_FOUND, response.getBody().get("message"));
 
         verify(userRepository, never()).save(any());
     }

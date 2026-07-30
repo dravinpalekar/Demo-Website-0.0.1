@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static dravin.com.authentication.constant.ConstantString.*;
+import static dravin.com.authentication.constant.Error.PERMISSION_NOT_FOUND;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -44,7 +46,7 @@ public class PermissionServiceTest {
         ResponseEntity<Map<String,String>> response = permissionService.createPermission(prepareCreatePermissionRequestFunction(Permissions.ALL));
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Permission created successfully.", response.getBody().get("message"));
+        assertEquals(PERMISSION_CREATED_SUCCESSFULLY, response.getBody().get("message"));
 
         verify(permissionRepository).save(any(PermissionEntity.class));
     }
@@ -61,7 +63,7 @@ public class PermissionServiceTest {
         ResponseEntity<Map<String, String>> response = permissionService.createPermission(prepareCreatePermissionRequestFunction(Permissions.ALL));
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Permission already exists.", response.getBody().get("message"));
+        assertEquals(PERMISSION_ALREADY_EXISTS, response.getBody().get("message"));
 
         verify(permissionRepository, never()).save(any());
     }
@@ -74,7 +76,7 @@ public class PermissionServiceTest {
         ResponseEntity<Map<String, String>> response = permissionService.updatePermissionById(1L, prepareCreatePermissionRequestFunction(Permissions.ALL));
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("Permission not found", response.getBody().get("message"));
+        assertEquals(PERMISSION_NOT_FOUND, response.getBody().get("message"));
 
         verify(permissionRepository, never()).save(any());
     }
@@ -94,7 +96,7 @@ public class PermissionServiceTest {
         ResponseEntity<Map<String, String>> response = permissionService.updatePermissionById(1L, prepareCreatePermissionRequestFunction(Permissions.ALL));
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Permission already exists.", response.getBody().get("message"));
+        assertEquals(PERMISSION_ALREADY_EXISTS, response.getBody().get("message"));
 
         verify(permissionRepository, never()).save(any());
     }
@@ -112,7 +114,7 @@ public class PermissionServiceTest {
         ResponseEntity<Map<String, String>> response = permissionService.updatePermissionById(1L, prepareCreatePermissionRequestFunction(Permissions.ALL));
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Permission updated successfully.", response.getBody().get("message"));
+        assertEquals(PERMISSION_UPDATED_SUCCESSFULLY, response.getBody().get("message"));
 
         assertEquals(Permissions.ALL, permission.getName());
 
@@ -157,7 +159,7 @@ public class PermissionServiceTest {
         when(permissionRepository.findByIdAndDeletedAtIsNull(1L)).thenReturn(Optional.empty());
         NullPointerException ex = assertThrows( NullPointerException.class, () -> permissionService.getPermissionById(1L));
 
-        assertEquals("Permission not found.", ex.getMessage());
+        assertEquals(PERMISSION_NOT_FOUND, ex.getMessage());
     }
 
     @Test
@@ -169,7 +171,7 @@ public class PermissionServiceTest {
         ResponseEntity<Map<String, String>> response = permissionService.deletePermission(1L);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Permission not found", response.getBody().get("message"));
+        assertEquals(PERMISSION_NOT_FOUND, response.getBody().get("message"));
     }
 
     @Test
@@ -201,7 +203,7 @@ public class PermissionServiceTest {
         ResponseEntity<Map<String, String>> response = permissionService.deletePermission(1L);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Permission deleted successfully.", response.getBody().get("message"));
+        assertEquals(PERMISSION_DELETED_SUCCESSFULLY, response.getBody().get("message"));
 
         ArgumentCaptor<PermissionEntity> captor = ArgumentCaptor.forClass(PermissionEntity.class);
 

@@ -30,6 +30,8 @@ import java.util.Optional;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static dravin.com.authentication.constant.ConstantString.PROFILE_UPDATED_SUCCESSFULLY;
+import static dravin.com.authentication.constant.Error.DATA_NOT_FOUND;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -91,7 +93,7 @@ public class MyProfileServiceTest {
         when(userRepository.findByIdAndDeletedAtIsNull(1L)).thenReturn(Optional.of(user));
         ResponseEntity<Map<String, Object>> response = service.getMyProfile();
 
-        assertEquals("Data not found", response.getBody().get("error"));
+        assertEquals(DATA_NOT_FOUND, response.getBody().get("error"));
     }
 
     @Test
@@ -157,7 +159,7 @@ public class MyProfileServiceTest {
         when(userRepository.findByIdAndDeletedAtIsNull(1L)).thenReturn(Optional.of(user));
         ResponseEntity<Map<String, Object>> response = service.getMyImage();
 
-        assertEquals("Data not found", response.getBody().get("error"));
+        assertEquals(DATA_NOT_FOUND, response.getBody().get("error"));
     }
 
     @Test
@@ -198,7 +200,7 @@ public class MyProfileServiceTest {
         ResponseEntity<Map<String, Object>> response = service.getMyImage();
 
         assertEquals(200, response.getStatusCode().value());
-        assertEquals("Data not found", response.getBody().get("error"));
+        assertEquals(DATA_NOT_FOUND, response.getBody().get("error"));
     }
 
     @Test
@@ -243,7 +245,7 @@ public class MyProfileServiceTest {
         ResponseEntity<Map<String, String>> response = service.updateMyProfile(prepareUpdateMyProfileRequest(), null);
 
         assertEquals(200, response.getStatusCode().value());
-        assertEquals("Profile updated successfully.", response.getBody().get("message"));
+        assertEquals(PROFILE_UPDATED_SUCCESSFULLY, response.getBody().get("message"));
 
         verify(userRepository).save(any(UserEntity.class));
     }
@@ -258,7 +260,7 @@ public class MyProfileServiceTest {
         ResponseEntity<Map<String, String>> response = service.updateMyProfile(request, null);
 
         assertEquals(200, response.getStatusCode().value());
-        assertEquals("Profile updated successfully.", response.getBody().get("message"));
+        assertEquals(PROFILE_UPDATED_SUCCESSFULLY, response.getBody().get("message"));
 
         verify(userRepository, never()).save(any());
     }
@@ -296,7 +298,7 @@ public class MyProfileServiceTest {
             ResponseEntity<Map<String, String>> response = service.updateMyProfile(prepareUpdateMyProfileRequest(), file);
 
             assertEquals(200, response.getStatusCode().value());
-            assertEquals("Profile updated successfully.", response.getBody().get("message"));
+            assertEquals(PROFILE_UPDATED_SUCCESSFULLY, response.getBody().get("message"));
 
             verify(userRepository).save(any(UserEntity.class));
 
@@ -339,7 +341,7 @@ public class MyProfileServiceTest {
         ResponseEntity<Map<String, String>> response = service.updateMyProfile(prepareUpdateMyProfileRequest(), null);
 
         assertEquals(200, response.getStatusCode().value());
-        assertEquals("Profile updated successfully.", response.getBody().get("message"));
+        assertEquals(PROFILE_UPDATED_SUCCESSFULLY, response.getBody().get("message"));
         verify(userRepository).save(any(UserEntity.class));
     }
 }

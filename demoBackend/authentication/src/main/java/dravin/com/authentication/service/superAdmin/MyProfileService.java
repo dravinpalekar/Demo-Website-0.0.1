@@ -25,6 +25,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import static dravin.com.authentication.constant.ConstantString.MESSAGE;
+import static dravin.com.authentication.constant.ConstantString.PROFILE_UPDATED_SUCCESSFULLY;
+import static dravin.com.authentication.constant.Error.DATA_NOT_FOUND;
+
 @Service
 public class MyProfileService {
 
@@ -86,7 +90,7 @@ public class MyProfileService {
             userEntityNew.setUserOtherInformation(existingInfo);
             userRepository.save(userEntityNew);
         }
-        return ResponseEntity.ok(Map.of("message", "Profile updated successfully."));
+        return ResponseEntity.ok(Map.of(MESSAGE, PROFILE_UPDATED_SUCCESSFULLY));
     }
 
     public ResponseEntity<Map<String, Object>> getMyProfile() {
@@ -96,7 +100,7 @@ public class MyProfileService {
         if (user.getUserOtherInformation() != null)
             return ResponseEntity.ok(Map.of("data", user.getUserOtherInformation()));
         else
-            return ResponseEntity.ok(Map.of("error", "Data not found"));
+            return ResponseEntity.ok(Map.of("error", DATA_NOT_FOUND));
     }
 
 
@@ -126,6 +130,6 @@ public class MyProfileService {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
         else
-            return ResponseEntity.ok(Map.of("error", "Data not found"));
+            return ResponseEntity.ok(Map.of("error", DATA_NOT_FOUND));
     }
 }

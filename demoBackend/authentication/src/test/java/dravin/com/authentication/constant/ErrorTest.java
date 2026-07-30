@@ -1,22 +1,23 @@
 package dravin.com.authentication.constant;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ErrorTest {
 
     @Test
-    void shouldVerifyRoleNotFoundMessage() {
-        assertEquals(" Role is not found.", Error.ROLE_NOT_FOUND);
-    }
-
-    @Test
-    void shouldVerifyPermissionNotFoundMessage() {
-        assertEquals(" Permission is not found.", Error.PERMISSION_NOT_FOUND);
+    @DisplayName("Constants should hold expected String values")
+    void constantsShouldHaveCorrectValues() {
+        assertThat(Error.ROLE_NOT_FOUND).isEqualTo(" Role is not found.");
+        assertThat(Error.PERMISSION_NOT_FOUND).isEqualTo(" Permission is not found.");
+        assertThat(Error.USER_NOT_FOUND).isEqualTo("User not found");
+        assertThat(Error.DATA_NOT_FOUND).isEqualTo("Data not found");
     }
 
     @Test

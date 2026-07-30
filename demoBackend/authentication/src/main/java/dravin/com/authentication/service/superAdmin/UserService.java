@@ -2,7 +2,6 @@ package dravin.com.authentication.service.superAdmin;
 
 
 import dravin.com.authentication.requestmodel.superAdmin.ActivateRequestModel;
-import dravin.com.repository.constant.enumConstant.Status;
 import dravin.com.repository.entity.UserEntity;
 import dravin.com.repository.repository.UserRepository;
 import org.slf4j.Logger;
@@ -13,6 +12,10 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
+
+import static dravin.com.authentication.constant.ConstantString.MESSAGE;
+import static dravin.com.authentication.constant.ConstantString.USER_DELETED_SUCCESSFULLY;
+import static dravin.com.authentication.constant.Error.USER_NOT_FOUND;
 
 @Service
 public class UserService {
@@ -37,9 +40,9 @@ public class UserService {
         if(userEntity.isPresent()){
             userEntity.get().setDeletedAt(new Date());
             userRepository.save(userEntity.get());
-            return ResponseEntity.ok(Map.of("message", "User deleted successfully."));
+            return ResponseEntity.ok(Map.of(MESSAGE, USER_DELETED_SUCCESSFULLY));
         }else {
-            return ResponseEntity.badRequest().body(Map.of("message","User not found"));
+            return ResponseEntity.badRequest().body(Map.of(MESSAGE,USER_NOT_FOUND));
         }
     }
 
@@ -50,8 +53,8 @@ public class UserService {
         if(userEntity.isPresent()){
             userEntity.get().setActive(requestModel.getStatus());
             userRepository.save(userEntity.get());
-            return ResponseEntity.ok(Map.of("message", "User "+ requestModel.getStatus().toString().toLowerCase()+" successfully."));
+            return ResponseEntity.ok(Map.of(MESSAGE, "User "+ requestModel.getStatus().toString().toLowerCase()+" successfully."));
         }
-        return ResponseEntity.badRequest().body(Map.of("message","User not found"));
+        return ResponseEntity.badRequest().body(Map.of(MESSAGE,USER_NOT_FOUND));
     }
 }

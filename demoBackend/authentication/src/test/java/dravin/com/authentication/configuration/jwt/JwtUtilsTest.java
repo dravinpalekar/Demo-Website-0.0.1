@@ -12,6 +12,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Collections;
 
+import static dravin.com.authentication.constant.ConstantString.AUTHORIZATION;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.*;
@@ -92,7 +93,7 @@ public class JwtUtilsTest {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        when(request.getHeader("Authorization")).thenReturn("Bearer abc.def.xyz");
+        when(request.getHeader(AUTHORIZATION)).thenReturn("Bearer abc.def.xyz");
 
         String token = jwtUtils.parseJwt(request);
 
@@ -105,7 +106,7 @@ public class JwtUtilsTest {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        when(request.getHeader("Authorization")).thenReturn(null);
+        when(request.getHeader(AUTHORIZATION)).thenReturn(null);
 
         assertNull(jwtUtils.parseJwt(request));
     }
@@ -116,7 +117,7 @@ public class JwtUtilsTest {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        when(request.getHeader("Authorization")).thenReturn("");
+        when(request.getHeader(AUTHORIZATION)).thenReturn("");
 
         assertNull(jwtUtils.parseJwt(request));
     }
@@ -127,7 +128,7 @@ public class JwtUtilsTest {
 
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        when(request.getHeader("Authorization")).thenReturn("Basic xxxxxx");
+        when(request.getHeader(AUTHORIZATION)).thenReturn("Basic xxxxxx");
 
         assertNull(jwtUtils.parseJwt(request));
     }

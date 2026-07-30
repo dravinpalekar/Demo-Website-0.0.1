@@ -21,7 +21,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static dravin.com.authentication.constant.ConstantString.*;
 import static dravin.com.authentication.constant.Error.PERMISSION_NOT_FOUND;
+import static dravin.com.authentication.constant.Error.ROLE_NOT_FOUND;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.AssertionsKt.assertNotNull;
@@ -50,7 +52,7 @@ public class RoleServiceTest {
         ResponseEntity<Map<String, String>> response = roleService.createRole(prepareCreateRoleRequestFunction(Roles.ROLE_ADMIN, Permissions.ALL));
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Role created successfully.", response.getBody().get("message"));
+        assertEquals(ROLE_CREATED_SUCCESSFULLY, response.getBody().get("message"));
 
         verify(roleRepository).save(any(RoleEntity.class));
     }
@@ -64,7 +66,7 @@ public class RoleServiceTest {
         ResponseEntity<Map<String, String>> response = roleService.createRole(prepareCreateRoleRequestFunction(Roles.ROLE_ADMIN, Permissions.ALL));
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Role already exists.", response.getBody().get("message"));
+        assertEquals(ROLE_ALREADY_EXISTS, response.getBody().get("message"));
 
         verify(roleRepository, never()).save(any());
     }
@@ -94,7 +96,7 @@ public class RoleServiceTest {
         ResponseEntity<Map<String,String>> response = roleService.updateRoleById(1L, prepareCreateRoleRequestFunction(Roles.ROLE_ADMIN, Permissions.ALL));
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Role updated successfully.", response.getBody().get("message"));
+        assertEquals(ROLE_UPDATED_SUCCESSFULLY, response.getBody().get("message"));
 
         verify(roleRepository).save(roleEntity);
     }
@@ -107,7 +109,7 @@ public class RoleServiceTest {
         ResponseEntity<Map<String,String>> response = roleService.updateRoleById(1L, prepareCreateRoleRequestFunction(Roles.ROLE_ADMIN, Permissions.ALL));
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("Role not found", response.getBody().get("message"));
+        assertEquals(ROLE_NOT_FOUND, response.getBody().get("message"));
     }
 
     @Test
@@ -122,7 +124,7 @@ public class RoleServiceTest {
         ResponseEntity<Map<String,String>> response = roleService.updateRoleById(1L, prepareCreateRoleRequestFunction(Roles.ROLE_ADMIN, Permissions.ALL));
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Role already exists.", response.getBody().get("message"));
+        assertEquals(ROLE_ALREADY_EXISTS, response.getBody().get("message"));
 
         verify(roleRepository, never()).save(any());
     }
@@ -174,7 +176,7 @@ public class RoleServiceTest {
         when(roleRepository.findByIdAndDeletedAtIsNull(1L)).thenReturn(Optional.empty());
         NullPointerException ex = assertThrows(NullPointerException.class, () -> roleService.getRoleById(1L));
 
-        assertEquals("Role not found.", ex.getMessage());
+        assertEquals(ROLE_NOT_FOUND, ex.getMessage());
     }
 
     @Test
@@ -187,7 +189,7 @@ public class RoleServiceTest {
         ResponseEntity<Map<String,String>> response = roleService.deleteRole(1L);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Role deleted successfully.", response.getBody().get("message"));
+        assertEquals(ROLE_DELETED_SUCCESSFULLY, response.getBody().get("message"));
 
         verify(roleRepository).save(roleEntity);
         assertNotNull(roleEntity.getDeletedAt());
@@ -201,7 +203,7 @@ public class RoleServiceTest {
         ResponseEntity<Map<String,String>> response = roleService.deleteRole(1L);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Role not found", response.getBody().get("message"));
+        assertEquals(ROLE_NOT_FOUND, response.getBody().get("message"));
 
         verify(roleRepository, never()).save(any());
     }

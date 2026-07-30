@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+import static dravin.com.authentication.constant.ConstantString.*;
+import static dravin.com.authentication.constant.Error.PERMISSION_NOT_FOUND;
+
 @Service
 public class PermissionService {
 
@@ -31,11 +34,11 @@ public class PermissionService {
         Optional<PermissionEntity> permissionEntity = permissionRepository.findByNameAndDeletedAtIsNull(requestObject.getName());
         if(permissionEntity.isPresent())
         {
-            return ResponseEntity.badRequest().body(Map.of("message","Permission already exists."));
+            return ResponseEntity.badRequest().body(Map.of(MESSAGE,PERMISSION_ALREADY_EXISTS));
         }
         else {
             permissionRepository.save(new PermissionEntity(requestObject.getName()));
-            return ResponseEntity.ok(Map.of("message","Permission created successfully."));
+            return ResponseEntity.ok(Map.of(MESSAGE,PERMISSION_CREATED_SUCCESSFULLY));
         }
     }
 
@@ -44,15 +47,14 @@ public class PermissionService {
                 .map(permission -> {
                     Optional<PermissionEntity> permissionEntity = permissionRepository.findByNameAndDeletedAtIsNull(requestObject.getName());
                     if(permissionEntity.isPresent()){
-                        return ResponseEntity.badRequest().body(Map.of("message","Permission already exists."));
+                        return ResponseEntity.badRequest().body(Map.of(MESSAGE,PERMISSION_ALREADY_EXISTS));
                     }else {
                         permission.setName(requestObject.getName());
                         permissionRepository.save(permission);
-                        return ResponseEntity.ok(Map.of("message", "Permission updated successfully."));
+                        return ResponseEntity.ok(Map.of(MESSAGE, PERMISSION_UPDATED_SUCCESSFULLY));
                     }
                 })
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(Map.of("message", "Permission not found")));
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(MESSAGE, PERMISSION_NOT_FOUND)));
     }
 
     public ResponseEntity<Map<String,Object>> getAllPermission(){
@@ -62,7 +64,7 @@ public class PermissionService {
 
     public ResponseEntity<Map<String,Object>> getPermissionById(Long id){
 
-        return ResponseEntity.ok(Map.of("data",permissionRepository.findByIdAndDeletedAtIsNull(id).orElseThrow(() -> new NullPointerException("Permission not found."))));
+        return ResponseEntity.ok(Map.of("data",permissionRepository.findByIdAndDeletedAtIsNull(id).orElseThrow(() -> new NullPointerException(PERMISSION_NOT_FOUND))));
     }
 
     public ResponseEntity<Map<String,String>> deletePermission(Long id){
@@ -77,10 +79,10 @@ public class PermissionService {
             {
                 permissionEntity.get().setDeletedAt(new Date());
                 permissionRepository.save(permissionEntity.get());
-                return ResponseEntity.ok(Map.of("message","Permission deleted successfully."));
+                return ResponseEntity.ok(Map.of(MESSAGE,PERMISSION_DELETED_SUCCESSFULLY));
             }
         }
-        return ResponseEntity.badRequest().body(Map.of("message","Permission not found"));
+        return ResponseEntity.badRequest().body(Map.of(MESSAGE,PERMISSION_NOT_FOUND));
     }
 
 }
