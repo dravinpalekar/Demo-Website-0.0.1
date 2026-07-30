@@ -2,6 +2,10 @@ package dravin.com.authentication.constant;
 
 public class RoutesFile {
 
+    private RoutesFile() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static final String API = "/api";
 
     //    All nouns related string

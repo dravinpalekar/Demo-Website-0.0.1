@@ -3,8 +3,6 @@ package dravin.com.authentication.requestmodel.superAdmin;
 import dravin.com.repository.constant.enumConstant.Gender;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
-import lombok.Setter;
-import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 public class UpdateMyProfileRequestModel {
@@ -38,16 +36,4 @@ public class UpdateMyProfileRequestModel {
     @NotBlank(message = "Address is mandatory.")
     private String address;
 
-
-//    private MultipartFile file;
-//
-//    @Pattern(regexp = "image/(jpeg|jpg|jpe|png)", message = "Only JPEG, JPG, JPE or PNG images are allowed")
-//    private String contentType;
-//
-//    public void setFile(MultipartFile file) {
-//        this.file = file;
-//        if (file != null) {
-//            this.contentType = file.getContentType();
-//        }
-//    }
 }

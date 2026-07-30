@@ -29,7 +29,7 @@ import java.util.UUID;
 public class MyProfileService {
 
 
-    private static final Logger logger = LoggerFactory.getLogger( MyProfileService.class );
+    private static final Logger logger = LoggerFactory.getLogger(MyProfileService.class);
 
     private final UserRepository userRepository;
     private final JwtUtils jwtUtils;
@@ -39,11 +39,11 @@ public class MyProfileService {
         this.jwtUtils = jwtUtils;
     }
 
-    public ResponseEntity<Map<String,String>> updateMyProfile(UpdateMyProfileRequestModel requestObject, MultipartFile file){
+    public ResponseEntity<Map<String, String>> updateMyProfile(UpdateMyProfileRequestModel requestObject, MultipartFile file) {
 
         String token = this.jwtUtils.getIdFromJwtToken(this.jwtUtils.parseJwt(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest()));
 
-        Optional<UserEntity> userEntity = userRepository.findById(Long.valueOf(token));
+        Optional<UserEntity> userEntity = userRepository.findByIdAndDeletedAtIsNull(Long.valueOf(token));
         if (userEntity.isPresent()) {
 
             UserEntity userEntityNew = userEntity.get();
@@ -53,27 +53,23 @@ public class MyProfileService {
                 existingInfo = new UserOtherInformationEntity();
             }
 
-            if((file != null)){
-                if(file.getSize() > 512 * 1024){
-                    throw new MaxUploadSizeExceededException(512 * 1024L);
-                }else {
-                    try {
-                        String uploadDir = "uploadData/user/saveProfile/";
+            if ((file != null)) {
+                try {
+                    String uploadDir = "uploadData/user/saveProfile/";
 
-                        File directory = new File(uploadDir);
-                        if (!directory.exists()) {
-                            directory.mkdirs();
-                        }
-
-                        String storeFileName = UUID.randomUUID().toString() + userEntityNew.getId();
-                        String extension = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf('.') + 1);
-                        Path filePath = Paths.get(uploadDir + storeFileName);
-                        Thumbnails.of(file.getInputStream()).size(200, 200).outputFormat(extension).toFile(filePath.toFile());
-
-                        existingInfo.setPhotoUrl(storeFileName + '.' + extension);
-                    } catch (Exception e) {
-                        return ResponseEntity.ok(Map.of("error",e.getMessage()));
+                    File directory = new File(uploadDir);
+                    if (!directory.exists()) {
+                        directory.mkdirs();
                     }
+
+                    String storeFileName = UUID.randomUUID().toString() + userEntityNew.getId();
+                    String extension = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf('.') + 1);
+                    Path filePath = Paths.get(uploadDir + storeFileName);
+                    Thumbnails.of(file.getInputStream()).size(200, 200).outputFormat(extension).toFile(filePath.toFile());
+
+                    existingInfo.setPhotoUrl(storeFileName + '.' + extension);
+                } catch (Exception e) {
+                    return ResponseEntity.ok(Map.of("error", e.getMessage()));
                 }
             }
 
@@ -90,24 +86,24 @@ public class MyProfileService {
             userEntityNew.setUserOtherInformation(existingInfo);
             userRepository.save(userEntityNew);
         }
-        return ResponseEntity.ok(Map.of("message","Profile updated successfully."));
+        return ResponseEntity.ok(Map.of("message", "Profile updated successfully."));
     }
 
-    public ResponseEntity<Map<String,Object>> getMyProfile(){
+    public ResponseEntity<Map<String, Object>> getMyProfile() {
 
         String token = jwtUtils.getIdFromJwtToken(jwtUtils.parseJwt(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest()));
-        UserEntity user = userRepository.findById(Long.valueOf(token)).orElseThrow(() -> new NullPointerException("User not found with ID: " + token));
-        if(user.getUserOtherInformation() != null)
-            return ResponseEntity.ok(Map.of("data",user.getUserOtherInformation()));
+        UserEntity user = userRepository.findByIdAndDeletedAtIsNull(Long.valueOf(token)).orElseThrow(() -> new NullPointerException("User not found with ID: " + token));
+        if (user.getUserOtherInformation() != null)
+            return ResponseEntity.ok(Map.of("data", user.getUserOtherInformation()));
         else
-            return ResponseEntity.ok(Map.of("error","Data not found"));
+            return ResponseEntity.ok(Map.of("error", "Data not found"));
     }
 
 
-    public ResponseEntity<Map<String,Object>> getMyImage() {
+    public ResponseEntity<Map<String, Object>> getMyImage() {
         String token = jwtUtils.getIdFromJwtToken(jwtUtils.parseJwt(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest()));
-        UserEntity user = userRepository.findById(Long.valueOf(token)).orElseThrow(() -> new NullPointerException("User not found with ID: " + token));
-        if(user.getUserOtherInformation() != null && user.getUserOtherInformation().getPhotoUrl() !=null)
+        UserEntity user = userRepository.findByIdAndDeletedAtIsNull(Long.valueOf(token)).orElseThrow(() -> new NullPointerException("User not found with ID: " + token));
+        if (user.getUserOtherInformation() != null && user.getUserOtherInformation().getPhotoUrl() != null)
             try {
                 String uploadDir = System.getProperty("user.dir") + "/uploadData/user/saveProfile/";
                 Path filePath = Paths.get(uploadDir).resolve(user.getUserOtherInformation().getPhotoUrl()).normalize();
@@ -120,16 +116,16 @@ public class MyProfileService {
                 String contentType = Files.probeContentType(filePath);
                 String base64Image = "data:" + contentType + ";base64," + Base64.getEncoder().encodeToString(imageBytes);
                 return ResponseEntity.ok().body(Map.of(
-                        "image",base64Image,
-                        "firstName",user.getUserOtherInformation().getFirstName(),
-                        "middleName",user.getUserOtherInformation().getMiddleName() !=null ? user.getUserOtherInformation().getMiddleName() : " ",
-                        "lastName",user.getUserOtherInformation().getLastName(),
-                        "gender",user.getUserOtherInformation().getGender()));
+                        "image", base64Image,
+                        "firstName", user.getUserOtherInformation().getFirstName(),
+                        "middleName", user.getUserOtherInformation().getMiddleName() != null ? user.getUserOtherInformation().getMiddleName() : " ",
+                        "lastName", user.getUserOtherInformation().getLastName(),
+                        "gender", user.getUserOtherInformation().getGender()));
 
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
         else
-            return ResponseEntity.ok(Map.of("error","Data not found"));
+            return ResponseEntity.ok(Map.of("error", "Data not found"));
     }
 }

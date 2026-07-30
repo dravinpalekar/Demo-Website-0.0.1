@@ -18,6 +18,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.security.access.AccessDeniedException;
 import java.sql.SQLIntegrityConstraintViolationException;
@@ -148,4 +149,16 @@ public class CustomExceptionHandler {
         errorDetail.setProperty(ACCESS_DENIED_REASON, AUTHENTICATION_FAILURE);
         return errorDetail;
     }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ProblemDetail handleMaxUpload(MaxUploadSizeExceededException ex) {
+
+        errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(HttpServletResponse.SC_BAD_REQUEST), ex.getMessage());
+        errorDetail.setProperty("message", "Maximum file size exceed");
+        return errorDetail;
+
+    }
+
+
 }
