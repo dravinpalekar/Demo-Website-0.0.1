@@ -8,12 +8,15 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: Admin@123
       MYSQL_DATABASE: website
-      MYSQL_USER: root
-      MYSQL_PASSWORD: Admin@123
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pAdmin@123"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   # 2. Spring Boot Application Service
   backend-app:
@@ -24,9 +27,10 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - mysqldb
+      mysqldb:
+        condition: service_healthy
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/website?useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/website?useSSL=false&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: Admin@123
 
