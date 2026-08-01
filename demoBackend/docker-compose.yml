@@ -1,9 +1,5 @@
 version: '3.8'
-
 services:
-  # ==========================================
-  # Service 1: MySQL Database Container
-  # ==========================================
   mysqldb:
     image: mysql:8.0
     container_name: mysql_container
@@ -30,6 +26,25 @@ services:
     restart: always
     ports:
       - "8080:8080"
+    environment:
+      # Spring Boot DB Connection properties (Docker network ke zariye)
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/website?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: Admin@123
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    depends_on:
+      - mysqldb
+    networks:
+      - app-network
+
+  restapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: java_backend_container_restapi
+    restart: always
+    ports:
+      - "8081:8081"
     environment:
       # Spring Boot DB Connection properties (Docker network ke zariye)
       SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/website?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC

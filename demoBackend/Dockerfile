@@ -31,3 +31,10 @@ COPY --from=builder /build/demoBackend/authentication/target/*.jar app.jar
 EXPOSE 8080
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
+
+
+COPY --from=builder /build/demoBackend/restApi/target/*.jar app.jar
+
+EXPOSE 8081
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
