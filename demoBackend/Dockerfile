@@ -12,10 +12,7 @@ RUN git clone https://github.com/dravinpalekar/Demo-Website-0.0.1.git .
 
 # Sub-folder (demoBackend) me Maven Build run karein
 WORKDIR /build/demoBackend/
-
-# har baar new dependency ko add karna or purani cache se nahi
 # RUN mvn dependency:go-offline -B
-
 RUN mvn clean package -DskipTests
 
 # ==========================================
@@ -26,15 +23,10 @@ FROM eclipse-temurin:25-jre-alpine
 WORKDIR /app
 
 
-COPY --from=builder /build/demoBackend/authentication/target/*.jar app.jar
+COPY --from=builder /build/demoBackend/authentication/target/*.jar authentication.jar
+COPY --from=builder /build/demoBackend/restApi/target/*.jar restApi.jar
 
 EXPOSE 8080
-
-ENTRYPOINT ["java", "-jar", "app.jar"]
-
-
-COPY --from=builder /build/demoBackend/restApi/target/*.jar app.jar
-
 EXPOSE 8081
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["sh","-c","java -jar authentication.jar & java -jar restApi.jar & wait"]

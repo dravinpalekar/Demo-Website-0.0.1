@@ -26,6 +26,7 @@ services:
     restart: always
     ports:
       - "8080:8080"
+      # - "8081:8081"
     environment:
       # Spring Boot DB Connection properties (Docker network ke zariye)
       SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/website?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
