@@ -11,8 +11,8 @@
 
 	<modules>
 		<module>repository</module>
-		<module>restApi</module>
 		<module>authentication</module>
+		<module>restApi</module>
 	</modules>
 
 	<properties>

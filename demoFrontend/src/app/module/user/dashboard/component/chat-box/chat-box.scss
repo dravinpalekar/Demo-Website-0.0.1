@@ -1,0 +1,127 @@
+
+.chat-section {
+//   background-color: #CDC4F9;
+  min-height: 80vh;
+  margin-left: 0px;
+//   width: 100% !important;
+}
+
+
+.chat-card {
+//   width: 100%;
+  border-radius: 15px;
+  overflow: hidden;
+  height: calc(100vh - 200px); 
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-card-body {
+    // width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.chat-main-row {
+  height: 100%;
+}
+
+/* --- Left Column: User List --- */
+.user-list-column {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.user-list-container {
+  flex-grow: 1; 
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Badge dot for user status */
+.badge-dot {
+  border-radius: 50%;
+  height: 10px;
+  width: 10px;
+  position: absolute;
+  bottom: 5px;
+  right: 12px;
+}
+
+/* --- Right Column: Active Chat Area --- */
+.chat-main-column {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.chat-messages-container {
+  flex-grow: 1; 
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Form input adjustments */
+#chat3 .form-control {
+  border-color: transparent;
+}
+
+#chat3 .form-control:focus {
+  border-color: transparent;
+  box-shadow: inset 0px 0px 0px 1px transparent;
+}
+
+/* Avatar Sizing Fixes */
+.user-avatar-lg {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+}
+
+.chat-avatar {
+  width: 45px;
+  height: 45px;
+  object-fit: cover;
+}
+
+.input-avatar {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+}
+
+.avatar-wrapper {
+  position: relative;
+}
+
+/* Custom Scrollbar (Modern Look) */
+.chat-messages-container::-webkit-scrollbar,
+.user-list-container::-webkit-scrollbar {
+  width: 5px;
+}
+
+.chat-messages-container::-webkit-scrollbar-thumb,
+.user-list-container::-webkit-scrollbar-thumb {
+  background: #bbb;
+  border-radius: 10px;
+}
+
+/* --- Responsive Adjustments (Mobile & Tablets) --- */
+@media (max-width: 767.98px) {
+  .chat-card {
+    height: auto; 
+    min-height: 80vh;
+  }
+
+  .user-list-column {
+    height: 250px;
+    margin-bottom: 1.5rem;
+  }
+
+  .chat-main-column {
+    height: 450px;
+  }
+}

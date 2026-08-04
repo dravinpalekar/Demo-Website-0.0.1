@@ -32,6 +32,8 @@ export class allRoutes {
 
     // Define all the routes used in the application for backend 
     static readonly backendBaseUrl = "http://localhost:8080/";
+    static readonly backendWebSocketUrl = "ws://localhost:8081/ws";
+
     static readonly api = "api/";
     static readonly auth = "auth/";
     static readonly signIn = "signIn";
@@ -46,6 +48,11 @@ export class allRoutes {
     static readonly getMyImage = "getMyImage";
     static readonly user = "user/";
     static readonly activateDeactivate = "activateDeactivate";
+
+    static readonly oneToOneSendMessageBackendUrl = "oneToOneSendMessage";
+    static readonly oneToOneAddUserBackendUrl = "oneToOneAddUser";
+    static readonly userPrivateBackendUrl = "/user/private";
+
 
     static readonly loginBackendUrl = this.backendBaseUrl + this.api + this.auth + this.signIn;
     static readonly signUpBackendUrl = this.backendBaseUrl + this.api + this.auth + this.signUp;
@@ -68,4 +75,17 @@ export class allRoutes {
     static readonly deleteUserBackendUrl = this.backendBaseUrl + this.api + this.super + this.user + this.delete;
     static readonly activateDeactivateUserBackendUrl = this.backendBaseUrl + this.api + this.super + this.user + this.activateDeactivate;
     // Define all the routes used in the application for backend
+
+
+
+
+
+    // Define websocket routes used in the application for frontend
+
+
+    static readonly oneToOneSendMessage = "/app/" + this.oneToOneSendMessageBackendUrl;
+    static readonly oneToOneAddUser = "/app/" + this.oneToOneAddUserBackendUrl;
+
+
+    // Define websocket routes used in the application for frontend
 }
