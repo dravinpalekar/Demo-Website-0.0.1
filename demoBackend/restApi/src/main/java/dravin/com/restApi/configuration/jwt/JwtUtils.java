@@ -1,4 +1,4 @@
-package dravin.com.restApi.configuration;
+package dravin.com.restApi.configuration.jwt;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -28,5 +28,15 @@ public class JwtUtils {
                 .parseSignedClaims(token) // replaced parseClaimsJws
                 .getPayload() // replaced getBody
                 .getSubject();
+    }
+
+    public String getIdFromJwtToken(String token) {
+
+        return Jwts.parser()
+                .verifyWith(key())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("id", Integer.class).toString();
     }
 }

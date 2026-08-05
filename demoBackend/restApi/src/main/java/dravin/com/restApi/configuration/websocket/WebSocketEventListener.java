@@ -1,4 +1,4 @@
-package dravin.com.restApi.configuration;
+package dravin.com.restApi.configuration.websocket;
 
 
 import dravin.com.restApi.constant.ChatMessageType;

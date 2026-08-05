@@ -1,11 +1,9 @@
 package dravin.com.restApi.controller;
 
-import dravin.com.repository.constant.enumConstant.Status;
-import dravin.com.repository.entity.UserEntity;
 //import dravin.com.repository.repository.OneToOneRoomRepository;
 //import dravin.com.repository.repository.RoomRepository;
 //import dravin.com.repository.repository.UserRepository;
-import dravin.com.restApi.configuration.JwtUtils;
+import dravin.com.restApi.configuration.jwt.JwtUtils;
 import dravin.com.restApi.requestModel.ChatMessage;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,8 +20,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
+        import java.util.Map;
 
 import static dravin.com.restApi.constant.RoutesFile.*;
 

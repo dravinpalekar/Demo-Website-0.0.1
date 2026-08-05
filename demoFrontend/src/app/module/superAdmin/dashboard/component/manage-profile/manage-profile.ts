@@ -1,5 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
-import { ChangeDetectorRef, Component, ElementRef, Inject, PLATFORM_ID, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Inject, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
 import { ReactiveFormsModule, FormGroup, FormBuilder, FormControl, Validators, AbstractControl } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { UpdateMyProfileModel } from '../../../../../model/requestModel/superAdmin/UpdateMyProfileModel';
@@ -16,7 +16,7 @@ import { FileValidation } from '../../../../../utils/formValidation/FileValidati
   templateUrl: './manage-profile.html',
   styleUrl: './manage-profile.scss',
 })
-export class ManageProfile {
+export class ManageProfile implements OnInit{
 
   @ViewChild('dropdownGender') dropdownElementGender!: ElementRef<HTMLSelectElement>;
   @ViewChild('dropdownCountry') dropdownElementCountry!: ElementRef<HTMLSelectElement>;

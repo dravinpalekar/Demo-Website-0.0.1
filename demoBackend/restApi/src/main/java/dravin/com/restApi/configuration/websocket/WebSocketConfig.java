@@ -1,4 +1,4 @@
-package dravin.com.restApi.configuration;
+package dravin.com.restApi.configuration.websocket;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

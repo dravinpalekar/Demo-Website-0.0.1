@@ -9,15 +9,16 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>dravin.com</groupId>
-	<artifactId>restApi</artifactId>
+	<artifactId>userApi</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>restApi</name>
-	<description>restApi module for all manipulation process of chatting</description>
+	<name>userApi</name>
+	<description>userApi module for all manipulation process for user or guest user</description>
 
 	<properties>
 		<java.version>25</java.version>
 	</properties>
 	<dependencies>
+
 		<dependency>
 			<groupId>dravin.com</groupId>
 			<artifactId>repository</artifactId>
@@ -32,30 +33,16 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-websocket</artifactId>
-			<version>4.1.0</version>
-			<scope>compile</scope>
-		</dependency>
-
-<!--		<dependency>-->
-<!--			<groupId>org.springframework.boot</groupId>-->
-<!--			<artifactId>spring-boot-starter-security</artifactId>-->
-<!--			<version>4.1.0</version>-->
-<!--			<scope>compile</scope>-->
-<!--		</dependency>-->
-
-<!--		<dependency>-->
-<!--			<groupId>org.springframework.security</groupId>-->
-<!--			<artifactId>spring-security-test</artifactId>-->
-<!--			<version>7.1.0</version>-->
-<!--			<scope>test</scope>-->
-<!--		</dependency>-->
-
-		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 			<version>3.0.3</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>net.coobird</groupId>
+			<artifactId>thumbnailator</artifactId>
+			<version>0.4.21</version>
 			<scope>compile</scope>
 		</dependency>
 
@@ -86,15 +73,24 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webmvc-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -195,6 +191,7 @@
 
 				</executions>
 			</plugin>
+
 		</plugins>
 	</build>
 

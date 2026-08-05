@@ -31,7 +31,8 @@ export class allRoutes {
 
 
     // Define all the routes used in the application for backend 
-    static readonly backendBaseUrl = "http://localhost:8080/";
+    static readonly entryPointBackendBaseUrl = "http://localhost:8080/";
+    static readonly userBackendBaseUrl = "http://localhost:8082/";
     static readonly backendWebSocketUrl = "ws://localhost:8081/ws";
 
     static readonly api = "api/";
@@ -48,33 +49,57 @@ export class allRoutes {
     static readonly getMyImage = "getMyImage";
     static readonly user = "user/";
     static readonly activateDeactivate = "activateDeactivate";
+    static readonly people = "people/";
 
     static readonly oneToOneSendMessageBackendUrl = "oneToOneSendMessage";
     static readonly oneToOneAddUserBackendUrl = "oneToOneAddUser";
     static readonly userPrivateBackendUrl = "/user/private";
 
 
-    static readonly loginBackendUrl = this.backendBaseUrl + this.api + this.auth + this.signIn;
-    static readonly signUpBackendUrl = this.backendBaseUrl + this.api + this.auth + this.signUp;
+    static readonly loginBackendUrl = this.entryPointBackendBaseUrl + this.api + this.auth + this.signIn;
+    static readonly signUpBackendUrl = this.entryPointBackendBaseUrl + this.api + this.auth + this.signUp;
 
-    static readonly createRoleBackendUrl = this.backendBaseUrl + this.api + this.super + this.role + this.create;
-    static readonly getRoleBackendUrl = this.backendBaseUrl + this.api + this.super + this.role + this.get;
-    static readonly deleteRoleByIdBackendUrl = this.backendBaseUrl + this.api + this.super + this.role + this.delete;
-    static readonly updateRoleByIdBackendUrl = this.backendBaseUrl + this.api + this.super + this.role + this.update;
+    static readonly createRoleBackendUrl = this.entryPointBackendBaseUrl + this.api + this.super + this.role + this.create;
+    static readonly getRoleBackendUrl = this.entryPointBackendBaseUrl + this.api + this.super + this.role + this.get;
+    static readonly deleteRoleByIdBackendUrl = this.entryPointBackendBaseUrl + this.api + this.super + this.role + this.delete;
+    static readonly updateRoleByIdBackendUrl = this.entryPointBackendBaseUrl + this.api + this.super + this.role + this.update;
 
-    static readonly createPermissionBackendUrl = this.backendBaseUrl + this.api + this.super + this.permission + this.create;
-    static readonly updatePermissionByIdBackendUrl = this.backendBaseUrl + this.api + this.super + this.permission + this.update;
-    static readonly getPermissionBackendUrl = this.backendBaseUrl + this.api + this.super + this.permission + this.get;
-    static readonly deletePermissionBackendUrl = this.backendBaseUrl + this.api + this.super + this.permission + this.delete;
+    static readonly createPermissionBackendUrl = this.entryPointBackendBaseUrl + this.api + this.super + this.permission + this.create;
+    static readonly updatePermissionByIdBackendUrl = this.entryPointBackendBaseUrl + this.api + this.super + this.permission + this.update;
+    static readonly getPermissionBackendUrl = this.entryPointBackendBaseUrl + this.api + this.super + this.permission + this.get;
+    static readonly deletePermissionBackendUrl = this.entryPointBackendBaseUrl + this.api + this.super + this.permission + this.delete;
 
-    static readonly updateMyProfileBackendUrl = this.backendBaseUrl + this.api + this.super + this.myProfile + this.create;
-    static readonly getMyProfileBackendUrl = this.backendBaseUrl + this.api + this.super + this.myProfile + this.get;
-    static readonly getMyImageBackendUrl = this.backendBaseUrl + this.api + this.super + this.myProfile + this.getMyImage;
+    static readonly updateMyProfileSuperAdminBackendUrl = this.entryPointBackendBaseUrl + this.api + this.super + this.myProfile + this.create;
 
-    static readonly getUserBackendUrl = this.backendBaseUrl + this.api + this.super + this.user + this.get;
-    static readonly deleteUserBackendUrl = this.backendBaseUrl + this.api + this.super + this.user + this.delete;
-    static readonly activateDeactivateUserBackendUrl = this.backendBaseUrl + this.api + this.super + this.user + this.activateDeactivate;
+    static readonly getMyProfileSuperAdminBackendUrl = this.entryPointBackendBaseUrl + this.api + this.super + this.myProfile + this.get;
+
+    static readonly getMyImageSuperAdminBackendUrl = this.entryPointBackendBaseUrl + this.api + this.super + this.myProfile + this.getMyImage;
+
+    static readonly getUserBackendUrl = this.entryPointBackendBaseUrl + this.api + this.super + this.user + this.get;
+    static readonly deleteUserBackendUrl = this.entryPointBackendBaseUrl + this.api + this.super + this.user + this.delete;
+    static readonly activateDeactivateUserBackendUrl = this.entryPointBackendBaseUrl + this.api + this.super + this.user + this.activateDeactivate;
     // Define all the routes used in the application for backend
+
+
+
+
+
+
+
+
+
+    // Define all normal user routes used in the appliation for backend
+
+    static readonly getMyProfileBackendUrl = this.userBackendBaseUrl + this.api + this.user + this.myProfile + this.get;
+    static readonly getMyImageBackendUrl = this.userBackendBaseUrl + this.api + this.user + this.myProfile + this.getMyImage;
+    static readonly updateMyProfileBackendUrl = this.userBackendBaseUrl + this.api + this.user + this.myProfile + this.create;
+    static readonly getAllUserListBackendUrl = this.userBackendBaseUrl + this.api + this.user + this.people + this.get;
+    // Define all normal user routes used in the appliation for backend
+
+
+
+
+
 
 
 
@@ -82,10 +107,8 @@ export class allRoutes {
 
     // Define websocket routes used in the application for frontend
 
-
     static readonly oneToOneSendMessage = "/app/" + this.oneToOneSendMessageBackendUrl;
     static readonly oneToOneAddUser = "/app/" + this.oneToOneAddUserBackendUrl;
-
 
     // Define websocket routes used in the application for frontend
 }

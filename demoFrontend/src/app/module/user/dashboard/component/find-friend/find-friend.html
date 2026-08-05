@@ -1,1 +1,50 @@
-<p>find-friend works!</p>
+<div class="content-wrapper">
+    <div class="content">
+        <div class="card card-default">
+            <div class="card-header align-items-center px-3 px-md-5">
+                <h2>Find friend</h2>
+            </div>
+
+            <div class="card-body px-3 px-md-5">
+                <div class="row">
+
+                    @for(item of userList(); track $index) {
+
+                        <div class="col-lg-6 col-xl-4">
+                            <div class="card card-default p-4">
+                                <a href="javascript:0" class="media text-secondary" data-bs-toggle="modal" data-bs-target="#modal-contact">
+                                    <img src="#" class="me-3 img-fluid rounded" alt="Avatar Image">
+
+                                    <div class="media-body">
+                                        <h5 class="mt-0 mb-2 text-dark">{{ item.userOtherInformation.firstName + " "+ item.userOtherInformation.middleName + " " + item.userOtherInformation.lastName }}</h5>
+                                        <ul class="list-unstyled text-smoke text-smoke">
+                                            <li class="d-flex">
+                                                <i class="mdi mdi-map me-1"></i>
+                                                <span>{{item.userOtherInformation.city + ", "+ item.userOtherInformation.country}}</span>
+                                            </li>
+                                            <li class="d-flex">
+                                                <i class="mdi mdi-email me-1"></i>
+                                                <span>{{item.email}}</span>
+                                            </li>
+                                            <!-- <li class="d-flex">
+                                                <i class="mdi mdi-phone me-1"></i>
+                                                <span>(123) 888 777 632</span>
+                                            </li> -->
+                                        </ul>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    }@empty {
+  <div class="col-12">
+    <p>No users found or loading...</p>
+  </div>
+}
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>

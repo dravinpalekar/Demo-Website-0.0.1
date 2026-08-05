@@ -1,9 +1,8 @@
-package dravin.com.restApi.configuration;
+package dravin.com.userApi.configuration.websecurity;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
 
 @Configuration
 public class CorsOriginConfiguration implements WebMvcConfigurer {

@@ -13,6 +13,7 @@
 		<module>repository</module>
 		<module>authentication</module>
 		<module>restApi</module>
+		<module>userApi</module>
 	</modules>
 
 	<properties>

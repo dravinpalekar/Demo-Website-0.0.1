@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Service, signal } from '@angular/core';
-import { AuthenticationService } from '../authentication-service';
+import { AuthenticationService, Role } from '../authentication-service';
 import { allRoutes } from '../../utils/allRoutes/allRoutes';
 import { createRoleModel } from '../../model/requestModel/superAdmin/createRoleModel';
 import { createNameModel } from '../../model/requestModel/superAdmin/createNameModel';
@@ -11,6 +11,7 @@ import { Observable, of, tap } from 'rxjs';
 export class SuperAdminService {
 
     private jwtToken?: string;
+    private roleName: any;
     private headers: HttpHeaders;
     private http = inject(HttpClient);
     private authenticationServiceObject = inject(AuthenticationService);
@@ -20,6 +21,7 @@ export class SuperAdminService {
 
     constructor() {
         this.jwtToken = this.authenticationServiceObject.currentUserValue?.token;
+        this.roleName = this.authenticationServiceObject.currentUserValue?.roles;
         this.headers = new HttpHeaders({ 'Authorization': `Bearer ${this.jwtToken}`, 'Content-Type': 'application/json' });
     }
 
@@ -96,20 +98,32 @@ export class SuperAdminService {
         };
 
         formDataTemp.append('updateMyProfileRequest', new Blob([JSON.stringify(profileData)], { type: 'application/json' }));
-        if(updateMyProfileModelObject.file && updateMyProfileModelObject.file.size > 0)
-        {
+        if (updateMyProfileModelObject.file && updateMyProfileModelObject.file.size > 0) {
             formDataTemp.append('file', updateMyProfileModelObject.file);
             this.clearCache();
         }
 
         // this.headers.delete('Content-Type');
         const headers = this.headers.delete('Content-Type');
-        return this.http.post(allRoutes.updateMyProfileBackendUrl, formDataTemp, { headers: headers });
+        if (this.roleName[0] == Role.User) {
+             return this.http.post(allRoutes.updateMyProfileBackendUrl, formDataTemp, { headers: headers });
+        }
+        else
+        {
+            return this.http.post(allRoutes.updateMyProfileSuperAdminBackendUrl, formDataTemp, { headers: headers });
+        }
+        
     }
 
     public getMyProfile() {
 
-        return this.http.get<any[]>(allRoutes.getMyProfileBackendUrl, { headers: this.headers });
+        if (this.roleName[0] == Role.User) {
+            return this.http.get<any[]>(allRoutes.getMyProfileBackendUrl, { headers: this.headers });
+        }
+        else {
+            return this.http.get<any[]>(allRoutes.getMyProfileSuperAdminBackendUrl, { headers: this.headers });
+        }
+
     }
 
     public getMyImage() {
@@ -119,24 +133,30 @@ export class SuperAdminService {
             return of(this.cachedData());
         }
         // Agar cache khali hai, to API call karo aur tap() ke jariye use cache me save kar lo
-        return this.http.get<any>(allRoutes.getMyImageBackendUrl, { headers: this.headers }).pipe(tap(data => this.cachedData.set(data)));
+        if (this.roleName?.includes(Role.User)) {
+            return this.http.get<any>(allRoutes.getMyImageBackendUrl, { headers: this.headers }).pipe(tap(data => this.cachedData.set(data)));
+        }
+        else {
+            return this.http.get<any>(allRoutes.getMyImageSuperAdminBackendUrl, { headers: this.headers }).pipe(tap(data => this.cachedData.set(data)));
+        }
+
     }
 
     clearCache(): void {
         this.cachedData.set(null);
     }
 
-    public getUsers(){
+    public getUsers() {
         return this.http.get<any[]>(allRoutes.getUserBackendUrl, { headers: this.headers });
     }
 
-     public deleteUserById(id: number) {
+    public deleteUserById(id: number) {
 
         return this.http.delete(allRoutes.deleteUserBackendUrl + "/" + id, { headers: this.headers });
     }
 
-    public activateDeactivate(requestData: any){
-        
+    public activateDeactivate(requestData: any) {
+
         return this.http.post(allRoutes.activateDeactivateUserBackendUrl, requestData, { headers: this.headers });
     }
 
