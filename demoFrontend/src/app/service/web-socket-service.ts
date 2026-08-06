@@ -17,14 +17,11 @@ import { allRoutes } from '../utils/allRoutes/allRoutes';
 @Service()
 export class WebSocketService {
 
-    private jwtToken?: string;
-    private headersLocal;
     private http = inject(HttpClient);
     private authenticationServiceObject = inject(AuthenticationService);
 
     constructor(){
-        this.jwtToken = this.authenticationServiceObject.currentUserValue?.token;
-        this.headersLocal = {'Authorization': `Bearer ${this.jwtToken}`};
+  
     }
 
     stompClient: Client | null = null;  // STOMP client instance to handle WebSocket connection
@@ -37,7 +34,7 @@ export class WebSocketService {
     private connectionSubject = new BehaviorSubject<boolean>(false);
     public connectionStatus$ = this.connectionSubject.asObservable();
 
-    async connect(username: string | undefined) {
+    connect(username: string ) {
 
         this.disconnect();
 
@@ -45,7 +42,8 @@ export class WebSocketService {
                 brokerURL: allRoutes.backendWebSocketUrl,
                 reconnectDelay: 5000,
                 connectHeaders: {
-                username: username!
+                username: username,
+                // withCredentials: "true"
             }
         });
 

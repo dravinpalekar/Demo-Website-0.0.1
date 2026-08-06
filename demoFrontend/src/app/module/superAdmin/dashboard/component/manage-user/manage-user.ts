@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -11,7 +11,7 @@ import { SuperAdminService } from '../../../../../service/superAdmin/super-admin
 import { allRoutes } from '../../../../../utils/allRoutes/allRoutes';
 import { CommonFun } from '../../../../../utils/helper/CommonFun';
 import { Router } from '@angular/router';
-import { DatePipe } from '@angular/common';
+import { DatePipe, isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-manage-user',
@@ -20,6 +20,8 @@ import { DatePipe } from '@angular/common';
   styleUrl: './manage-user.scss',
 })
 export class ManageUser implements OnInit {
+
+  private platformId = inject(PLATFORM_ID);
 
   showModal = false;
   modalTitle = '';
@@ -37,15 +39,18 @@ export class ManageUser implements OnInit {
 
   constructor(private SuperAdminServiceObject: SuperAdminService, private commonFunctionObject: CommonFun, private router: Router,) {
 
-    this.SuperAdminServiceObject.getUsers().subscribe((data) => {
-      this.dataSource = new MatTableDataSource(JSON.parse(JSON.stringify(data)).data);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-    });
+
   }
 
   ngOnInit() {
     console.log('----Manage-permission-Super-Admin component running--------ngOnInit------');
+    if (isPlatformBrowser(this.platformId)) {
+      this.SuperAdminServiceObject.getUsers().subscribe((data) => {
+        this.dataSource = new MatTableDataSource(JSON.parse(JSON.stringify(data)).data);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+      });
+    }
   }
 
   applyFilter(event: Event) {

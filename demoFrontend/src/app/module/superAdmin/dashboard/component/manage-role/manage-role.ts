@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, inject, PLATFORM_ID, ViewChild } from '@angular/core';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -10,7 +10,7 @@ import { allRoutes } from '../../../../../utils/allRoutes/allRoutes';
 import { Router } from '@angular/router';
 import { DialogBox } from '../../../../../utils/dialog-box/dialog-box';
 import { CommonFun } from '../../../../../utils/helper/CommonFun';
-import { DatePipe } from '@angular/common';
+import { DatePipe, isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-manage-role',
@@ -20,6 +20,7 @@ import { DatePipe } from '@angular/common';
 })
 export class ManageRole {
 
+  private platformId = inject(PLATFORM_ID);
   showModal = false;
   selectedId: number | null = null;
   modalTitle = 'Delete Record';
@@ -32,17 +33,18 @@ export class ManageRole {
 
   constructor(private SuperAdminServiceObject: SuperAdminService, private router: Router, private commonFunctionObject: CommonFun) {
 
-    this.SuperAdminServiceObject.getRoles().subscribe((data) => {
-      this.dataSource = new MatTableDataSource(JSON.parse(JSON.stringify(data)).data);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-    });
   }
 
 
   ngOnInit() {
     console.log('----Manage-role-Super-Admin module running--------ngOnInit------');
-
+    if (isPlatformBrowser(this.platformId)) {
+      this.SuperAdminServiceObject.getRoles().subscribe((data) => {
+        this.dataSource = new MatTableDataSource(JSON.parse(JSON.stringify(data)).data);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+      });
+    }
   }
 
   applyFilter(event: Event) {

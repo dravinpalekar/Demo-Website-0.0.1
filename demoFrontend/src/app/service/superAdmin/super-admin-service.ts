@@ -1,95 +1,82 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { inject, Service, signal } from '@angular/core';
-import { AuthenticationService, Role } from '../authentication-service';
+import { Role } from '../authentication-service';
 import { allRoutes } from '../../utils/allRoutes/allRoutes';
 import { createRoleModel } from '../../model/requestModel/superAdmin/createRoleModel';
 import { createNameModel } from '../../model/requestModel/superAdmin/createNameModel';
 import { UpdateMyProfileModel } from '../../model/requestModel/superAdmin/UpdateMyProfileModel';
-import { Observable, of, tap } from 'rxjs';
+import { of, tap } from 'rxjs';
+import { CookieService } from 'ngx-cookie-service';
 
 @Service()
 export class SuperAdminService {
 
-    private jwtToken?: string;
+    private cookieService = inject(CookieService);
     private roleName: any;
-    private headers: HttpHeaders;
     private http = inject(HttpClient);
-    private authenticationServiceObject = inject(AuthenticationService);
 
     //Define variable for storing cache data
     private cachedData = signal<any>(null);
 
     constructor() {
-        this.jwtToken = this.authenticationServiceObject.currentUserValue?.token;
-        this.roleName = this.authenticationServiceObject.currentUserValue?.roles;
-        this.headers = new HttpHeaders({ 'Authorization': `Bearer ${this.jwtToken}`, 'Content-Type': 'application/json' });
+
+        if (this.cookieService.get("isLoggedIn")) {
+            this.roleName = JSON.parse(this.cookieService.get("userSession")).roles;
+        }
     }
 
     public createRole(createRoleModelObject: createRoleModel) {
 
-        return this.http.post(allRoutes.createRoleBackendUrl, createRoleModelObject, { headers: this.headers });
+        return this.http.post(allRoutes.createRoleBackendUrl, createRoleModelObject);
     }
 
     public updateRoleById(id: number, createRoleModelObject: createRoleModel) {
 
-        return this.http.put(allRoutes.updateRoleByIdBackendUrl + "/" + id, createRoleModelObject, { headers: this.headers });
+        return this.http.put(allRoutes.updateRoleByIdBackendUrl + "/" + id, createRoleModelObject);
     }
 
     public getRoles() {
 
-        return this.http.get<any[]>(allRoutes.getRoleBackendUrl, { headers: this.headers });
+        return this.http.get<any[]>(allRoutes.getRoleBackendUrl);
     }
 
     public getRoleById(id: number) {
 
-        return this.http.get<any[]>(allRoutes.getRoleBackendUrl + "/" + id, { headers: this.headers });
+        return this.http.get<any[]>(allRoutes.getRoleBackendUrl + "/" + id);
     }
 
     public deleteRole(id: number) {
 
-        return this.http.delete(allRoutes.deleteRoleByIdBackendUrl + "/" + id, { headers: this.headers });
+        return this.http.delete(allRoutes.deleteRoleByIdBackendUrl + "/" + id);
     }
 
     public createPermission(createPermissionModelObject: createNameModel) {
 
-        return this.http.post(allRoutes.createPermissionBackendUrl, createPermissionModelObject, { headers: this.headers });
+        return this.http.post(allRoutes.createPermissionBackendUrl, createPermissionModelObject);
     }
 
     public updatePermissionById(id: number, createPermissionModelObject: createNameModel) {
 
-        return this.http.put(allRoutes.updatePermissionByIdBackendUrl + "/" + id, createPermissionModelObject, { headers: this.headers });
+        return this.http.put(allRoutes.updatePermissionByIdBackendUrl + "/" + id, createPermissionModelObject);
     }
 
     public getPermissions() {
 
-        return this.http.get<any[]>(allRoutes.getPermissionBackendUrl, { headers: this.headers });
+        return this.http.get<any[]>(allRoutes.getPermissionBackendUrl);
     }
 
     public getPermissionById(id: number) {
 
-        return this.http.get<any[]>(allRoutes.getPermissionBackendUrl + "/" + id, { headers: this.headers });
+        return this.http.get<any[]>(allRoutes.getPermissionBackendUrl + "/" + id);
     }
 
     public deletePermission(id: number) {
 
-        return this.http.delete(allRoutes.deletePermissionBackendUrl + "/" + id, { headers: this.headers });
+        return this.http.delete(allRoutes.deletePermissionBackendUrl + "/" + id);
     }
 
     public updateMyProfile(updateMyProfileModelObject: UpdateMyProfileModel) {
-        // const formData = new FormData();
-        // formData.append('firstName', updateMyProfileModelObject.firstName);
-        // formData.append('middleName', updateMyProfileModelObject.middleName);
-        // formData.append('lastName', updateMyProfileModelObject.lastName);
-        // formData.append('gender', updateMyProfileModelObject.gender);
-        // formData.append('country', updateMyProfileModelObject.country);
-        // formData.append('city', updateMyProfileModelObject.city);
-        // formData.append('age', updateMyProfileModelObject.age.toString());
-        // formData.append('pinCode', updateMyProfileModelObject.pinCode.toString());
-        // formData.append('address', updateMyProfileModelObject.address);
-        // formData.append('file', updateMyProfileModelObject.file!);
-        // if (updateMyProfileModelObject.file) {
-        //     formData.append('file', updateMyProfileModelObject.file);
-        // }
+
         const formDataTemp = new FormData();
         const profileData = {
             "firstName": updateMyProfileModelObject.firstName, "middleName": updateMyProfileModelObject.middleName, "lastName": updateMyProfileModelObject.lastName,
@@ -103,27 +90,22 @@ export class SuperAdminService {
             this.clearCache();
         }
 
-        // this.headers.delete('Content-Type');
-        const headers = this.headers.delete('Content-Type');
         if (this.roleName[0] == Role.User) {
-             return this.http.post(allRoutes.updateMyProfileBackendUrl, formDataTemp, { headers: headers });
+            return this.http.post(allRoutes.updateMyProfileBackendUrl, formDataTemp);
         }
-        else
-        {
-            return this.http.post(allRoutes.updateMyProfileSuperAdminBackendUrl, formDataTemp, { headers: headers });
+        else {
+            return this.http.post(allRoutes.updateMyProfileSuperAdminBackendUrl, formDataTemp);
         }
-        
     }
 
     public getMyProfile() {
 
         if (this.roleName[0] == Role.User) {
-            return this.http.get<any[]>(allRoutes.getMyProfileBackendUrl, { headers: this.headers });
+            return this.http.get<any[]>(allRoutes.getMyProfileBackendUrl);
         }
         else {
-            return this.http.get<any[]>(allRoutes.getMyProfileSuperAdminBackendUrl, { headers: this.headers });
+            return this.http.get<any[]>(allRoutes.getMyProfileSuperAdminBackendUrl);
         }
-
     }
 
     public getMyImage() {
@@ -134,12 +116,11 @@ export class SuperAdminService {
         }
         // Agar cache khali hai, to API call karo aur tap() ke jariye use cache me save kar lo
         if (this.roleName?.includes(Role.User)) {
-            return this.http.get<any>(allRoutes.getMyImageBackendUrl, { headers: this.headers }).pipe(tap(data => this.cachedData.set(data)));
+            return this.http.get<any>(allRoutes.getMyImageBackendUrl).pipe(tap(data => this.cachedData.set(data)));
         }
         else {
-            return this.http.get<any>(allRoutes.getMyImageSuperAdminBackendUrl, { headers: this.headers }).pipe(tap(data => this.cachedData.set(data)));
+            return this.http.get<any>(allRoutes.getMyImageSuperAdminBackendUrl).pipe(tap(data => this.cachedData.set(data)));
         }
-
     }
 
     clearCache(): void {
@@ -147,17 +128,17 @@ export class SuperAdminService {
     }
 
     public getUsers() {
-        return this.http.get<any[]>(allRoutes.getUserBackendUrl, { headers: this.headers });
+        return this.http.get<any[]>(allRoutes.getUserBackendUrl);
     }
 
     public deleteUserById(id: number) {
 
-        return this.http.delete(allRoutes.deleteUserBackendUrl + "/" + id, { headers: this.headers });
+        return this.http.delete(allRoutes.deleteUserBackendUrl + "/" + id);
     }
 
     public activateDeactivate(requestData: any) {
 
-        return this.http.post(allRoutes.activateDeactivateUserBackendUrl, requestData, { headers: this.headers });
+        return this.http.post(allRoutes.activateDeactivateUserBackendUrl, requestData);
     }
 
 }

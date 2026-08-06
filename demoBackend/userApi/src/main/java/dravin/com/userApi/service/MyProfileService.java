@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -40,9 +42,11 @@ public class MyProfileService {
         this.jwtUtils = jwtUtils;
     }
 
-    public ResponseEntity<Map<String, String>> updateMyProfile(UpdateMyProfileRequestModel requestObject, MultipartFile file, String headerToken) {
+    public ResponseEntity<Map<String, String>> updateMyProfile(UpdateMyProfileRequestModel requestObject, MultipartFile file) {
 
-        String tokenUserId = this.jwtUtils.getIdFromJwtToken(headerToken.substring(7));
+        ServletRequestAttributes request = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+
+        String tokenUserId = this.jwtUtils.getIdFromJwtToken(this.jwtUtils.getJwtFromCookies(request.getRequest()));
 
         Optional<UserEntity> userEntity = userRepository.findByIdAndDeletedAtIsNull(Long.valueOf(tokenUserId));
         if (userEntity.isPresent()) {
@@ -90,9 +94,11 @@ public class MyProfileService {
         return ResponseEntity.ok(Map.of(MESSAGE, PROFILE_UPDATED_SUCCESSFULLY));
     }
 
-    public ResponseEntity<Map<String, Object>> getMyProfile(String headerToken) {
+    public ResponseEntity<Map<String, Object>> getMyProfile() {
 
-        String tokenUserId = jwtUtils.getIdFromJwtToken(headerToken.substring(7));
+        ServletRequestAttributes request = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+
+        String tokenUserId = jwtUtils.getIdFromJwtToken(this.jwtUtils.getJwtFromCookies(request.getRequest()));
         UserEntity user = userRepository.findByIdAndDeletedAtIsNull(Long.valueOf(tokenUserId)).orElseThrow(() -> new NullPointerException("User not found with ID: " + tokenUserId));
         if (user.getUserOtherInformation() != null)
             return ResponseEntity.ok(Map.of("data", user.getUserOtherInformation()));
@@ -101,8 +107,11 @@ public class MyProfileService {
     }
 
 
-    public ResponseEntity<Map<String, Object>> getMyImage(String headerToken) {
-        String tokenUserId = jwtUtils.getIdFromJwtToken(headerToken.substring(7));
+    public ResponseEntity<Map<String, Object>> getMyImage() {
+
+        ServletRequestAttributes request = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+
+        String tokenUserId = jwtUtils.getIdFromJwtToken(this.jwtUtils.getJwtFromCookies(request.getRequest()));
         UserEntity user = userRepository.findByIdAndDeletedAtIsNull(Long.valueOf(tokenUserId)).orElseThrow(() -> new NullPointerException("User not found with ID: " + tokenUserId));
         if (user.getUserOtherInformation() != null && user.getUserOtherInformation().getPhotoUrl() != null)
             try {

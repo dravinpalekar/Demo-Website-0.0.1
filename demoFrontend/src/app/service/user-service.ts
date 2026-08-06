@@ -10,8 +10,7 @@ export class UserService {
 
     // private platformId = inject(PLATFORM_ID);
 
-    private jwtToken?: string;
-    private headers: HttpHeaders = new HttpHeaders;
+    // private headers: HttpHeaders = new HttpHeaders;
     private http = inject(HttpClient);
     // private authenticationServiceObject = inject(AuthenticationService);
 
@@ -21,8 +20,7 @@ export class UserService {
 
      ngOnInit(): void {
         //  if (isPlatformBrowser(this.platformId)) {
-        // this.jwtToken = this.authenticationServiceObject.currentUserValue?.token;
-        // this.headers = new HttpHeaders({ 'Authorization': `Bearer ${this.jwtToken}`, 'Content-Type': 'application/json' });
+
         // }
      }
 

@@ -4,13 +4,16 @@ import dravin.com.authentication.service.loaduser.UserDetailsImpl;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
+import org.springframework.web.util.WebUtils;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
@@ -28,9 +31,14 @@ public class JwtUtils {
     @Value("${jwtExpirationInMillisecond}")
     private int jwtExpirationMillisecond;
 
+    @Value("${jwtCookieName:jwt_token}")
+    private String jwtCookieName;
+
     public String generateJwtToken(Authentication authentication) {
 
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+
+        String ssds = userPrincipal.getAuthorities().toString();
 
         return Jwts.builder()
                 .subject(userPrincipal.getUsername()) // renamed from setSubject
@@ -40,6 +48,36 @@ public class JwtUtils {
                 .expiration(new Date(System.currentTimeMillis() + jwtExpirationMillisecond)) // renamed from setExpiration
                 .signWith(key(), Jwts.SIG.HS256) // Use Jwts.SIG instead of SignatureAlgorithm
                 .compact();
+    }
+
+    // 2. JWT ko HTTP-Only ResponseCookie me Wrap karke Response me bhejne ke liye
+    public ResponseCookie generateJwtCookie(Authentication authentication) {
+        String jwt = generateJwtToken(authentication);
+        return ResponseCookie.from(jwtCookieName, jwt)
+                .path("/")                     // Poori app ke endpoints par cookie bhejega
+                .maxAge(jwtExpirationMillisecond / 1000) // Seconds me maxAge
+                .httpOnly(true)                // XSS Defense: JS access band
+                .secure(false)                 // Production me HTTPS par true rakhein
+                .sameSite("Strict")            // CSRF Defense
+                .build();
+    }
+
+    // 3. Logout ke waqt Cookie ko expire (clean) karne ke liye
+    public ResponseCookie getCleanJwtCookie() {
+        return ResponseCookie.from(jwtCookieName, "")
+                .path("/")
+                .maxAge(0)                     // Immediate expire
+                .httpOnly(true)
+                .build();
+    }
+
+    // 4. Request Cookie se JWT Extract karne ka naya method (XSS Safe)
+    public String getJwtFromCookies(HttpServletRequest request) {
+        Cookie cookie = WebUtils.getCookie(request, jwtCookieName);
+        if (cookie != null) {
+            return cookie.getValue();
+        }
+        return null;
     }
 
     private SecretKey key() {

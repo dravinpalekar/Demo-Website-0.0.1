@@ -45,7 +45,7 @@ public class MyProfileService {
 
     public ResponseEntity<Map<String, String>> updateMyProfile(UpdateMyProfileRequestModel requestObject, MultipartFile file) {
 
-        String token = this.jwtUtils.getIdFromJwtToken(this.jwtUtils.parseJwt(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest()));
+        String token = this.jwtUtils.getIdFromJwtToken(this.jwtUtils.getJwtFromCookies(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest()));
 
         Optional<UserEntity> userEntity = userRepository.findByIdAndDeletedAtIsNull(Long.valueOf(token));
         if (userEntity.isPresent()) {
@@ -95,7 +95,7 @@ public class MyProfileService {
 
     public ResponseEntity<Map<String, Object>> getMyProfile() {
 
-        String token = jwtUtils.getIdFromJwtToken(jwtUtils.parseJwt(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest()));
+        String token = jwtUtils.getIdFromJwtToken(jwtUtils.getJwtFromCookies(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest()));
         UserEntity user = userRepository.findByIdAndDeletedAtIsNull(Long.valueOf(token)).orElseThrow(() -> new NullPointerException("User not found with ID: " + token));
         if (user.getUserOtherInformation() != null)
             return ResponseEntity.ok(Map.of("data", user.getUserOtherInformation()));
@@ -105,7 +105,7 @@ public class MyProfileService {
 
 
     public ResponseEntity<Map<String, Object>> getMyImage() {
-        String token = jwtUtils.getIdFromJwtToken(jwtUtils.parseJwt(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest()));
+        String token = jwtUtils.getIdFromJwtToken(jwtUtils.getJwtFromCookies(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest()));
         UserEntity user = userRepository.findByIdAndDeletedAtIsNull(Long.valueOf(token)).orElseThrow(() -> new NullPointerException("User not found with ID: " + token));
         if (user.getUserOtherInformation() != null && user.getUserOtherInformation().getPhotoUrl() != null)
             try {

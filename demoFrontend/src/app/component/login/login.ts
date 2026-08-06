@@ -3,12 +3,11 @@ import { AbstractControl, FormBuilder, FormControl, FormGroup, ReactiveFormsModu
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { LoginModel } from '../../model/requestModel/LoginModel';
 import { MatButtonModule } from '@angular/material/button';
-import { isPlatformBrowser } from '@angular/common';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthenticationService } from '../../service/authentication-service';
 import { allRoutes } from '../../utils/allRoutes/allRoutes';
 import { CommonFun } from '../../utils/helper/CommonFun';
 import { Errors } from '../../utils/helper/Errors';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-login',
@@ -18,17 +17,14 @@ import { Errors } from '../../utils/helper/Errors';
 })
 export class Login implements OnInit {
 
+  private cookieService = inject(CookieService);
   loginForm!: FormGroup;
   submitted = false;
-  isBrowser: boolean = false;
-  private platformId = inject(PLATFORM_ID);
-  constructor(private errorObject: Errors, private snackBarObject: MatSnackBar, private fb: FormBuilder, private authServiceServiceObject: AuthenticationService, private router: Router, private commonFunObject: CommonFun, private route: ActivatedRoute,) {
 
-    this.isBrowser = isPlatformBrowser(this.platformId);
-    if (isPlatformBrowser(this.platformId)) {
-      if (this.authServiceServiceObject.currentUserValue?.token != undefined) {
-        this.router.navigate([this.route.snapshot.queryParams['returnUrl'] || allRoutes.userDashboard]);
-      }
+  constructor(private errorObject: Errors, private fb: FormBuilder, private authServiceServiceObject: AuthenticationService, private router: Router, private commonFunObject: CommonFun, private route: ActivatedRoute,) {
+
+    if (this.cookieService.get("isLoggedIn")) {
+      this.router.navigate([this.route.snapshot.queryParams['returnUrl'] || allRoutes.userDashboard]);
     }
   }
 
@@ -54,18 +50,16 @@ export class Login implements OnInit {
     this.authServiceServiceObject.loginUser(loginModelObject).subscribe({
       next: (res) => {
         console.log(res);
-        res.roles.forEach((element: any) => {
-          this.router.navigate([this.route.snapshot.queryParams['returnUrl'] || allRoutes.userDashboard]);
-        });
+        // res.roles.forEach((element: any) => {
+        this.router.navigate([this.route.snapshot.queryParams['returnUrl'] || allRoutes.userDashboard]);
+        // });
       },
       error: (e) => {
         //bad credentials
         if (e.status == 401) {
-          // this.openSnackBar(e.error.detail);
           this.commonFunObject.openSnackBar(e.error.detail, 'danger');
         }
         else if (e.status == 406) {
-          // this.openSnackBar(this.errorObject.errorStatus406(JSON.parse(JSON.stringify(e.error))));
           this.commonFunObject.openSnackBar(this.errorObject.errorStatus406(JSON.parse(JSON.stringify(e.error))), 'danger');
         }
       }

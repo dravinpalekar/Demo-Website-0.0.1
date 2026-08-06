@@ -36,7 +36,7 @@ public class AuthenticationController {
             summary = "Authenticate API for User Or Guest User",
             description = "Authenticate Admin and Super-AdminFeatures as well."
     )
-    public ResponseEntity<Map<String,String>> authenticateUser(@Valid @RequestBody LoginRequestModel loginRequest) {
+    public ResponseEntity<Map<String,Object>> authenticateUser(@Valid @RequestBody LoginRequestModel loginRequest) {
 
         logger.info("Attempt user for authenticate and UserName is {}", loginRequest.getUserName());
         return authenticationService.authenticateUser(loginRequest);

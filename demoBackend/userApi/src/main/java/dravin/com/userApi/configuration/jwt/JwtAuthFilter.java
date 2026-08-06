@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
+import jakarta.servlet.http.Cookie;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
@@ -27,11 +28,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        String authHeader = request.getHeader("Authorization");
+        Cookie[] getCookies = request.getCookies();
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (getCookies == null) {
 
-            handlerExceptionResolver.resolveException(request, response, null, new SignatureException("Jwt Token is required."));
+            handlerExceptionResolver.resolveException(request, response, null, new SignatureException("Cookies Token is required."));
             return;
         }
         filterChain.doFilter(request, response);

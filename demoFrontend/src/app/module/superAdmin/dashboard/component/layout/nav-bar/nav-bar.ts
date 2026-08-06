@@ -3,8 +3,8 @@ import { AuthenticationService } from '../../../../../../service/authentication-
 import { Router, RouterModule } from '@angular/router';
 import { allRoutes } from '../../../../../../utils/allRoutes/allRoutes';
 import { SuperAdminService } from '../../../../../../service/superAdmin/super-admin-service';
-import { isPlatformBrowser } from '@angular/common';
 import { CommonFun } from '../../../../../../utils/helper/CommonFun';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-nav-bar',
@@ -17,17 +17,16 @@ export class NavBar implements OnInit {
   @Input() navBarPageTitle: string = '';
   displayEmail: string | undefined;
   profileImage: string = 'assets/superAdminModule/images/user/user-xs-01.jpg';
-  isBrowser: boolean = false;
-  private platformId = inject(PLATFORM_ID);
+
+  private cookieService = inject(CookieService);
 
   constructor(private authenticationServiceObject: AuthenticationService, private router: Router, private SuperAdminServiceObject: SuperAdminService,private renderer: Renderer2,private commonFunctionObject: CommonFun,) {
     // this.commonFunctionObject.loadStyle( this.renderer, 'assets/superAdminModule/simplebar/simplebar.css' );
     //  this.commonFunctionObject.loadScript( this.renderer, 'assets/superAdminModule/simplebar/simplebar.min.js' );
-    this.isBrowser = isPlatformBrowser(this.platformId);
-       if (isPlatformBrowser(this.platformId))
-       {
-            this.displayEmail = this.authenticationServiceObject.currentUserValue.Subject;
-       }
+            if(this.cookieService.get("isLoggedIn"))
+            {
+              this.displayEmail = JSON.parse(this.cookieService.get("userSession")).userName;
+            }
   }
 
   ngOnInit(): void {

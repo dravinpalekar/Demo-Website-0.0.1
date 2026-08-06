@@ -2,33 +2,23 @@ import { inject, PLATFORM_ID, Service } from '@angular/core';
 import { LoginModel } from '../model/requestModel/LoginModel';
 import { allRoutes } from '../utils/allRoutes/allRoutes';
 import { HttpClient } from '@angular/common/http';
-import { jwtDecode } from 'jwt-decode';
 import { BehaviorSubject, Observable, map } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
 import { signUpModel } from '../model/requestModel/signUpModel';
+import { CookieService } from 'ngx-cookie-service';
 
 export enum Role {
     User = 'ROLE_USER',
     Admin = 'ROLE_ADMIN',
     SuperAdmin = 'ROLE_SUPER_ADMIN',
+    Guest = "ROLE_GUEST"
 }
 
 export class UserValidateModel {
-    roles: Role | undefined;
-    Subject: string | undefined;
-    token?: string;
+    roles: Role[] | undefined;
+    userName: string | undefined;
 }
 
-export interface JwtPayload {
-    // iss?: string;
-    sub?: string;
-    // aud?: string[] | string;
-    exp?: number;
-    // nbf?: number;
-    iat?: number;
-    // jti?: string;
-    roles?: string[];
-}
 
 @Service()
 export class AuthenticationService {
@@ -39,7 +29,8 @@ export class AuthenticationService {
 
     private currentUserSubject: BehaviorSubject<UserValidateModel>;
     public currentUser: Observable<UserValidateModel>;
-    private roles: string[] = [];
+    private cookieService = inject(CookieService);
+    private roles: Role[] = [];
 
     constructor() {
         this.isBrowser = isPlatformBrowser(this.platformId);
@@ -47,9 +38,8 @@ export class AuthenticationService {
         let storedUser: UserValidateModel = new UserValidateModel();
 
         if (isPlatformBrowser(this.platformId)) {
-            const sessionData = sessionStorage.getItem('currentUser');
-            if (sessionData) {
-                storedUser = JSON.parse(sessionData);
+            if (this.cookieService.get("isLoggedIn")) {
+                storedUser = JSON.parse(this.cookieService.get("userSession"));
             }
         }
 
@@ -64,35 +54,37 @@ export class AuthenticationService {
 
 
     public loginUser(loginObject: LoginModel) {
-        return this.http.post<any>(allRoutes.loginBackendUrl, loginObject)
+        return this.http.post<any>(allRoutes.loginBackendUrl, loginObject, { withCredentials: true })
             .pipe(map(userValidateModel => {
-                // login successful if there's a jwt token in the response
-                if (userValidateModel && userValidateModel.token) {
 
-                    var decoded: JwtPayload = jwtDecode(userValidateModel.token);
+                // login successful if there's a data in the response
+                if (userValidateModel && userValidateModel.data) {
 
-                    userValidateModel.Subject = decoded.sub;
+                    let responseData = JSON.parse(JSON.stringify(userValidateModel));
 
-                    JSON.parse(JSON.stringify([decoded.roles][0])).forEach((element: any) => {
-                        this.roles.push(element.authority);
+                    responseData.data.roles.forEach((element: any) => {
+                        this.roles.push(element);
                     });
 
-                    userValidateModel.roles = this.roles;
-                    // store user details and jwt token in local storage to keep user logged in between page refreshes
-                    sessionStorage.setItem('currentUser', JSON.stringify(userValidateModel));
-                    this.currentUserSubject.next(userValidateModel);
+                    let setUserData: UserValidateModel = new UserValidateModel();
+                    setUserData.roles = this.roles;
+                    setUserData.userName = responseData.data.userName;
+
+                    this.cookieService.set("userSession", JSON.stringify(setUserData), 86400000 / 1000, '/', '', true, 'Strict');
+                    this.cookieService.set("isLoggedIn", "true", 86400000 / 1000, '/', '', true, 'Strict');
+
+                    this.currentUserSubject.next(setUserData);
                 }
                 return userValidateModel;
-            }));
-    }
-
-    public get currentUserValue(): UserValidateModel {
-        return this.currentUserSubject.value;
+            }
+            ));
     }
 
     logout() {
-        // remove user from local storage to log user out
-        sessionStorage.removeItem('currentUser');
+        // remove user from cookie storage to log user out
+        this.cookieService.delete('cookieToken', '/');
+        this.cookieService.delete('userSession', '/');
+        this.cookieService.delete('isLoggedIn', '/');
         this.currentUserSubject.next(null!);
     }
 }

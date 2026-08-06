@@ -4,6 +4,7 @@ package dravin.com.authentication.service;
 import dravin.com.authentication.configuration.jwt.JwtUtils;
 import dravin.com.authentication.requestmodel.LoginRequestModel;
 import dravin.com.authentication.requestmodel.SignupRequestModel;
+import dravin.com.authentication.service.loaduser.UserDetailsImpl;
 import dravin.com.repository.constant.enumConstant.Roles;
 import dravin.com.repository.entity.RoleEntity;
 import dravin.com.repository.entity.UserEntity;
@@ -11,19 +12,20 @@ import dravin.com.repository.repository.RoleRepository;
 import dravin.com.repository.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static dravin.com.authentication.constant.ConstantString.*;
 import static dravin.com.authentication.constant.Error.ROLE_NOT_FOUND;
@@ -31,7 +33,7 @@ import static dravin.com.authentication.constant.Error.ROLE_NOT_FOUND;
 @Service
 public class AuthenticationService {
 
-    private static final Logger logger = LoggerFactory.getLogger( AuthenticationService.class );
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
 
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder encoder;
@@ -48,33 +50,38 @@ public class AuthenticationService {
         this.roleRepository = roleRepository;
     }
 
-    public ResponseEntity<Map<String,String>> authenticateUser(LoginRequestModel requestObject){
+    public ResponseEntity<Map<String,Object>> authenticateUser(LoginRequestModel requestObject) {
 
         Authentication authenticationObject = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(requestObject.getUserName(), requestObject.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authenticationObject);
 
-        return ResponseEntity.ok(Map.of("token",jwtUtils.generateJwtToken(authenticationObject)));
+        List<String> roleList = ((UserDetailsImpl) authenticationObject.getPrincipal()).getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+
+        Map<String,Object> responseObject = new HashMap<>();
+        responseObject.put("roles",roleList);
+        responseObject.put("userName",requestObject.getUserName());
+        responseObject.put("message","User logged in successfully.");
+
+        ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(authenticationObject);
+
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString()).body(Map.of("data", responseObject));
     }
 
 
-    public ResponseEntity<Map<String,String>> registerUser(SignupRequestModel requestObject){
+    public ResponseEntity<Map<String, String>> registerUser(SignupRequestModel requestObject) {
 
-        if(Boolean.TRUE.equals(userRepository.existsByEmail(requestObject.getEmail())))
-        {
-            throw new NullPointerException(requestObject.getEmail()+" Email is already exists.");
+        if (Boolean.TRUE.equals(userRepository.existsByEmail(requestObject.getEmail()))) {
+            throw new NullPointerException(requestObject.getEmail() + " Email is already exists.");
         }
 
         Set<RoleEntity> roles = new HashSet<>();
 
-        if(requestObject.getRoles() == null)
-        {
+        if (requestObject.getRoles() == null) {
             roles.add(roleRepository.findByNameAndDeletedAtIsNull(Roles.ROLE_USER).orElseThrow(() -> new NullPointerException(ROLE_NOT_FOUND)));
-        }
-        else
-        {
-            for(String loopObject:requestObject.getRoles()){
-                switch (loopObject){
+        } else {
+            for (String loopObject : requestObject.getRoles()) {
+                switch (loopObject) {
                     case "admin":
                         roles.add(roleRepository.findByNameAndDeletedAtIsNull(Roles.ROLE_ADMIN).orElseThrow(() -> new NullPointerException(loopObject + ROLE_NOT_FOUND)));
                         break;
@@ -85,7 +92,7 @@ public class AuthenticationService {
 
                     case "superAdmin":
                         Optional<UserEntity> checkAlreadySuperAdmin = userRepository.findUsersByRoleAndDeletedAtIsNull(Roles.ROLE_SUPER_ADMIN);
-                        if(checkAlreadySuperAdmin.isEmpty())
+                        if (checkAlreadySuperAdmin.isEmpty())
                             roles.add(roleRepository.findByNameAndDeletedAtIsNull(Roles.ROLE_SUPER_ADMIN).orElseThrow(() -> new NullPointerException(loopObject + ROLE_NOT_FOUND)));
                         break;
 
@@ -96,13 +103,13 @@ public class AuthenticationService {
             }
         }
 
-        if(roles.isEmpty()){
-            return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(Map.of(MESSAGE,SUPER_ADMIN_IS_ALREADY_EXISTS));
+        if (roles.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(Map.of(MESSAGE, SUPER_ADMIN_IS_ALREADY_EXISTS));
         }
-        UserEntity userEntity = new UserEntity(requestObject.getEmail(),requestObject.getEmail(),encoder.encode(requestObject.getPassword()),roles);
+        UserEntity userEntity = new UserEntity(requestObject.getEmail(), requestObject.getEmail(), encoder.encode(requestObject.getPassword()), roles);
         userRepository.save(userEntity);
 
-        return ResponseEntity.ok(Map.of(MESSAGE,USER_REGISTERED_SUCCESSFULLY));
+        return ResponseEntity.ok(Map.of(MESSAGE, USER_REGISTERED_SUCCESSFULLY));
     }
 
 

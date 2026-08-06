@@ -1,7 +1,8 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { WebSocketService } from '../../../../../service/web-socket-service';
 import { FormsModule } from '@angular/forms';
 import { AuthenticationService } from '../../../../../service/authentication-service';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-chat-box',
@@ -11,6 +12,7 @@ import { AuthenticationService } from '../../../../../service/authentication-ser
 })
 export class ChatBox implements OnInit, OnDestroy {
 
+  private cookieService = inject(CookieService);
   title = 'frontend';
   anotherUsername: string = '';  // Stores the username entered by the user
   message: string = '';  // Stores the message being typed by the user
@@ -21,9 +23,11 @@ export class ChatBox implements OnInit, OnDestroy {
 
   currentUserName: string = "";
 
-  constructor(private socketService: WebSocketService, private authenticationService: AuthenticationService,private cdr: ChangeDetectorRef) { 
+  constructor(private socketService: WebSocketService, private authenticationService: AuthenticationService, private cdr: ChangeDetectorRef) {
 
-    this.currentUserName = this.authenticationService.currentUserValue.Subject!;
+    if (this.cookieService.get("isLoggedIn")) {
+      this.currentUserName = JSON.parse(this.cookieService.get("userSession")).userName;
+    }
   }
 
   ngOnInit(): void {
@@ -57,10 +61,10 @@ export class ChatBox implements OnInit, OnDestroy {
     this.anotherUsername = username;
   }
 
-  sendMessage(event:Event) {
+  sendMessage(event: Event) {
     event.preventDefault();
-     const chatMessage = { sender: this.currentUserName,recipient: this.anotherUsername, content: this.message, type: 'CHAT' };
-      this.messages.push(chatMessage);
+    const chatMessage = { sender: this.currentUserName, recipient: this.anotherUsername, content: this.message, type: 'CHAT' };
+    this.messages.push(chatMessage);
     if (this.message) {
       this.socketService.sendMessage(this.currentUserName, this.anotherUsername, this.message);  // Send the message via WebSocket service
       this.message = '';  // Clear the message input after sending

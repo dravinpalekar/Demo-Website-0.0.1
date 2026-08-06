@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
 import { SuperAdminService } from '../../../../../service/superAdmin/super-admin-service';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -6,13 +6,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { getRolesResponseModel } from '../../../../../model/responseModel/getRolesResponseModel';
-import { MatIconButton } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonFun } from '../../../../../utils/helper/CommonFun';
 import { DialogBox } from '../../../../../utils/dialog-box/dialog-box';
 import { Router } from '@angular/router';
 import { allRoutes } from '../../../../../utils/allRoutes/allRoutes';
-import { DatePipe } from '@angular/common';
+import { DatePipe, isPlatformBrowser } from '@angular/common';
 
 
 @Component({
@@ -23,6 +22,8 @@ import { DatePipe } from '@angular/common';
 })
 export class ManagePermission implements OnInit {
 
+  private SuperAdminServiceObject = inject(SuperAdminService);
+  private platformId = inject(PLATFORM_ID);
   showModal = false;
   modalTitle = 'Delete Record';
   modalMessage = 'Are you sure you want to delete this record?';
@@ -33,17 +34,19 @@ export class ManagePermission implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private SuperAdminServiceObject: SuperAdminService, private commonFunctionObject: CommonFun, private router: Router,) {
+  constructor(private commonFunctionObject: CommonFun, private router: Router) {
 
-    this.SuperAdminServiceObject.getPermissions().subscribe((data) => {
-      this.dataSource = new MatTableDataSource(JSON.parse(JSON.stringify(data)).data);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-    });
   }
 
   ngOnInit() {
     console.log('----Manage-permission-Super-Admin component running--------ngOnInit------');
+    if (isPlatformBrowser(this.platformId)) {
+      this.SuperAdminServiceObject.getPermissions().subscribe((data) => {
+        this.dataSource = new MatTableDataSource(JSON.parse(JSON.stringify(data)).data);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+      });
+    }
   }
 
   applyFilter(event: Event) {
@@ -69,7 +72,7 @@ export class ManagePermission implements OnInit {
   }
 
   openDailogForEditItem(id: number) {
-   this.router.navigate([allRoutes.editPermission + id]);
+    this.router.navigate([allRoutes.editPermission + id]);
   }
 
   openDailogForDeteteItem(id: number) {

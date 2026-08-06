@@ -1,14 +1,14 @@
-import { isPlatformBrowser } from '@angular/common';
-import { ChangeDetectorRef, Component, ElementRef, Inject, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, inject, Inject, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
 import { ReactiveFormsModule, FormGroup, FormBuilder, FormControl, Validators, AbstractControl } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { UpdateMyProfileModel } from '../../../../../model/requestModel/superAdmin/UpdateMyProfileModel';
-import { AuthenticationService } from '../../../../../service/authentication-service';
 import { SuperAdminService } from '../../../../../service/superAdmin/super-admin-service';
 import { Errors } from '../../../../../utils/helper/Errors';
 import { AlertMessage } from '../layout/alert-message/alert-message';
 import { CommonFun } from '../../../../../utils/helper/CommonFun';
 import { FileValidation } from '../../../../../utils/formValidation/FileValidation';
+import { CookieService } from 'ngx-cookie-service';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-manage-profile',
@@ -16,7 +16,10 @@ import { FileValidation } from '../../../../../utils/formValidation/FileValidati
   templateUrl: './manage-profile.html',
   styleUrl: './manage-profile.scss',
 })
-export class ManageProfile implements OnInit{
+export class ManageProfile implements OnInit {
+
+  private cookieService = inject(CookieService);
+  private platformId = inject(PLATFORM_ID);
 
   @ViewChild('dropdownGender') dropdownElementGender!: ElementRef<HTMLSelectElement>;
   @ViewChild('dropdownCountry') dropdownElementCountry!: ElementRef<HTMLSelectElement>;
@@ -26,21 +29,21 @@ export class ManageProfile implements OnInit{
   fullName = "";
   myProfileForm!: FormGroup;
   submittedForm = false;
-  image!:any;
+  image: any;
   private choicesInstanceGender: any;
   private choicesInstanceCountry: any;
-  private isBrowser: boolean;
   displayAlertErrorList: string[] = [];
 
   file: File | null = null;
   preview: string | ArrayBuffer | null = null;
   showFileUploadOption = true;
   showFileUploadPreviewOption = false;
+  private isBrowser: boolean;
 
-  constructor(private authenticationServiceObject: AuthenticationService, private fb: FormBuilder, @Inject(PLATFORM_ID) platformId: object, private commonFunctionObject: CommonFun, private SuperAdminServiceObject: SuperAdminService, private errorObject: Errors, private cd: ChangeDetectorRef) {
+  constructor(private fb: FormBuilder, @Inject(PLATFORM_ID) platformId: object, private commonFunctionObject: CommonFun, private SuperAdminServiceObject: SuperAdminService, private errorObject: Errors, private cd: ChangeDetectorRef) {
     this.isBrowser = isPlatformBrowser(platformId);
-    if (isPlatformBrowser(platformId)) {
-      this.displayEmail = this.authenticationServiceObject.currentUserValue.Subject;
+    if (this.cookieService.get("isLoggedIn")) {
+      this.displayEmail = JSON.parse(this.cookieService.get("userSession")).userName;
     }
   }
 
@@ -60,11 +63,13 @@ export class ManageProfile implements OnInit{
       uploadImage: new FormControl(null, [FileValidation(['image/jpeg', 'image/jpg', 'image/jpe', 'image/png'], 1)])
     });
 
-    this.SuperAdminServiceObject.getMyImage().subscribe({
-      next: (res) => {
-        this.image = JSON.parse(JSON.stringify(res)).image;
-      }
-    })
+    if (isPlatformBrowser(this.platformId)) {
+      this.SuperAdminServiceObject.getMyImage().subscribe({
+        next: (res) => {
+          this.image = JSON.parse(JSON.stringify(res)).image;
+        }
+      })
+    }
   }
 
   async ngAfterViewInit() {
@@ -72,29 +77,31 @@ export class ManageProfile implements OnInit{
       this.choicesInstanceGender = await this.commonFunctionObject.selectDropDownConfigWithChoicesJs(this.dropdownElementGender, "Please select Gender", "Type to search here...");
       this.choicesInstanceCountry = await this.commonFunctionObject.selectDropDownConfigWithChoicesJs(this.dropdownElementCountry, "Please select Country", "Type to search here...");
 
-      this.SuperAdminServiceObject.getMyProfile().subscribe({
-        next: (res) => { //console.log(JSON.parse(JSON.stringify(res)).data);
-          let responseData = JSON.parse(JSON.stringify(res)).data;
-          if (responseData) {
-            this.myProfileForm.patchValue({
-              firstName: responseData.firstName,
-              middleName: responseData.middleName,
-              lastName: responseData.lastName,
-              gender: responseData.gender,
-              age: responseData.age,
-              country: responseData.country,
-              pinCode: responseData.pinCode,
-              city: responseData.city,
-              address: responseData.address
-            });
-            this.fullName = responseData.firstName + " " + responseData.middleName + " " + responseData.lastName;
-            this.choicesInstanceGender.setChoiceByValue(responseData.gender);
-            this.choicesInstanceCountry.setChoiceByValue(responseData.country);
-          }
-        },
-        error: (e) => {// console.log(e);
-        },
-      });
+      if (isPlatformBrowser(this.platformId)) {
+        this.SuperAdminServiceObject.getMyProfile().subscribe({
+          next: (res) => { //console.log(JSON.parse(JSON.stringify(res)).data);
+            let responseData = JSON.parse(JSON.stringify(res)).data;
+            if (responseData) {
+              this.myProfileForm.patchValue({
+                firstName: responseData.firstName,
+                middleName: responseData.middleName,
+                lastName: responseData.lastName,
+                gender: responseData.gender,
+                age: responseData.age,
+                country: responseData.country,
+                pinCode: responseData.pinCode,
+                city: responseData.city,
+                address: responseData.address
+              });
+              this.fullName = responseData.firstName + " " + responseData.middleName + " " + responseData.lastName;
+              this.choicesInstanceGender.setChoiceByValue(responseData.gender);
+              this.choicesInstanceCountry.setChoiceByValue(responseData.country);
+            }
+          },
+          error: (e) => {// console.log(e);
+          },
+        });
+      }
     }
   }
 

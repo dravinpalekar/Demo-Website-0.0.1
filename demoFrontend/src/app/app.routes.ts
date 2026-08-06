@@ -20,7 +20,7 @@ export const routes: Routes = [
         path: allRoutes.userDashboard,
         loadChildren: () => import('./module/user/dashboard/dashboard-module').then(m => m.DashboardModule),
         canActivate: [authGuard],
-        data: { roles: [Role.User] },
+        data: { roles: [Role.User, Role.Guest] },
     },
     {
         path: allRoutes.superAdminLogin,

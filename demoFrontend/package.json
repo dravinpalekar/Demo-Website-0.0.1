@@ -29,7 +29,7 @@
     "choices.js": "^11.2.3",
     "express": "^5.1.0",
     "jquery": "^4.0.0",
-    "jwt-decode": "^4.0.0",
+    "ngx-cookie-service": "^22.0.0",
     "ngx-ui-loader": "^19.0.0",
     "rxjs": "~7.8.0",
     "sockjs-client": "^1.6.1",

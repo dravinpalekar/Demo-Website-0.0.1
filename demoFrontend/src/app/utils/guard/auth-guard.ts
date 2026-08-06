@@ -1,24 +1,25 @@
 import { inject, PLATFORM_ID } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { AuthenticationService, Role } from '../../service/authentication-service';
+import { Role } from '../../service/authentication-service';
 import { allRoutes } from '../allRoutes/allRoutes';
 import { isPlatformBrowser } from '@angular/common';
+import { CookieService } from 'ngx-cookie-service';
 
 export const authGuard: CanActivateFn = (route, state) => {
   const platformId = inject(PLATFORM_ID);
-  const isBrowser = isPlatformBrowser(platformId);
 
   if (isPlatformBrowser(platformId)) {
-    const authenticationService = inject(AuthenticationService);
+    const cookieService = inject(CookieService);
     const router = inject(Router);
-    const currentUser = authenticationService.currentUserValue;
+    const currentUser =  cookieService.get("userSession") ? JSON.parse(cookieService.get("userSession")): null;
+   
 
     // 1. Check ki user logged in hai ya nahi
-    if (currentUser && currentUser.token) {
+    if (currentUser && currentUser.userName) {
       const routeRoles = route.data['roles'] as Role[] | undefined;
 
       // Explicitly cast user roles to Role[]
-      const userRoles = (currentUser.roles as Role) || [];
+      const userRoles = (currentUser.roles) || [];
 
       if (routeRoles && routeRoles.length > 0) {
         // Ab userRoles.includes(role) bina kisi TypeScript error ke chalega
