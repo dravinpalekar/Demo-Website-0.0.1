@@ -9,17 +9,27 @@ import dravin.com.userApi.requestmodel.UpdateMyProfileRequestModel;
 import net.coobird.thumbnailator.Thumbnails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.Base64;
 import java.util.Map;
 import java.util.Optional;
@@ -32,17 +42,25 @@ public class MyProfileService {
 
     private final UserRepository userRepository;
     private final JwtUtils jwtUtils;
+    private final S3Client s3Client;
+
+    @Value("${awsBucketName}")
+    private String bucketName;
+
+    @Value("${awsRegion}")
+    private String awsRegion;
 
     public static final String MESSAGE = "message";
     public static final String PROFILE_UPDATED_SUCCESSFULLY = "Profile updated successfully.";
     public static final String DATA_NOT_FOUND = "Data not found";
 
-    public MyProfileService(UserRepository userRepository, JwtUtils jwtUtils) {
+    public MyProfileService(UserRepository userRepository, JwtUtils jwtUtils, S3Client s3Client) {
         this.userRepository = userRepository;
         this.jwtUtils = jwtUtils;
+        this.s3Client = s3Client;
     }
 
-    public ResponseEntity<Map<String, String>> updateMyProfile(UpdateMyProfileRequestModel requestObject, MultipartFile file) {
+    public ResponseEntity<Map<String, String>> updateMyProfile(UpdateMyProfileRequestModel requestObject, MultipartFile file) throws IOException {
 
         ServletRequestAttributes request = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 
@@ -59,23 +77,9 @@ public class MyProfileService {
             }
 
             if ((file != null)) {
-                try {
-                    String uploadDir = "uploadData/user/saveProfile/";
-
-                    File directory = new File(uploadDir);
-                    if (!directory.exists()) {
-                        directory.mkdirs();
-                    }
-
-                    String storeFileName = UUID.randomUUID().toString() + userEntityNew.getId();
-                    String extension = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf('.') + 1);
-                    Path filePath = Paths.get(uploadDir + storeFileName);
-                    Thumbnails.of(file.getInputStream()).size(200, 200).outputFormat(extension).toFile(filePath.toFile());
-
-                    existingInfo.setPhotoUrl(storeFileName + '.' + extension);
-                } catch (Exception e) {
-                    return ResponseEntity.ok(Map.of("error", e.getMessage()));
-                }
+                    String fileName = System.currentTimeMillis() + "_" + UUID.randomUUID();
+                    this.uploadImageIntoAws(file, tokenUserId, fileName);
+                    existingInfo.setPhotoUrl(fileName);
             }
 
             existingInfo.setFirstName(requestObject.getFirstName());
@@ -92,6 +96,26 @@ public class MyProfileService {
             userRepository.save(userEntityNew);
         }
         return ResponseEntity.ok(Map.of(MESSAGE, PROFILE_UPDATED_SUCCESSFULLY));
+    }
+
+    private void uploadImageIntoAws(MultipartFile file, String userId, String fileName) throws IOException {
+
+        String extension = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf('.') + 1);
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        Thumbnails.of(file.getInputStream()).size(200, 200).outputFormat(extension).toOutputStream(os);
+
+        byte[] resizedImageBytes = os.toByteArray();
+
+        String fileKey = "users/profile/" + userId + "/" + fileName;
+
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(fileKey)
+                .contentType(file.getContentType())
+                .build();
+
+        s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(new ByteArrayInputStream(resizedImageBytes), resizedImageBytes.length));
     }
 
     public ResponseEntity<Map<String, Object>> getMyProfile() {
@@ -115,18 +139,10 @@ public class MyProfileService {
         UserEntity user = userRepository.findByIdAndDeletedAtIsNull(Long.valueOf(tokenUserId)).orElseThrow(() -> new NullPointerException("User not found with ID: " + tokenUserId));
         if (user.getUserOtherInformation() != null && user.getUserOtherInformation().getPhotoUrl() != null)
             try {
-                String uploadDir = System.getProperty("user.dir") + "/uploadData/user/saveProfile/";
-                Path filePath = Paths.get(uploadDir).resolve(user.getUserOtherInformation().getPhotoUrl()).normalize();
 
-                if (!Files.exists(filePath)) {
-                    return ResponseEntity.notFound().build();
-                }
-
-                byte[] imageBytes = Files.readAllBytes(filePath);
-                String contentType = Files.probeContentType(filePath);
-                String base64Image = "data:" + contentType + ";base64," + Base64.getEncoder().encodeToString(imageBytes);
+                String url = "https://s3." + this.awsRegion + ".amazonaws.com/" + this.bucketName + "/users/profile/" + tokenUserId + "/" + user.getUserOtherInformation().getPhotoUrl();
                 return ResponseEntity.ok().body(Map.of(
-                        "image", base64Image,
+                        "image", url,
                         "firstName", user.getUserOtherInformation().getFirstName(),
                         "middleName", user.getUserOtherInformation().getMiddleName() != null ? user.getUserOtherInformation().getMiddleName() : " ",
                         "lastName", user.getUserOtherInformation().getLastName(),
@@ -138,4 +154,5 @@ public class MyProfileService {
         else
             return ResponseEntity.ok(Map.of("error", DATA_NOT_FOUND));
     }
+
 }

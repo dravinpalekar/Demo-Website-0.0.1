@@ -1,0 +1,19 @@
+.avatar-img {
+    width: 80px;            /* Size chota karne ke liye fixed width */
+    height: 80px;           /* Height width ke barabar square ke liye */
+    min-width: 80px;        /* Layout stretch na ho iske liye */
+    object-fit: cover;      /* Photo bina stretch hue properly crop ho kar fit ho */
+    border-radius: 8px;     /* Card jaisa smooth rounded corner */
+}
+
+
+.media {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+
+.media-body {
+    width: 100%;
+}

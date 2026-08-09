@@ -12,6 +12,6 @@ import java.util.Optional;
 @EnableJpaRepositories
 public interface FriendsInformationRepository extends JpaRepository<FriendsInformationEntity, Long> {
 
-    Optional<FriendsInformationEntity> findByUserAAndUserB(UserEntity userA, UserEntity userB);
+    Optional<FriendsInformationEntity> findByUserAAndUserBAndDeletedAtIsNullOrUserBAndUserAAndDeletedAtIsNull(UserEntity userA, UserEntity userB, UserEntity userD, UserEntity userC);
 
 }

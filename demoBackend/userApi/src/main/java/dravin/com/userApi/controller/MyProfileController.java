@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Map;
 
 import static dravin.com.userApi.constant.RoutesFile.*;
@@ -40,7 +41,7 @@ public class MyProfileController {
             summary = "Store other information of a users",
             description = "This API is for storing or updating users' other information, like full name, age, gender, address, country or display profile photo."
     )
-    public ResponseEntity<Map<String,String>> updateMyProfile(@RequestPart(value = "file", required = false) MultipartFile file, @RequestPart("updateMyProfileRequest") @Valid UpdateMyProfileRequestModel updateMyProfileRequest) {
+    public ResponseEntity<Map<String,String>> updateMyProfile(@RequestPart(value = "file", required = false) MultipartFile file, @RequestPart("updateMyProfileRequest") @Valid UpdateMyProfileRequestModel updateMyProfileRequest) throws IOException {
         if (file != null && !file.isEmpty())
             this.validateImageFile(file);
         return myProfileService.updateMyProfile(updateMyProfileRequest,file);

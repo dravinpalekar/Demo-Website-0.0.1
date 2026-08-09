@@ -50,6 +50,9 @@ export class allRoutes {
     static readonly user = "user/";
     static readonly activateDeactivate = "activateDeactivate";
     static readonly people = "people/";
+    static readonly send = "send/";
+    static readonly accept = "accept/";
+    static readonly request = "request";
 
     static readonly oneToOneSendMessageBackendUrl = "oneToOneSendMessage";
     static readonly oneToOneAddUserBackendUrl = "oneToOneAddUser";
@@ -94,6 +97,9 @@ export class allRoutes {
     static readonly getMyImageBackendUrl = this.userBackendBaseUrl + this.api + this.user + this.myProfile + this.getMyImage;
     static readonly updateMyProfileBackendUrl = this.userBackendBaseUrl + this.api + this.user + this.myProfile + this.create;
     static readonly getAllUserListBackendUrl = this.userBackendBaseUrl + this.api + this.user + this.people + this.get;
+
+    static readonly sendFriendRequestBackendUrl = this.userBackendBaseUrl + this.api + this.user + this.send + this.request;
+    static readonly acceptFriendRequestBackendUrl = this.userBackendBaseUrl + this.api + this.user + this.accept + this.request;
     // Define all normal user routes used in the appliation for backend
 
 

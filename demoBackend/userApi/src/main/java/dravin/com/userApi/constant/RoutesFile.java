@@ -12,6 +12,7 @@ public class RoutesFile {
 
     public static final String GET = "/get";
     public static final String SEND = "send";
+    public static final String ACCEPT = "accept";
     public static final String CREATE = "/create";
     public static final String MY_PROFILE = "/myProfile";
     public static final String GET_MY_IMAGE = "/getMyImage";
@@ -20,6 +21,8 @@ public class RoutesFile {
     public static final String PEOPLE_GET = "people" + GET;
 
     public static final String SEND_REQUEST = SEND + "/request";
+
+    public static final String ACCEPT_REQUEST = ACCEPT + "/request";
 
 
 

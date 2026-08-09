@@ -3,6 +3,7 @@ package dravin.com.repository.entity;
 
 import dravin.com.repository.constant.enumConstant.FriendStatus;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -35,4 +36,10 @@ public class FriendsInformationEntity extends AbstractDateTimeEntity implements 
 
     @Column(name="status", nullable = false)
     private FriendStatus status;
+
+    public FriendsInformationEntity(UserEntity userA, UserEntity userB, FriendStatus status) {
+        this.userA = userA;
+        this.userB = userB;
+        this.status = status;
+    }
 }

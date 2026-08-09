@@ -1,8 +1,10 @@
 package dravin.com.userApi.controller;
 
 import dravin.com.userApi.configuration.jwt.JwtUtils;
+import dravin.com.userApi.requestmodel.NameRequestModel;
 import dravin.com.userApi.service.FriendsInformationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -35,9 +37,15 @@ public class FriendsInformationController {
     }
 
     @PostMapping(SEND_REQUEST)
-    public ResponseEntity<?> sendFriendRequest(@RequestHeader("Authorization") String authHeader, @RequestBody String senderUserName){
+    public ResponseEntity<Map<String,String>> sendFriendRequest(@Valid @RequestBody NameRequestModel requestModel){
 
-        return this.friendsInformationService.sendFriendRequest();
+        return this.friendsInformationService.sendFriendRequest(requestModel);
+    }
+
+    @PostMapping(ACCEPT_REQUEST)
+    public ResponseEntity<Map<String,String>> acceptFriendRequest(@Valid @RequestBody NameRequestModel requestModel){
+
+        return this.friendsInformationService.acceptFriendRequest(requestModel);
     }
 
 

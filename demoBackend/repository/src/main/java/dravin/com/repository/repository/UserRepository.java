@@ -28,8 +28,13 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     @Query("SELECT u FROM UserEntity u JOIN u.role r WHERE r.name = :role AND r.deletedAt IS NULL")
     Optional<UserEntity> findUsersByRoleAndDeletedAtIsNull(@Param("role") Roles role);
 
-    @Query("SELECT u FROM UserEntity u JOIN u.role r WHERE r.name = :role AND r.deletedAt IS NULL AND u.active = :active")
-    List<UserEntity> findUsersByRoleAndActiveAndDeletedAtIsNull(@Param("role") Roles role, @Param("active") Status active);
+//    @Query("SELECT u FROM UserEntity u JOIN u.role r WHERE r.name = :role AND u.deletedAt IS NULL AND u.active = :active")
+//    List<UserEntity> findUsersByRoleAndActiveAndDeletedAtIsNull(@Param("role") Roles role, @Param("active") Status active);
+
+    @Query("SELECT u, f FROM UserEntity u JOIN u.role r " +
+            "LEFT JOIN FriendsInformationEntity f ON ((f.userA = u OR f.userB = u) AND f.deletedAt IS NULL) " +
+            "WHERE r.name = :role AND u.active = :active AND u.deletedAt IS NULL")
+    List<Object[]> findUsersByRoleAndActiveAndDeletedAtIsNull( @Param("role") Roles role, @Param("active") Status active );
 
     List<UserEntity> findByUserNameInAndDeletedAtIsNullAndActive(List<String> userA, Status status);
 

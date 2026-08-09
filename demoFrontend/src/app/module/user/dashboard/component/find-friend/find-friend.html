@@ -1,45 +1,81 @@
-<div class="content-wrapper">
-    <div class="content">
+<div class="content-wrapper ">
+    <div class="content  pl-0 pr-0 pt-0 pb-0">
         <div class="card card-default">
-            <div class="card-header align-items-center px-3 px-md-5">
+            <div class="card-header align-items-center px-3 px-md-5 col-12 col-sm-12 col-md-12 col-lg-12 d-flex align-items-center">
                 <h2>Find friend</h2>
-            </div>
+            
+                <div class="col-6 col-sm-6 col-md-6 col-lg-6 d-flex align-items-center text-end" style="">
+                    <input type="text" autocomplete="off" name="query" id="search-input" class="form-control" placeholder="Search friends ..." style="background-color: #f5f6fa; border-radius: 10px;"/>
+                    <div class="input-group-append">
+                        <button class="btn" type="button" style="background-color: #ffffff;" (click)="serachFriend()">
+                            <span class="input-group-text border-0" id="search-addon">
+                                <i class="bi bi-search"></i>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>      
 
             <div class="card-body px-3 px-md-5">
                 <div class="row">
 
                     @for(item of userList(); track $index) {
 
-                        <div class="col-lg-6 col-xl-4">
+                        <div class="col-lg-6 col-xl-6">
                             <div class="card card-default p-4">
-                                <a href="javascript:0" class="media text-secondary" data-bs-toggle="modal" data-bs-target="#modal-contact">
-                                    <img src="#" class="me-3 img-fluid rounded" alt="Avatar Image">
+                                <a class="media text-secondary" data-bs-toggle="modal" data-bs-target="#modal-contact">
 
-                                    <div class="media-body">
-                                        <h5 class="mt-0 mb-2 text-dark">{{ item.userOtherInformation.firstName + " "+ item.userOtherInformation.middleName + " " + item.userOtherInformation.lastName }}</h5>
-                                        <ul class="list-unstyled text-smoke text-smoke">
-                                            <li class="d-flex">
-                                                <i class="mdi mdi-map me-1"></i>
-                                                <span>{{item.userOtherInformation.city + ", "+ item.userOtherInformation.country}}</span>
-                                            </li>
-                                            <li class="d-flex">
-                                                <i class="mdi mdi-email me-1"></i>
-                                                <span>{{item.email}}</span>
-                                            </li>
-                                            <!-- <li class="d-flex">
-                                                <i class="mdi mdi-phone me-1"></i>
-                                                <span>(123) 888 777 632</span>
-                                            </li> -->
-                                        </ul>
+                                    <div class="col-8 col-sm-8 col-md-8 col-lg-8 d-flex align-items-center">
+                                        <img src="{{ item.photoData }}" class="me-3 img-fluid rounded avatar-img" alt="Avatar Image">
+
+                                        <div class="media-body">
+                                            <h5 class="mt-0 mb-2 text-dark">{{ item.fullName }}</h5>
+                                            <ul class="list-unstyled text-smoke text-smoke">
+                                                <li class="d-flex">
+                                                    <i class="mdi mdi-map me-1"></i>
+                                                    <span>{{item.fullAddress}}</span>
+                                                </li>
+                                                <li class="d-flex">
+                                                    <i class="mdi mdi-email me-1"></i>
+                                                    <span>{{item.email}}</span>
+                                                </li>
+                                                <!-- <li class="d-flex">
+                                                    <i class="mdi mdi-phone me-1"></i>
+                                                    <span>(123) 888 777 632</span>
+                                                </li> -->
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-4 col-sm-4 col-md-4 col-lg-4">
+                                        <button type="button" class="btn btn-primary" (click)="sendRequest(item.email,item.friendStatus)" style="text-transform:none" [disabled]="item.friendStatus === 'SEND' || item.friendStatus === 'FRIEND'">
+                                            @if(item.friendStatus == "SEND"){
+                                                Already Sent Request
+                                            }
+                                            @else if(item.friendStatus == "ACCEPT")
+                                            {
+                                                Accept Request
+                                            }
+                                            @else if(item.friendStatus == "FRIEND")
+                                            {
+                                                Friend
+                                            }
+                                            @else {
+                                                Send Request
+                                            }
+                                             
+                                        </button>
                                     </div>
                                 </a>
                             </div>
                         </div>
-                    }@empty {
-  <div class="col-12">
-    <p>No users found or loading...</p>
-  </div>
-}
+                    }
+                    @empty {
+                        <div class="col-12">
+                            <p>No users found or loading...</p>
+                        </div>
+                    }
 
                 </div>
             </div>
@@ -48,3 +84,23 @@
     </div>
 
 </div>
+
+
+
+<div class="modal fade" [class.show]="showModal" [style.display]="showModal ? 'block' : 'none'" tabindex="-1"
+    (click)="closeModal()">
+
+    <div class="modal-dialog modal-dialog-centered mt-n8" (click)="$event.stopPropagation()">
+        <div class="modal-content">
+
+            <app-dialog-box [title]="modalTitle" [message]="modalMessage" [btnOkText]="'Yes'" [btnCancelText]="'No'"
+                (confirmed)="onConfirm($event)" (closed)="closeModal()">
+            </app-dialog-box>
+
+        </div>
+    </div>
+</div>
+<!-- Backdrop -->
+@if (showModal) {
+<div class="modal-backdrop fade show"></div>
+}
