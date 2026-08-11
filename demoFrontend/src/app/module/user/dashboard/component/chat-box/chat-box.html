@@ -64,7 +64,7 @@
                                 <div class="col-md-6 col-lg-7 col-xl-8 chat-main-column">
 
                                     <!-- Messages Container -->
-                                    <div class="pt-3 pe-3 chat-messages-container" data-mdb-perfect-scrollbar-init>
+                                    <div #messagesContainer class="pt-3 pe-3 chat-messages-container" data-mdb-perfect-scrollbar-init>
 
                                         @for (item of messages; track $index) 
                                         {
