@@ -28,5 +28,10 @@ export class UserService {
         return this.http.post(allRoutes.acceptFriendRequestBackendUrl,requestData);
     }
 
+     public getFriendList() {
+
+        return this.http.get<any[]>(allRoutes.getFriendListBackendUrl);
+    }
+
 
 }

@@ -50,6 +50,7 @@ export class allRoutes {
     static readonly user = "user/";
     static readonly activateDeactivate = "activateDeactivate";
     static readonly people = "people/";
+     static readonly friendList = "friendList/";
     static readonly send = "send/";
     static readonly accept = "accept/";
     static readonly request = "request";
@@ -100,6 +101,7 @@ export class allRoutes {
 
     static readonly sendFriendRequestBackendUrl = this.userBackendBaseUrl + this.api + this.user + this.send + this.request;
     static readonly acceptFriendRequestBackendUrl = this.userBackendBaseUrl + this.api + this.user + this.accept + this.request;
+    static readonly getFriendListBackendUrl = this.userBackendBaseUrl + this.api + this.user + this.friendList + this.get;
     // Define all normal user routes used in the appliation for backend
 
 

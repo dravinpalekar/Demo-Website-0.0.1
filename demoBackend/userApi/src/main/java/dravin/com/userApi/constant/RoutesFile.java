@@ -19,7 +19,7 @@ public class RoutesFile {
 
     public static final String API_USER = API + "/user";
     public static final String PEOPLE_GET = "people" + GET;
-
+    public static final String FRIEND_GET = "friendList" + GET;
     public static final String SEND_REQUEST = SEND + "/request";
 
     public static final String ACCEPT_REQUEST = ACCEPT + "/request";

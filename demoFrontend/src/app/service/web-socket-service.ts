@@ -17,8 +17,8 @@ import { allRoutes } from '../utils/allRoutes/allRoutes';
 @Service()
 export class WebSocketService {
 
-    private http = inject(HttpClient);
-    private authenticationServiceObject = inject(AuthenticationService);
+    // private http = inject(HttpClient);
+    // private authenticationServiceObject = inject(AuthenticationService);
 
     constructor(){
   
@@ -76,7 +76,7 @@ export class WebSocketService {
 
         if (this.stompClient && this.stompClient.connected) {
             // Create a chat message object
-            const chatMessage = { sender: username,recipient: recipientUsername, content: content, type: 'CHAT' };
+            const chatMessage = { sender: username,recipient: recipientUsername, content: content, dataTime: new Date(), type: 'CHAT' };
 
             // Log the message being sent and the sender
             console.log(`Message sent by ${username}: ${content}`);
@@ -98,44 +98,5 @@ export class WebSocketService {
             this.stompClient.deactivate();  // Deactivate the WebSocket connection
         }
     }
-
-    // send(message: ChatMessage): void {
-
-    //     this.stompClient.publish({
-    //         destination: '/app/sendMessage/'+"2232",
-    //         body: JSON.stringify(message)
-    //     });
-    // }
-
-    // createRoom(id:string){
-    //     return this.http.post("http://localhost:8081/api/v1/rooms", {"roomId":id});
-    // }
-
-    // joinRoom(id:string){
-    //     // return this.http.get("http://localhost:8081/api/v1/rooms/"+id);
-    //     this.stompClient.onConnect = () => {
-
-    //         const subscription = this.stompClient.subscribe(
-    //             `/topic/room/${id}`,
-    //             (message) => {
-
-    //                 console.log("Message Received :", message.body);
-
-    //                 this.messageSubject.next(
-    //                     JSON.parse(message.body)
-    //                 );
-
-    //             }
-    //         );
-
-    //         console.log("Subscribed Successfully");
-    //         console.log(subscription);
-
-    //     };
-    // }
-
-    // disconnect(): void {
-    //     this.stompClient.deactivate();
-    // }
 
 }
