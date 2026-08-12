@@ -49,41 +49,34 @@ export class ChatBox implements OnInit, OnDestroy {
             })
         }
 
-        // Subscribe to messages observable to receive messages from the WebSocket service
         this.socketService.messages$.subscribe(message => {
 
             if (message) {
 
-                 if (message.type === 'LEAVE') {
-                     console.log(`${message.sender} has leave the chat room.`);
-                      this.messages.push(message);
-                 }
+                if (message.type === 'CONNECTED') {
+                    // console.log('Both users are connected successfully');
+                    this.messages.push(message);
+                }
+
+                if (message.type === 'LEAVE') {
+                    //  console.log(`${message.sender} has leave the chat room.`);
+                    this.messages.push(message);
+                }
 
                 if (message.type === 'JOIN') {
-                    // console.log(`${message.sender} is now online/connected.`);
 
                     if (message.sender === this.anotherUsername) {
                         console.log(`${message.sender} has joined the chat room.`);
                     }
-
-                    // if (message.sender === this.currentUserName) {
-                    //     console.log(`${message.recipient} has joined the chat room.`);
-                    // }
-
                 }
 
                 if (message.type === 'CHAT') {
-                   // Log and add the received message to the array of messages
-                    console.log(`Message received from ${message.sender}: ${message.content}`);
-
-                    //  const chatMessage = { sender: message.sender,recipient: message.recipientUsername, content: message.content, type: 'CHAT' };
+                    // console.log(`Message received from ${message.sender}: ${message.content}`);
                     this.messages.push(message);
                 }
 
-                    this.cdr.detectChanges();
-                    // console.log(this.messages);
-                    this.scrollToBottom();
-                
+                this.cdr.detectChanges();
+                this.scrollToBottom();
             }
         });
 

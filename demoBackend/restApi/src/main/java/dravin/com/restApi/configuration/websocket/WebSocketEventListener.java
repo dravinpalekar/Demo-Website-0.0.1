@@ -26,7 +26,7 @@ public class WebSocketEventListener {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         String currentUserName = (String) headerAccessor.getSessionAttributes().get("currentUserName");
         String targetUserName = (String) headerAccessor.getSessionAttributes().get("targetUserName");
-        if(currentUserName !=null || targetUserName !=null ){
+        if(currentUserName !=null && targetUserName !=null ){
 
             logger.info("User disconnected: {} | Chat Partner: {}", currentUserName, targetUserName);
 

@@ -1,27 +1,20 @@
 package dravin.com.restApi.controller;
 
-//import dravin.com.repository.repository.OneToOneRoomRepository;
-//import dravin.com.repository.repository.RoomRepository;
-//import dravin.com.repository.repository.UserRepository;
 import dravin.com.restApi.configuration.jwt.JwtUtils;
+import dravin.com.restApi.constant.ChatMessageType;
 import dravin.com.restApi.requestModel.ChatMessage;
-
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-        import java.util.Map;
-
+import java.util.Map;
 import static dravin.com.restApi.constant.RoutesFile.*;
 
 @Controller
@@ -32,18 +25,12 @@ public class ChatController {
     private static final Logger logger = LoggerFactory.getLogger(ChatController.class);
 
     private final SimpMessagingTemplate messagingTemplate;
-//    private final RoomRepository roomRepository;
-//    private final OneToOneRoomRepository oneToOneRoomRepository;
-//    private final UserRepository userRepository;
+    private final SimpUserRegistry simpUserRegistry;
     private final JwtUtils jwtUtils;
 
-    public ChatController(SimpMessagingTemplate messagingTemplate,
-//                          RoomRepository roomRepository, OneToOneRoomRepository oneToOneRoomRepository, UserRepository userRepository,
-                          JwtUtils jwtUtils) {
+    public ChatController(SimpMessagingTemplate messagingTemplate, SimpUserRegistry simpUserRegistry, JwtUtils jwtUtils) {
         this.messagingTemplate = messagingTemplate;
-//        this.roomRepository = roomRepository;
-//        this.oneToOneRoomRepository = oneToOneRoomRepository;
-//        this.userRepository = userRepository;
+        this.simpUserRegistry = simpUserRegistry;
         this.jwtUtils = jwtUtils;
     }
 
@@ -59,9 +46,32 @@ public class ChatController {
     @MessageMapping(ONE_TO_ONE_ADD_USER)
     public void addUser(@Payload ChatMessage msg, SimpMessageHeaderAccessor headerAccessor) {
 
-        headerAccessor.getSessionAttributes().put("username", msg.getSender());
-//        logger.info("User joined: " + msg.getSender());
-//        return msg;
+        headerAccessor.getSessionAttributes().put("currentUserName", msg.getSender());
+        headerAccessor.getSessionAttributes().put("targetUserName", msg.getRecipient());
+
+        logger.info("User joined chat: {} -> {}", msg.getSender(), msg.getRecipient());
+
+        checkBothUsersConnected( msg.getSender(), msg.getRecipient());
+    }
+
+    private void checkBothUsersConnected(String currentUserName, String targetUserName)
+    {
+        boolean currentUserConnected = simpUserRegistry.getUser(currentUserName) != null;
+        boolean targetUserConnected = simpUserRegistry.getUser(targetUserName) != null;
+
+        logger.info("Connection status -> {} : {} | {} : {}", currentUserName, currentUserConnected, targetUserName, targetUserConnected );
+
+        if (currentUserConnected && targetUserConnected) {
+
+            ChatMessage message = ChatMessage.builder().type(ChatMessageType.CONNECTED)
+                    .content("You are now connected")
+                    .build();
+
+            messagingTemplate.convertAndSendToUser(currentUserName, WEBSOCKET_PRIVATE, message );
+            messagingTemplate.convertAndSendToUser(targetUserName, WEBSOCKET_PRIVATE, message );
+
+            logger.info("Both users connected successfully: {} <-> {}", currentUserName, targetUserName );
+        }
     }
 
     @PostMapping("create/room")

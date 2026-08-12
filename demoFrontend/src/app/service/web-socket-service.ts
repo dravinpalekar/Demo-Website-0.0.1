@@ -54,7 +54,7 @@ export class WebSocketService {
             // Send a "JOIN" message to notify the server that a user has joined
             this.stompClient?.publish({
                 destination: allRoutes.oneToOneAddUser,
-                body: JSON.stringify({ sender: currentUserName, type: 'JOIN' })
+                body: JSON.stringify({ sender: currentUserName, recipient: targetUserName, type: 'JOIN' })
             });
         };
 
@@ -73,7 +73,7 @@ export class WebSocketService {
             const chatMessage = { sender: username, recipient: recipientUsername, content: content, dataTime: new Date(), type: 'CHAT' };
 
             // Log the message being sent and the sender
-            console.log(`Message sent by ${username}: ${content}`);
+            // console.log(`Message sent by ${username}: ${content}`);
 
             // Publish (send) the message to the '/app/chat.sendMessage' destination
             this.stompClient.publish({
