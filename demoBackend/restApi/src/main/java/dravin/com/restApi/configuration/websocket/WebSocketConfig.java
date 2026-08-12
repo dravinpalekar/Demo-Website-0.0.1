@@ -47,11 +47,20 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 
                 if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
-                    String username = accessor.getFirstNativeHeader("username");
-                    if (username != null && !username.isEmpty()) {
 
-                        accessor.setUser(new StompPrincipal(username));
-                        logger.info("set user in StompPrincipal - "+username);
+                    String currentUserName = accessor.getFirstNativeHeader("currentUserName");
+                    String targetUserName = accessor.getFirstNativeHeader("targetUserName");
+
+                    if (currentUserName != null && !currentUserName.isEmpty()) {
+                        accessor.setUser(new StompPrincipal(currentUserName));
+                        logger.info("set user in StompPrincipal - "+currentUserName);
+                    }
+
+                    if (currentUserName != null && !currentUserName.isBlank()) {
+                        accessor.getSessionAttributes().put("currentUserName", currentUserName);
+                    }
+                    if (targetUserName != null && !targetUserName.isBlank()) {
+                        accessor.getSessionAttributes().put("targetUserName", targetUserName);
                     }
                 }
                 return message;

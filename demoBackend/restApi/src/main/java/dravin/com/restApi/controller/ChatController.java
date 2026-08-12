@@ -52,7 +52,7 @@ public class ChatController {
     public void sendPrivateMessage(@Payload ChatMessage msg) {
 
         messagingTemplate.convertAndSendToUser( msg.getRecipient(),WEBSOCKET_PRIVATE, msg );
-        logger.info("Message received from " + msg.getSender() + ": " + msg.getRecipient());
+//        logger.info("Message received from " + msg.getSender() + ": " + msg.getRecipient());
 //        return msg;
     }
 
@@ -60,7 +60,7 @@ public class ChatController {
     public void addUser(@Payload ChatMessage msg, SimpMessageHeaderAccessor headerAccessor) {
 
         headerAccessor.getSessionAttributes().put("username", msg.getSender());
-        logger.info("User joined: " + msg.getSender());
+//        logger.info("User joined: " + msg.getSender());
 //        return msg;
     }
 

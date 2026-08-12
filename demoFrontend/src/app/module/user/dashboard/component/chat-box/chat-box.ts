@@ -16,18 +16,19 @@ export class ChatBox implements OnInit, OnDestroy {
     private cookieService = inject(CookieService);
     private platformId = inject(PLATFORM_ID);
 
-    // title = 'frontend';
-    anotherUsername: string = '';  // Stores the username entered by the user
-    message: string = '';  // Stores the message being typed by the user
-    messages: any[] = [];  // Stores all the chat messages
-    isConnected = false;  // Tracks whether the user is connected to the WebSocket
-    connectingMessage = 'Connecting...';  // Message to show while connecting
+    messageTextBoxArea: string = '';
+    messages: any[] = [];
+    isConnected = false;
+    connectingMessage = 'Connecting...';
+
     showMessagingTextBox = false;
+
     anotherPhotoUrl: any;
     currentPhotoUrl: any;
 
-    userList = signal<any[]>([]);
+    friendList = signal<any[]>([]);
     currentUserName: string = "";
+    anotherUsername: string = '';
 
     @ViewChild('messagesContainer') private messagesContainer!: ElementRef<HTMLDivElement>;
 
@@ -36,7 +37,6 @@ export class ChatBox implements OnInit, OnDestroy {
         if (this.cookieService.get("isLoggedIn")) {
             this.currentUserName = JSON.parse(this.cookieService.get("userSession")).userName;
         }
-
     }
 
     ngOnInit(): void {
@@ -44,23 +44,46 @@ export class ChatBox implements OnInit, OnDestroy {
         if (isPlatformBrowser(this.platformId)) {
             this.userService.getFriendList().subscribe({
                 next: (res) => {
-                    this.userList.set(JSON.parse(JSON.stringify(res)).data);
+                    this.friendList.set(JSON.parse(JSON.stringify(res)).data);
                 }
             })
         }
 
-
         // Subscribe to messages observable to receive messages from the WebSocket service
         this.socketService.messages$.subscribe(message => {
-            if (message) {
-                // Log and add the received message to the array of messages
-                console.log(`Message received from ${message.sender}: ${message.content}`);
 
-                //  const chatMessage = { sender: message.sender,recipient: message.recipientUsername, content: message.content, type: 'CHAT' };
-                this.messages.push(message);
-                this.cdr.detectChanges();
-                // console.log(this.messages);
-                this.scrollToBottom();
+            if (message) {
+
+                 if (message.type === 'LEAVE') {
+                     console.log(`${message.sender} has leave the chat room.`);
+                      this.messages.push(message);
+                 }
+
+                if (message.type === 'JOIN') {
+                    // console.log(`${message.sender} is now online/connected.`);
+
+                    if (message.sender === this.anotherUsername) {
+                        console.log(`${message.sender} has joined the chat room.`);
+                    }
+
+                    // if (message.sender === this.currentUserName) {
+                    //     console.log(`${message.recipient} has joined the chat room.`);
+                    // }
+
+                }
+
+                if (message.type === 'CHAT') {
+                   // Log and add the received message to the array of messages
+                    console.log(`Message received from ${message.sender}: ${message.content}`);
+
+                    //  const chatMessage = { sender: message.sender,recipient: message.recipientUsername, content: message.content, type: 'CHAT' };
+                    this.messages.push(message);
+                }
+
+                    this.cdr.detectChanges();
+                    // console.log(this.messages);
+                    this.scrollToBottom();
+                
             }
         });
 
@@ -74,24 +97,26 @@ export class ChatBox implements OnInit, OnDestroy {
         });
     }
 
-    connect(username: string, photoData: string): void {
+    connect(targetUserName: string, targetPhotoData: string): void {
+
         this.showMessagingTextBox = true;
         console.log('Attempting to connect to WebSocket at http://localhost:8080/ws with username:', this.currentUserName);
-        this.socketService.connect(this.currentUserName);
+        this.socketService.connect(this.currentUserName, targetUserName);
 
-        this.anotherUsername = username;
-        this.anotherPhotoUrl = photoData;
+        this.anotherUsername = targetUserName;
+        this.anotherPhotoUrl = targetPhotoData;
         let imgElement = document.querySelector('.user-image') as HTMLImageElement;
         this.currentPhotoUrl = imgElement.src;
     }
 
     sendMessage(event: Event) {
+
         event.preventDefault();
-        const chatMessage = { sender: this.currentUserName, recipient: this.anotherUsername, content: this.message, dataTime: new Date(), type: 'CHAT' };
+        const chatMessage = { sender: this.currentUserName, recipient: this.anotherUsername, content: this.messageTextBoxArea, dataTime: new Date(), type: 'CHAT' };
         this.messages.push(chatMessage);
-        if (this.message) {
-            this.socketService.sendMessage(this.currentUserName, this.anotherUsername, this.message);  // Send the message via WebSocket service
-            this.message = '';  // Clear the message input after sending
+        if (this.messageTextBoxArea) {
+            this.socketService.sendMessage(this.currentUserName, this.anotherUsername, this.messageTextBoxArea);  // Send the message via WebSocket service
+            this.messageTextBoxArea = '';  // Clear the message input after sending
             this.scrollToBottom();
         }
     }
@@ -101,6 +126,7 @@ export class ChatBox implements OnInit, OnDestroy {
     }
 
     private scrollToBottom(): void {
+
         if (!isPlatformBrowser(this.platformId)) {
             return;
         }

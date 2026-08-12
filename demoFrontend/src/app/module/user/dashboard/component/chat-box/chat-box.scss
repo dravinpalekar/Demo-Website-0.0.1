@@ -132,3 +132,32 @@
   border-bottom-right-radius: 10%;
   font-size: larger;
 }
+
+
+
+
+.chat-alert {
+    position: relative;
+    width: 65%;
+    padding: 6px 45px;
+    margin: auto; 
+    text-align: center;
+    font-size: 13px;
+    margin-bottom: 30px;
+    line-height: 1.2;
+    border-radius: 6px;
+}
+
+.chat-alert-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+}
+
+.chat-alert-content {
+    display: block;
+    width: 100%;
+    text-align: center;
+}

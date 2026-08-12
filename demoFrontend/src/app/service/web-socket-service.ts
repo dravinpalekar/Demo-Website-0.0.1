@@ -1,9 +1,6 @@
-import { inject, PLATFORM_ID, Service } from '@angular/core';
+import { Service } from '@angular/core';
 import { Client, Message } from '@stomp/stompjs';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { isPlatformBrowser } from '@angular/common';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { AuthenticationService } from './authentication-service';
+import { BehaviorSubject } from 'rxjs';
 import { allRoutes } from '../utils/allRoutes/allRoutes';
 
 // export interface ChatMessage {
@@ -17,11 +14,8 @@ import { allRoutes } from '../utils/allRoutes/allRoutes';
 @Service()
 export class WebSocketService {
 
-    // private http = inject(HttpClient);
-    // private authenticationServiceObject = inject(AuthenticationService);
+    constructor() {
 
-    constructor(){
-  
     }
 
     stompClient: Client | null = null;  // STOMP client instance to handle WebSocket connection
@@ -34,16 +28,16 @@ export class WebSocketService {
     private connectionSubject = new BehaviorSubject<boolean>(false);
     public connectionStatus$ = this.connectionSubject.asObservable();
 
-    connect(username: string ) {
+    connect(currentUserName: string, targetUserName: string) {
 
         this.disconnect();
 
         this.stompClient = new Client({
-                brokerURL: allRoutes.backendWebSocketUrl,
-                reconnectDelay: 5000,
-                connectHeaders: {
-                username: username,
-                // withCredentials: "true"
+            brokerURL: allRoutes.backendWebSocketUrl,
+            reconnectDelay: 5000,
+            connectHeaders: {
+                currentUserName: currentUserName,
+                targetUserName: targetUserName
             }
         });
 
@@ -52,21 +46,21 @@ export class WebSocketService {
             console.log('Connected to WebSocket server');
             this.connectionSubject.next(true);  // Notify that the connection is successful
 
-            // Subscribe to the '/topic/public' topic to receive public messages
+            // Subscribe to the '/user/private' topic to receive public messages
             this.stompClient?.subscribe(allRoutes.userPrivateBackendUrl, (message: Message) => {
-                this.messageSubject.next(JSON.parse(message.body));  // Pass the message to subscribers
+                this.messageSubject.next(JSON.parse(message.body));
             });
 
             // Send a "JOIN" message to notify the server that a user has joined
             this.stompClient?.publish({
-                destination: allRoutes.oneToOneAddUser,  // Server endpoint for adding users
-                body: JSON.stringify({ sender: username, type: 'JOIN' })  // Send username and join event
+                destination: allRoutes.oneToOneAddUser,
+                body: JSON.stringify({ sender: currentUserName, type: 'JOIN' })
             });
         };
 
         this.stompClient.onStompError = (frame) => {
-            console.error('Broker reported error: ' + frame.headers['message']);  // Log the error message
-            console.error('Additional details: ' + frame.body);  // Log additional error details
+            console.error('Broker reported error: ' + frame.headers['message']);
+            console.error('Additional details: ' + frame.body);
         };
 
         this.stompClient?.activate();
@@ -76,7 +70,7 @@ export class WebSocketService {
 
         if (this.stompClient && this.stompClient.connected) {
             // Create a chat message object
-            const chatMessage = { sender: username,recipient: recipientUsername, content: content, dataTime: new Date(), type: 'CHAT' };
+            const chatMessage = { sender: username, recipient: recipientUsername, content: content, dataTime: new Date(), type: 'CHAT' };
 
             // Log the message being sent and the sender
             console.log(`Message sent by ${username}: ${content}`);
@@ -84,7 +78,7 @@ export class WebSocketService {
             // Publish (send) the message to the '/app/chat.sendMessage' destination
             this.stompClient.publish({
                 destination: allRoutes.oneToOneSendMessage,
-                body: JSON.stringify(chatMessage)  // Convert the message to JSON and send
+                body: JSON.stringify(chatMessage)
             });
         } else {
             // Log an error if the WebSocket connection is not active
@@ -95,7 +89,7 @@ export class WebSocketService {
 
     disconnect() {
         if (this.stompClient) {
-            this.stompClient.deactivate();  // Deactivate the WebSocket connection
+            this.stompClient.deactivate();
         }
     }
 

@@ -25,7 +25,7 @@
                                     <div data-mdb-perfect-scrollbar-init class="user-list-container pe-2">
                                         <ul class="list-unstyled mb-0">
 
-                                            @for (item of userList(); track $index)
+                                            @for (item of friendList(); track $index)
                                             {
                                                 <li class="p-2 border-bottom">
                                                     <a (click)="connect(item.email,item.photoData)" class="d-flex justify-content-between text-decoration-none">
@@ -68,29 +68,50 @@
 
                                         @for (item of messages; track $index) 
                                         {
-                                            @if(item.sender != currentUserName)
+                                            @if(item.type === "CHAT")
                                             {
-                                                <div class="d-flex flex-row justify-content-start mb-3">
-                                                    <img width="45" height="45" [ngSrc] = "anotherPhotoUrl || 'assets/superAdminModule/images/user/user-xs-01.jpg'" alt="avatar 1" class="chat-avatar flex-shrink-0 me-2 rounded-circle" style="object-fit: cover;">
-                                                    <div>
-                                                        <p class="small p-2 ms-2 mb-1 rounded-3 bg-body-tertiary">
-                                                            {{item.content}}
-                                                        </p>
-                                                        <p class="small ms-2 mb-3 rounded-3 text-muted float-end">{{ item.dataTime | date:'hh:mm a | MMM d' }}</p>
+                                                
+                                                @if(item.sender != currentUserName)
+                                                {
+                                                    <div class="d-flex flex-row justify-content-start mb-3">
+                                                        <img width="45" height="45" [ngSrc] = "anotherPhotoUrl || 'assets/superAdminModule/images/user/user-xs-01.jpg'" alt="avatar 1" class="chat-avatar flex-shrink-0 me-2 rounded-circle" style="object-fit: cover;">
+                                                        <div>
+                                                            <p class="small p-2 ms-2 mb-1 rounded-3 bg-body-tertiary">
+                                                                {{item.content}}
+                                                            </p>
+                                                            <p class="small ms-2 mb-3 rounded-3 text-muted float-end">{{ item.dataTime | date:'hh:mm a | MMM d' }}</p>
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                }
+                                                @else
+                                                {
+                                                    <div class="d-flex flex-row justify-content-end mb-3">
+                                                        <div>
+                                                            <p class="small p-2 me-2 mb-1 text-white rounded-3 bg-primary">
+                                                                {{item.content}}
+                                                            </p>
+                                                            <p class="small me-2 mb-3 rounded-3 text-muted">{{ item.dataTime | date:'hh:mm a | MMM d' }}</p>
+                                                        </div>
+                                                        <img width="45" height="45" [ngSrc] = "currentPhotoUrl ||'assets/superAdminModule/images/user/user-xs-01.jpg'" alt="avatar 1" class="chat-avatar flex-shrink-0 ms-2 rounded-circle" style="object-fit: cover;">
+                                                    </div>
+                                                }
                                             }
-                                            @else
+                                            @if(item.type === "LEAVE")
                                             {
-                                                <div class="d-flex flex-row justify-content-end mb-3">
+                                                <!-- <div class="d-flex flex-row justify-content-center mb-3">
                                                     <div>
                                                         <p class="small p-2 me-2 mb-1 text-white rounded-3 bg-primary">
-                                                            {{item.content}}
+                                                                {{item.content}}
                                                         </p>
-                                                        <p class="small me-2 mb-3 rounded-3 text-muted">{{ item.dataTime | date:'hh:mm a | MMM d' }}</p>
                                                     </div>
-                                                    <img width="45" height="45" [ngSrc] = "currentPhotoUrl ||'assets/superAdminModule/images/user/user-xs-01.jpg'" alt="avatar 1" class="chat-avatar flex-shrink-0 ms-2 rounded-circle" style="object-fit: cover;">
-                                                </div>
+                                                </div> -->
+                                               <div class="alert alert-danger chat-alert" role="alert">
+    <i class="mdi mdi-diameter-variant chat-alert-icon"></i>
+
+    <span class="chat-alert-content fw-bold">
+        {{ item.content }}
+    </span>
+</div>
                                             }
                                         }
 
@@ -100,7 +121,7 @@
                                     <div
                                         class="text-muted d-flex justify-content-start align-items-center pe-3 pt-3 mt-auto border-top">
                                         <img width="40" height="40" [ngSrc] = "currentPhotoUrl ||'assets/superAdminModule/images/user/user-xs-01.jpg'" alt="avatar 3" class="input-avatar flex-shrink-0 me-2" style="object-fit: cover;">
-                                        <input type="text" class="form-control form-control-lg me-2" [(ngModel)]="message" placeholder="Type message" (keydown.enter)="sendMessage($event)">
+                                        <input type="text" class="form-control form-control-lg me-2" [(ngModel)]="messageTextBoxArea" placeholder="Type message" (keydown.enter)="sendMessage($event)">
                                         <a class="ms-1 text-muted" href="#!"><i class="fas fa-paperclip fs-5"></i></a>
                                         <a class="ms-3 text-muted" href="#!"><i class="fas fa-smile fs-5"></i></a>
                                         <a class="ms-3 text-primary" href="#" (click)="sendMessage($event)"><i class="bi bi-send-fill fs-5"></i></a>

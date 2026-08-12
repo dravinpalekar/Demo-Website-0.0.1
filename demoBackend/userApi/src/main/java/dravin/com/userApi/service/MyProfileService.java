@@ -103,7 +103,7 @@ public class MyProfileService {
         String extension = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf('.') + 1);
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Thumbnails.of(file.getInputStream()).size(200, 200).outputFormat(extension).toOutputStream(os);
+        Thumbnails.of(file.getInputStream()).size(100, 100).outputFormat(extension).toOutputStream(os);
 
         byte[] resizedImageBytes = os.toByteArray();
 
