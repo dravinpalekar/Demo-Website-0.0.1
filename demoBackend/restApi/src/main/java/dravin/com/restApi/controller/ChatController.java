@@ -50,10 +50,8 @@ public class ChatController {
     @MessageMapping(ONE_TO_ONE_ADD_USER)
     public void addUser(@Payload ChatMessage msg, SimpMessageHeaderAccessor headerAccessor, Principal principal) {
 
-//        String currentUserName = principal.getName();
-        String currentUserName = headerAccessor.getSessionAttributes().get("currentUserName").toString();
+        String currentUserName = principal.getName();
 
-//        headerAccessor.getSessionAttributes().put("currentUserName", currentUserName);
         headerAccessor.getSessionAttributes().put("targetUserName", msg.getRecipient());
 
         logger.info("User joined chat: {} -> {}", msg.getSender(), msg.getRecipient());
