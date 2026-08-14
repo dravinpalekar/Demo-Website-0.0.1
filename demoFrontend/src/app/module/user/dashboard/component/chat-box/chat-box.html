@@ -70,7 +70,6 @@
                                         {
                                             @if(item.type === "CHAT")
                                             {
-                                                
                                                 @if(item.sender != currentUserName)
                                                 {
                                                     <div class="d-flex flex-row justify-content-start mb-3">
@@ -129,7 +128,8 @@
                                     </div>
                                 </div>
                             }
-                            @else {
+                            @else 
+                            {
                                  <div class="col-md-6 col-lg-7 col-xl-8 chat-main-column align-items-center justify-content-center text-muted customBlankDiv">
                                   Chat not selected ...
                                  </div>

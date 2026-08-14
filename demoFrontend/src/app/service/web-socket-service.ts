@@ -35,10 +35,10 @@ export class WebSocketService {
         this.stompClient = new Client({
             brokerURL: allRoutes.backendWebSocketUrl,
             reconnectDelay: 5000,
-            connectHeaders: {
-                currentUserName: currentUserName,
-                targetUserName: targetUserName
-            }
+            // connectHeaders: {
+            //     // currentUserName: currentUserName,
+            //     // targetUserName: targetUserName
+            // }
         });
 
         // On successful connection
@@ -54,7 +54,7 @@ export class WebSocketService {
             // Send a "JOIN" message to notify the server that a user has joined
             this.stompClient?.publish({
                 destination: allRoutes.oneToOneAddUser,
-                body: JSON.stringify({ sender: currentUserName, recipient: targetUserName, type: 'JOIN' })
+                body: JSON.stringify({ recipient: targetUserName, type: 'JOIN' })
             });
         };
 
@@ -70,7 +70,7 @@ export class WebSocketService {
 
         if (this.stompClient && this.stompClient.connected) {
             // Create a chat message object
-            const chatMessage = { sender: username, recipient: recipientUsername, content: content, dataTime: new Date(), type: 'CHAT' };
+            const chatMessage = { recipient: recipientUsername, content: content, dataTime: new Date(), type: 'CHAT' };
 
             // Log the message being sent and the sender
             // console.log(`Message sent by ${username}: ${content}`);

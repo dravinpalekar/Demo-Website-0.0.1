@@ -14,6 +14,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 import java.util.Map;
 import static dravin.com.restApi.constant.RoutesFile.*;
 
@@ -36,7 +38,9 @@ public class ChatController {
 
 
     @MessageMapping(ONE_TO_ONE_SEND_MESSAGE)
-    public void sendPrivateMessage(@Payload ChatMessage msg) {
+    public void sendPrivateMessage(@Payload ChatMessage msg, Principal principal) {
+
+        msg.setSender( principal.getName());
 
         messagingTemplate.convertAndSendToUser( msg.getRecipient(),WEBSOCKET_PRIVATE, msg );
 //        logger.info("Message received from " + msg.getSender() + ": " + msg.getRecipient());
@@ -44,14 +48,17 @@ public class ChatController {
     }
 
     @MessageMapping(ONE_TO_ONE_ADD_USER)
-    public void addUser(@Payload ChatMessage msg, SimpMessageHeaderAccessor headerAccessor) {
+    public void addUser(@Payload ChatMessage msg, SimpMessageHeaderAccessor headerAccessor, Principal principal) {
 
-        headerAccessor.getSessionAttributes().put("currentUserName", msg.getSender());
+//        String currentUserName = principal.getName();
+        String currentUserName = headerAccessor.getSessionAttributes().get("currentUserName").toString();
+
+//        headerAccessor.getSessionAttributes().put("currentUserName", currentUserName);
         headerAccessor.getSessionAttributes().put("targetUserName", msg.getRecipient());
 
         logger.info("User joined chat: {} -> {}", msg.getSender(), msg.getRecipient());
 
-        checkBothUsersConnected( msg.getSender(), msg.getRecipient());
+        checkBothUsersConnected( currentUserName, msg.getRecipient());
     }
 
     private void checkBothUsersConnected(String currentUserName, String targetUserName)
@@ -63,9 +70,7 @@ public class ChatController {
 
         if (currentUserConnected && targetUserConnected) {
 
-            ChatMessage message = ChatMessage.builder().type(ChatMessageType.CONNECTED)
-                    .content("You are now connected")
-                    .build();
+            ChatMessage message = ChatMessage.builder().type(ChatMessageType.CONNECTED).content("You are now connected").build();
 
             messagingTemplate.convertAndSendToUser(currentUserName, WEBSOCKET_PRIVATE, message );
             messagingTemplate.convertAndSendToUser(targetUserName, WEBSOCKET_PRIVATE, message );

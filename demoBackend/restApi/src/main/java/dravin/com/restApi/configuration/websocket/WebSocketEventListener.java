@@ -24,8 +24,10 @@ public class WebSocketEventListener {
     public void handleWsDisconnectListener( SessionDisconnectEvent event){
         //To listen to another even, create the another method with NewEvent as argument.
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
+
         String currentUserName = (String) headerAccessor.getSessionAttributes().get("currentUserName");
         String targetUserName = (String) headerAccessor.getSessionAttributes().get("targetUserName");
+
         if(currentUserName !=null && targetUserName !=null ){
 
             logger.info("User disconnected: {} | Chat Partner: {}", currentUserName, targetUserName);
