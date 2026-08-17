@@ -10,4 +10,5 @@ public class ConstantString {
 
     public static final String SUCCESSFULLY_FRIEND_REQUEST_SENT = "successfully sent a friend request.";
     public static final String SUCCESSFULLY_ACCEPTED_FRIEND_REQUEST_SENT = "successfully accepted a friend request.";
+    public static final String SUCCESSFULLY_CANCEL_FRIEND_REQUEST_SENT = "successfully cancel a friend request.";
 }

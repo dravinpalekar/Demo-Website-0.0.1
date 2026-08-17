@@ -2,7 +2,7 @@
     <div class="content  pl-0 pr-0 pt-0 pb-0">
         <div class="card card-default">
             <div class="card-header align-items-center px-3 px-md-5 col-12 col-sm-12 col-md-12 col-lg-12 d-flex align-items-center">
-                <h2>Find friend</h2>
+                <h2>{{pageTitle}}</h2>
             
                 <div class="col-6 col-sm-6 col-md-6 col-lg-6 d-flex align-items-center text-end" style="">
                     <input type="text" autocomplete="off" name="query" id="search-input" class="form-control" placeholder="Search friends ..." style="background-color: #f5f6fa; border-radius: 10px;"/>
@@ -36,10 +36,10 @@
                                                     <i class="mdi mdi-map me-1"></i>
                                                     <span>{{item.fullAddress}}</span>
                                                 </li>
-                                                <li class="d-flex">
+                                                <!-- <li class="d-flex">
                                                     <i class="mdi mdi-email me-1"></i>
                                                     <span>{{item.email}}</span>
-                                                </li>
+                                                </li> -->
                                                 <!-- <li class="d-flex">
                                                     <i class="mdi mdi-phone me-1"></i>
                                                     <span>(123) 888 777 632</span>
@@ -48,24 +48,26 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-4 col-sm-4 col-md-4 col-lg-4">
-                                        <button type="button" class="btn btn-primary" (click)="sendRequest(item.email,item.friendStatus)" style="text-transform:none" [disabled]="item.friendStatus === 'SEND' || item.friendStatus === 'FRIEND'">
-                                            @if(item.friendStatus == "SEND"){
-                                                Already Sent Request
-                                            }
-                                            @else if(item.friendStatus == "ACCEPT")
+                                    <div class="col-4 col-sm-4 col-md-4 col-lg-4 d-flex gap-2">
+                                        <button type="button" class="btn btn-primary" (click)="sendRequest(item.id)" style="text-transform:none">
+                                            @if(pageTitle == "Friend Request Notification")
                                             {
                                                 Accept Request
                                             }
-                                            @else if(item.friendStatus == "FRIEND")
+                                            @else if(pageTitle == "Friend List")
                                             {
-                                                Friend
+                                               Unfriend
                                             }
                                             @else {
                                                 Send Request
                                             }
-                                             
                                         </button>
+
+                                        @if(pageTitle == "Friend Request Notification"){
+                                            <button type="button" class="btn btn-primary" (click)="cancelRequest(item.id)" style="text-transform:none">
+                                                Cancel Request
+                                            </button>
+                                        }
                                     </div>
                                 </a>
                             </div>

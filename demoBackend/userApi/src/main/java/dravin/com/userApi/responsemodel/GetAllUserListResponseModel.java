@@ -14,13 +14,11 @@ import lombok.Setter;
 
 public class GetAllUserListResponseModel {
 
-    private String fullName;
+    private Long id;
 
-    private String email;
+    private String fullName;
 
     private String fullAddress;
 
     private String photoData;
-
-    private FriendStatus friendStatus;
 }

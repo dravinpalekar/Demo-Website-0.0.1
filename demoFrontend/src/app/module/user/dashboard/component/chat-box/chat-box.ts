@@ -28,7 +28,7 @@ export class ChatBox implements OnInit, OnDestroy {
 
     friendList = signal<any[]>([]);
     currentUserName: string = "";
-    anotherUsername: string = '';
+    anotherUserId!: number;
 
     @ViewChild('messagesContainer') private messagesContainer!: ElementRef<HTMLDivElement>;
 
@@ -65,7 +65,7 @@ export class ChatBox implements OnInit, OnDestroy {
 
                 if (message.type === 'JOIN') {
 
-                    if (message.sender === this.anotherUsername) {
+                    if (message.sender === this.anotherUserId) {
                         console.log(`${message.sender} has joined the chat room.`);
                     }
                 }
@@ -90,13 +90,13 @@ export class ChatBox implements OnInit, OnDestroy {
         });
     }
 
-    connect(targetUserName: string, targetPhotoData: string): void {
+    connect(targetUserId: number, targetPhotoData: string): void {
 
         this.showMessagingTextBox = true;
         console.log('Attempting to connect to WebSocket at http://localhost:8080/ws with username:', this.currentUserName);
-        this.socketService.connect(this.currentUserName, targetUserName);
+        this.socketService.connect(targetUserId);
 
-        this.anotherUsername = targetUserName;
+        this.anotherUserId = targetUserId;
         this.anotherPhotoUrl = targetPhotoData;
         let imgElement = document.querySelector('.user-image') as HTMLImageElement;
         this.currentPhotoUrl = imgElement.src;
@@ -105,10 +105,10 @@ export class ChatBox implements OnInit, OnDestroy {
     sendMessage(event: Event) {
 
         event.preventDefault();
-        const chatMessage = { sender: this.currentUserName, recipient: this.anotherUsername, content: this.messageTextBoxArea, dataTime: new Date(), type: 'CHAT' };
+        const chatMessage = { sender: this.currentUserName, recipient: this.anotherUserId, content: this.messageTextBoxArea, dataTime: new Date(), type: 'CHAT' };
         this.messages.push(chatMessage);
         if (this.messageTextBoxArea) {
-            this.socketService.sendMessage(this.currentUserName, this.anotherUsername, this.messageTextBoxArea);  // Send the message via WebSocket service
+            this.socketService.sendMessage(this.anotherUserId, this.messageTextBoxArea);  // Send the message via WebSocket service
             this.messageTextBoxArea = '';  // Clear the message input after sending
             this.scrollToBottom();
         }

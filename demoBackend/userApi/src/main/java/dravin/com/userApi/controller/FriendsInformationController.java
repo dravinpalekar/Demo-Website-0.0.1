@@ -1,6 +1,7 @@
 package dravin.com.userApi.controller;
 
 import dravin.com.userApi.configuration.jwt.JwtUtils;
+import dravin.com.userApi.requestmodel.IdRequestModel;
 import dravin.com.userApi.requestmodel.NameRequestModel;
 import dravin.com.userApi.service.FriendsInformationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -40,15 +41,21 @@ public class FriendsInformationController {
     }
 
     @PostMapping(SEND_REQUEST)
-    public ResponseEntity<Map<String,String>> sendFriendRequest(@Valid @RequestBody NameRequestModel requestModel){
+    public ResponseEntity<Map<String,String>> sendFriendRequest(@Valid @RequestBody IdRequestModel requestModel){
 
         return this.friendsInformationService.sendFriendRequest(requestModel);
     }
 
     @PostMapping(ACCEPT_REQUEST)
-    public ResponseEntity<Map<String,String>> acceptFriendRequest(@Valid @RequestBody NameRequestModel requestModel){
+    public ResponseEntity<Map<String,String>> acceptFriendRequest(@Valid @RequestBody IdRequestModel requestModel){
 
         return this.friendsInformationService.acceptFriendRequest(requestModel);
+    }
+
+    @PostMapping(CANCEL_REQUEST)
+    public ResponseEntity<?> cancelFriendRequest(@Valid @RequestBody IdRequestModel requestModel){
+
+        return this.friendsInformationService.cancelFriendRequest(requestModel);
     }
 
     @GetMapping(FRIEND_GET)
@@ -57,4 +64,9 @@ public class FriendsInformationController {
         return this.friendsInformationService.getFriendList(pageable);
     }
 
+    @GetMapping(FRIEND_REQUEST_GET)
+    public ResponseEntity<?> getFriendRequestNotification(@PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable){
+
+        return this.friendsInformationService.getFriendRequestNotification(pageable);
+    }
 }

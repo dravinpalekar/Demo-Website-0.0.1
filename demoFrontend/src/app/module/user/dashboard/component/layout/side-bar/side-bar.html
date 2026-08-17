@@ -24,13 +24,24 @@
                     <a class="sidenav-item-link" data-bs-toggle="collapse" data-bs-target="#search"
                         aria-expanded="false" aria-controls="search">
                         <i class="bi bi-activity"></i>
-                        <span class="nav-text">Find</span> <b class="caret"></b>
+                        <span class="nav-text">User</span> <b class="caret"></b>
                     </a>
                     <ul class="collapse" id="search" data-bs-parent="#sidebar-menu">
                         <div class="sub-menu">
                             <li routerLinkActive="active">
-                                <a class="sidenav-item-link" [routerLink]="['/dashboard/findFriend']"
-                                    (click)="changeTitle('Find Friends')">
+                                <a class="sidenav-item-link" [routerLink]="['/dashboard/friendList']" (click)="changeTitle('Friend List')">
+                                    <span class="nav-text">Friend List</span>
+                                </a>
+                            </li>
+                        
+                            <li routerLinkActive="active">
+                                <a class="sidenav-item-link" [routerLink]="['/dashboard/friendRequestNotify']" (click)="changeTitle('Friend Request Notification')">
+                                    <span class="nav-text">Friend Request Notification</span>
+                                </a>
+                            </li>
+                        
+                            <li routerLinkActive="active">
+                                <a class="sidenav-item-link" [routerLink]="['/dashboard/findFriend']" (click)="changeTitle('Find Friends')">
                                     <span class="nav-text">Find Friends</span>
                                 </a>
                             </li>

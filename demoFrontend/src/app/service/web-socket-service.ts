@@ -14,11 +14,7 @@ import { allRoutes } from '../utils/allRoutes/allRoutes';
 @Service()
 export class WebSocketService {
 
-    constructor() {
-
-    }
-
-    stompClient: Client | null = null;  // STOMP client instance to handle WebSocket connection
+    stompClient: Client;
 
     // Subject to manage the stream of incoming messages
     private messageSubject = new BehaviorSubject<any>(null);
@@ -28,18 +24,17 @@ export class WebSocketService {
     private connectionSubject = new BehaviorSubject<boolean>(false);
     public connectionStatus$ = this.connectionSubject.asObservable();
 
-    connect(currentUserName: string, targetUserName: string) {
+    constructor() {
 
         this.disconnect();
 
         this.stompClient = new Client({
             brokerURL: allRoutes.backendWebSocketUrl,
             reconnectDelay: 5000,
-            // connectHeaders: {
-            //     // currentUserName: currentUserName,
-            //     // targetUserName: targetUserName
-            // }
         });
+    }
+
+    connect(targetUserId: number) {
 
         // On successful connection
         this.stompClient.onConnect = (frame) => {
@@ -54,7 +49,7 @@ export class WebSocketService {
             // Send a "JOIN" message to notify the server that a user has joined
             this.stompClient?.publish({
                 destination: allRoutes.oneToOneAddUser,
-                body: JSON.stringify({ recipient: targetUserName, type: 'JOIN' })
+                body: JSON.stringify({ recipient: targetUserId, type: 'JOIN' })
             });
         };
 
@@ -66,11 +61,11 @@ export class WebSocketService {
         this.stompClient?.activate();
     }
 
-    sendMessage(username: string | undefined, recipientUsername: string, content: string) {
+    sendMessage(recipientUserId: number, content: string) {
 
         if (this.stompClient && this.stompClient.connected) {
             // Create a chat message object
-            const chatMessage = { recipient: recipientUsername, content: content, dataTime: new Date(), type: 'CHAT' };
+            const chatMessage = { recipient: recipientUserId, content: content, dataTime: new Date(), type: 'CHAT' };
 
             // Log the message being sent and the sender
             // console.log(`Message sent by ${username}: ${content}`);

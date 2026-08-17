@@ -28,7 +28,7 @@
                                             @for (item of friendList(); track $index)
                                             {
                                                 <li class="p-2 border-bottom">
-                                                    <a (click)="connect(item.email,item.photoData)" class="d-flex justify-content-between text-decoration-none">
+                                                    <a (click)="connect(item.id,item.photoData)" class="d-flex justify-content-between text-decoration-none">
                                                         <div class="d-flex flex-row">
                                                             <div class="avatar-wrapper me-3">
                                                                 <img [src] ="item.photoData || 'assets/superAdminModule/images/user/user-xs-01.jpg'" width="45" height="45" alt="avatar" class="align-self-center rounded-circle">

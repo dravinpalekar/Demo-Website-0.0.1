@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { allRoutes } from '../utils/allRoutes/allRoutes';
 import { NameModel } from '../model/requestModel/NameModel';
+import { IdModel } from '../model/requestModel/IdModel';
 
 @Service()
 export class UserService {
@@ -9,7 +10,7 @@ export class UserService {
     private http = inject(HttpClient);
 
     constructor() {
-      
+
     }
 
 
@@ -18,19 +19,29 @@ export class UserService {
         return this.http.get<any[]>(allRoutes.getAllUserListBackendUrl);
     }
 
-    public sendFriendRequest(requestData:NameModel){
+    public sendFriendRequest(requestData: IdModel) {
 
-        return this.http.post(allRoutes.sendFriendRequestBackendUrl,requestData);
+        return this.http.post(allRoutes.sendFriendRequestBackendUrl, requestData);
     }
 
-    public acceptFriendRequest(requestData:NameModel){
+    public acceptFriendRequest(requestData: IdModel) {
 
-        return this.http.post(allRoutes.acceptFriendRequestBackendUrl,requestData);
+        return this.http.post(allRoutes.acceptFriendRequestBackendUrl, requestData);
     }
 
-     public getFriendList() {
+    public getFriendList() {
 
         return this.http.get<any[]>(allRoutes.getFriendListBackendUrl);
+    }
+
+    public getFriendRequestList() {
+
+        return this.http.get<any[]>(allRoutes.getFriendRequestListBackendUrl);
+    }
+
+     public cancelFriendRequest(requestData: IdModel) {
+
+        return this.http.post(allRoutes.cancelFriendRequestBackendUrl, requestData);
     }
 
 

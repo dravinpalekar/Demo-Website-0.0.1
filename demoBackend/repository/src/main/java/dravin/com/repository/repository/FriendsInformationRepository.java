@@ -19,5 +19,11 @@ public interface FriendsInformationRepository extends JpaRepository<FriendsInfor
 
     Optional<FriendsInformationEntity> findByUserAAndUserBAndDeletedAtIsNullOrUserBAndUserAAndDeletedAtIsNull(UserEntity userA, UserEntity userB, UserEntity userD, UserEntity userC);
 
-    Page<FriendsInformationEntity> findByUserAOrUserBAndStatusAndDeletedAtIsNull(UserEntity userA, UserEntity userB, FriendStatus status, Pageable pageable);
+    Page<FriendsInformationEntity> findByUserAAndStatusAndDeletedAtIsNullOrUserBAndStatusAndDeletedAtIsNull(UserEntity userA,FriendStatus statusA, UserEntity userB, FriendStatus statusB, Pageable pageable);
+
+    Page<FriendsInformationEntity> findByUserBAndStatusAndDeletedAtIsNull(UserEntity userA, FriendStatus status, Pageable pageable);
+
+    Optional<FriendsInformationEntity> findByUserAAndUserBAndStatusAndDeletedAtIsNull(UserEntity userA, UserEntity userB, FriendStatus status);
+
+
 }

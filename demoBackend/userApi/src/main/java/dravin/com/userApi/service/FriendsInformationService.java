@@ -9,9 +9,10 @@ import dravin.com.repository.entity.UserEntity;
 import dravin.com.repository.repository.FriendsInformationRepository;
 import dravin.com.repository.repository.UserRepository;
 import dravin.com.userApi.configuration.jwt.JwtUtils;
-import dravin.com.userApi.requestmodel.NameRequestModel;
+import dravin.com.userApi.requestmodel.IdRequestModel;
 import dravin.com.userApi.responsemodel.GetAllUserListResponseModel;
 import dravin.com.userApi.responsemodel.GetFriendListResponseModel;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,10 +29,7 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static dravin.com.userApi.constant.ConstantString.*;
 import static dravin.com.userApi.constant.Error.*;
@@ -60,60 +58,44 @@ public class FriendsInformationService {
         this.jwtUtils = jwtUtils;
     }
 
-    public ResponseEntity<Map<String,Object>> getPeopleList() {
+    public ResponseEntity<Map<String, Object>> getPeopleList() {
 
         ServletRequestAttributes request = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         String userIdFromToken = jwtUtils.getIdFromJwtToken(this.jwtUtils.getJwtFromCookies(request.getRequest()));
 
-        List<Object[]> entityList = this.userRepository.findUsersByRoleAndActiveAndDeletedAtIsNull(Roles.ROLE_USER, Status.ENABLE);
+        List<UserEntity> entityList = this.userRepository.findUsersByRoleAndActiveAndDeletedAtIsNull(Roles.ROLE_USER, Long.valueOf(userIdFromToken), Status.ENABLE);
 
         List<GetAllUserListResponseModel> responseData = new ArrayList<>();
 
-        for (Object[] forLoopObject : entityList) {
-
-            UserEntity userEntity = (UserEntity) forLoopObject[0];
-            FriendsInformationEntity friendsInformationEntity = (FriendsInformationEntity) forLoopObject[1];
-
-            if(Long.valueOf(userIdFromToken).equals(userEntity.getId()))
-                continue;
+        for (UserEntity forLoopObject : entityList) {
 
             GetAllUserListResponseModel addToList = new GetAllUserListResponseModel();
 
-            addToList.setFullName(userEntity.getUserOtherInformation().getFirstName() + " " + userEntity.getUserOtherInformation().getMiddleName() + " " + userEntity.getUserOtherInformation().getLastName());
-            addToList.setEmail(userEntity.getEmail());
-            addToList.setFullAddress(userEntity.getUserOtherInformation().getCity() + ", " + userEntity.getUserOtherInformation().getCountry());
+            addToList.setId(forLoopObject.getId());
+            addToList.setFullName(forLoopObject.getUserOtherInformation().getFirstName() + " " + forLoopObject.getUserOtherInformation().getMiddleName() + " " + forLoopObject.getUserOtherInformation().getLastName());
+            addToList.setFullAddress(forLoopObject.getUserOtherInformation().getCity() + ", " + forLoopObject.getUserOtherInformation().getCountry());
 
-            String photoUrl = "https://s3." + this.awsRegion + ".amazonaws.com/" + this.bucketName + "/users/profile/" + userEntity.getId() + "/" + userEntity.getUserOtherInformation().getPhotoUrl();
+            String photoUrl = "https://s3." + this.awsRegion + ".amazonaws.com/" + this.bucketName + "/users/profile/" + forLoopObject.getId() + "/" + forLoopObject.getUserOtherInformation().getPhotoUrl();
 
             addToList.setPhotoData(photoUrl);
-
-            if(friendsInformationEntity != null && friendsInformationEntity.getUserA().equals(userEntity) && friendsInformationEntity.getStatus().equals(FriendStatus.SEND))
-                addToList.setFriendStatus(FriendStatus.ACCEPT);
-
-            if(friendsInformationEntity != null && friendsInformationEntity.getUserB().equals(userEntity) && friendsInformationEntity.getStatus().equals(FriendStatus.SEND))
-                addToList.setFriendStatus(FriendStatus.SEND);
-
-            if(friendsInformationEntity != null && friendsInformationEntity.getStatus().equals(FriendStatus.FRIEND))
-                addToList.setFriendStatus(FriendStatus.FRIEND);
-
             responseData.add(addToList);
         }
         return ResponseEntity.ok().body(Map.of("data", responseData));
     }
 
-    public ResponseEntity<Map<String,String>> sendFriendRequest(NameRequestModel requestModel) {
+    public ResponseEntity<Map<String, String>> sendFriendRequest(IdRequestModel requestModel) {
 
         ServletRequestAttributes request = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        String currentUserName = jwtUtils.getUserNameFromJwtToken(this.jwtUtils.getJwtFromCookies(request.getRequest()));
+        Long currentUserId = Long.valueOf(jwtUtils.getIdFromJwtToken(this.jwtUtils.getJwtFromCookies(request.getRequest())));
 
-        List<UserEntity> userEntityList = this.userRepository.findByUserNameInAndDeletedAtIsNullAndActive(List.of(currentUserName, requestModel.getName()), Status.ENABLE);
+        List<UserEntity> userEntityList = this.userRepository.findByIdInAndDeletedAtIsNullAndActive(List.of(currentUserId, requestModel.getId()), Status.ENABLE);
 
         if (userEntityList.size() == 2) {
 
-            UserEntity currentUserEntity = null;     UserEntity sendToUserEntity = null;
-            for(UserEntity forLoopObject : userEntityList)
-            {
-                if(forLoopObject.getUserName().equals(currentUserName))
+            UserEntity currentUserEntity = null;
+            UserEntity sendToUserEntity = null;
+            for (UserEntity forLoopObject : userEntityList) {
+                if (forLoopObject.getId().equals(currentUserId))
                     currentUserEntity = forLoopObject;
                 else
                     sendToUserEntity = forLoopObject;
@@ -121,7 +103,7 @@ public class FriendsInformationService {
 
             Optional<FriendsInformationEntity> friendsInformationEntity = this.friendsInformationRepository.findByUserAAndUserBAndDeletedAtIsNullOrUserBAndUserAAndDeletedAtIsNull(currentUserEntity, sendToUserEntity, currentUserEntity, sendToUserEntity);
 
-            if (friendsInformationEntity.isPresent() && friendsInformationEntity.get().getStatus().equals(FriendStatus.SEND)) {
+            if (friendsInformationEntity.isPresent()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(MESSAGE, FRIEND_REQUEST_ALREADY_SENT));
             } else {
                 this.friendsInformationRepository.save(new FriendsInformationEntity(currentUserEntity, sendToUserEntity, FriendStatus.SEND));
@@ -131,19 +113,18 @@ public class FriendsInformationService {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(MESSAGE, USER_NOT_FOUND));
     }
 
-    public ResponseEntity<Map<String,String>> acceptFriendRequest(NameRequestModel requestModel) {
+    public ResponseEntity<Map<String, String>> acceptFriendRequest(IdRequestModel requestModel) {
 
         ServletRequestAttributes request = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        String currentUserName = jwtUtils.getUserNameFromJwtToken(this.jwtUtils.getJwtFromCookies(request.getRequest()));
+        Long currentUserId = Long.valueOf(jwtUtils.getIdFromJwtToken(this.jwtUtils.getJwtFromCookies(request.getRequest())));
 
-        List<UserEntity> userEntityList = this.userRepository.findByUserNameInAndDeletedAtIsNullAndActive(List.of(currentUserName, requestModel.getName()), Status.ENABLE);
+        List<UserEntity> userEntityList = this.userRepository.findByIdInAndDeletedAtIsNullAndActive(List.of(currentUserId, requestModel.getId()), Status.ENABLE);
 
         if (userEntityList.size() == 2) {
 
             UserEntity currentUserEntity = null;     UserEntity sendToUserEntity = null;
-            for(UserEntity forLoopObject : userEntityList)
-            {
-                if(forLoopObject.getUserName().equals(currentUserName))
+            for (UserEntity forLoopObject : userEntityList) {
+                if (forLoopObject.getId().equals(currentUserId))
                     currentUserEntity = forLoopObject;
                 else
                     sendToUserEntity = forLoopObject;
@@ -151,48 +132,47 @@ public class FriendsInformationService {
 
             Optional<FriendsInformationEntity> friendsInformationEntity = this.friendsInformationRepository.findByUserAAndUserBAndDeletedAtIsNullOrUserBAndUserAAndDeletedAtIsNull(currentUserEntity, sendToUserEntity, currentUserEntity, sendToUserEntity);
 
-            if (friendsInformationEntity.isPresent() && friendsInformationEntity.get().getStatus().equals(FriendStatus.SEND)) {
+            if (friendsInformationEntity.isPresent()) {
 
                 friendsInformationEntity.get().setStatus(FriendStatus.FRIEND);
                 this.friendsInformationRepository.save(friendsInformationEntity.get());
                 return ResponseEntity.ok(Map.of(MESSAGE, SUCCESSFULLY_ACCEPTED_FRIEND_REQUEST_SENT));
             }
-            else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(MESSAGE, DATA_NOT_FOUND));
-            }
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(MESSAGE, DATA_NOT_FOUND));
+
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(MESSAGE, USER_NOT_FOUND));
     }
 
-    public ResponseEntity<?> getFriendList(Pageable pageable){
+
+    public ResponseEntity<?> getFriendList(Pageable pageable) {
 
         ServletRequestAttributes request = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         String currentUserName = jwtUtils.getUserNameFromJwtToken(this.jwtUtils.getJwtFromCookies(request.getRequest()));
 
         Optional<UserEntity> userEntity = this.userRepository.findByUserNameAndDeletedAtIsNullAndActive(currentUserName, Status.ENABLE);
 
-        if(userEntity.isPresent())
-        {
-            Page<FriendsInformationEntity> friendsInformationEntities = this.friendsInformationRepository.findByUserAOrUserBAndStatusAndDeletedAtIsNull(userEntity.get(), userEntity.get(), FriendStatus.FRIEND, pageable);
+        if (userEntity.isPresent()) {
+            Page<FriendsInformationEntity> friendsInformationEntities = this.friendsInformationRepository.findByUserAAndStatusAndDeletedAtIsNullOrUserBAndStatusAndDeletedAtIsNull(userEntity.get(), FriendStatus.FRIEND, userEntity.get(), FriendStatus.FRIEND, pageable);
 
             List<GetFriendListResponseModel> responseData = new ArrayList<>();
 
-            for(FriendsInformationEntity forLoopObject:friendsInformationEntities){
+            for (FriendsInformationEntity forLoopObject : friendsInformationEntities) {
 
                 GetFriendListResponseModel getFriendListResponseModel = new GetFriendListResponseModel();
 
-                if(currentUserName.equals(forLoopObject.getUserA().getUserName()))
-                {
-                    getFriendListResponseModel.setEmail(forLoopObject.getUserB().getEmail());
-                    getFriendListResponseModel.setFullName(forLoopObject.getUserB().getUserOtherInformation().getFirstName() +" "+forLoopObject.getUserB().getUserOtherInformation().getMiddleName()+ " "+forLoopObject.getUserB().getUserOtherInformation().getLastName() );
+                if (currentUserName.equals(forLoopObject.getUserA().getUserName())) {
+                    getFriendListResponseModel.setId(forLoopObject.getUserB().getId());
+                    getFriendListResponseModel.setFullName(forLoopObject.getUserB().getUserOtherInformation().getFirstName() + " " + forLoopObject.getUserB().getUserOtherInformation().getMiddleName() + " " + forLoopObject.getUserB().getUserOtherInformation().getLastName());
+                    getFriendListResponseModel.setFullAddress(forLoopObject.getUserB().getUserOtherInformation().getCity() + ", " + forLoopObject.getUserB().getUserOtherInformation().getCountry());
 
                     String photoUrl = "https://s3." + this.awsRegion + ".amazonaws.com/" + this.bucketName + "/users/profile/" + forLoopObject.getUserB().getId() + "/" + forLoopObject.getUserB().getUserOtherInformation().getPhotoUrl();
                     getFriendListResponseModel.setPhotoData(photoUrl);
-                }
-                else
-                {
-                    getFriendListResponseModel.setEmail(forLoopObject.getUserA().getEmail());
-                    getFriendListResponseModel.setFullName(forLoopObject.getUserA().getUserOtherInformation().getFirstName() +" "+forLoopObject.getUserA().getUserOtherInformation().getMiddleName()+ " "+forLoopObject.getUserA().getUserOtherInformation().getLastName() );
+                } else {
+                    getFriendListResponseModel.setId(forLoopObject.getUserA().getId());
+                    getFriendListResponseModel.setFullName(forLoopObject.getUserA().getUserOtherInformation().getFirstName() + " " + forLoopObject.getUserA().getUserOtherInformation().getMiddleName() + " " + forLoopObject.getUserA().getUserOtherInformation().getLastName());
+                    getFriendListResponseModel.setFullAddress(forLoopObject.getUserA().getUserOtherInformation().getCity() + ", " + forLoopObject.getUserA().getUserOtherInformation().getCountry());
 
                     String photoUrl = "https://s3." + this.awsRegion + ".amazonaws.com/" + this.bucketName + "/users/profile/" + forLoopObject.getUserA().getId() + "/" + forLoopObject.getUserA().getUserOtherInformation().getPhotoUrl();
                     getFriendListResponseModel.setPhotoData(photoUrl);
@@ -201,7 +181,42 @@ public class FriendsInformationService {
                 responseData.add(getFriendListResponseModel);
             }
 
-            return ResponseEntity.status(HttpStatus.OK).body(Map.of("data",responseData,"pageSize",friendsInformationEntities.getSize(),"getTotalElements",friendsInformationEntities.getTotalElements()));
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of("data", responseData, "pageSize", friendsInformationEntities.getSize(), "getTotalElements", friendsInformationEntities.getTotalElements()));
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(MESSAGE, USER_NOT_FOUND));
+    }
+
+
+    public ResponseEntity<?> getFriendRequestNotification(Pageable pageable) {
+
+        ServletRequestAttributes request = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        String currentUserName = jwtUtils.getUserNameFromJwtToken(this.jwtUtils.getJwtFromCookies(request.getRequest()));
+
+        Optional<UserEntity> userEntity = this.userRepository.findByUserNameAndDeletedAtIsNullAndActive(currentUserName, Status.ENABLE);
+
+        if (userEntity.isPresent()) {
+            Page<FriendsInformationEntity> friendsInformationEntities = this.friendsInformationRepository.findByUserBAndStatusAndDeletedAtIsNull(userEntity.get(), FriendStatus.SEND, pageable);
+
+            List<GetAllUserListResponseModel> responseData = new ArrayList<>();
+            for (FriendsInformationEntity forLoopObject : friendsInformationEntities) {
+
+                GetAllUserListResponseModel getAllUserListResponseModel = new GetAllUserListResponseModel();
+
+                getAllUserListResponseModel.setId(forLoopObject.getUserA().getId());
+                getAllUserListResponseModel.setFullName(forLoopObject.getUserA().getUserOtherInformation().getFirstName() + " " + forLoopObject.getUserA().getUserOtherInformation().getMiddleName() + " " + forLoopObject.getUserA().getUserOtherInformation().getLastName());
+                getAllUserListResponseModel.setFullAddress(forLoopObject.getUserA().getUserOtherInformation().getCity() + ", " + forLoopObject.getUserA().getUserOtherInformation().getCountry());
+
+                String photoUrl = "https://s3." + this.awsRegion + ".amazonaws.com/" + this.bucketName + "/users/profile/" + forLoopObject.getUserA().getId() + "/" + forLoopObject.getUserA().getUserOtherInformation().getPhotoUrl();
+
+                getAllUserListResponseModel.setPhotoData(photoUrl);
+//                getAllUserListResponseModel.setFriendStatus(forLoopObject.getStatus());
+
+                responseData.add(getAllUserListResponseModel);
+            }
+
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of("data", responseData, "pageSize", friendsInformationEntities.getSize(), "getTotalElements", friendsInformationEntities.getTotalElements()));
+
         }
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(MESSAGE, USER_NOT_FOUND));
@@ -224,5 +239,37 @@ public class FriendsInformationService {
 
         // Pre-signed URL string me convert karke return karein
         return s3Presigner.presignGetObject(presignRequest).url().toString();
+    }
+
+    public ResponseEntity<?> cancelFriendRequest(@Valid IdRequestModel requestModel) {
+
+        ServletRequestAttributes request = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        Long currentUserId = Long.valueOf(jwtUtils.getIdFromJwtToken(this.jwtUtils.getJwtFromCookies(request.getRequest())));
+
+        List<UserEntity> userEntityList = this.userRepository.findByIdInAndDeletedAtIsNullAndActive(List.of(currentUserId, requestModel.getId()), Status.ENABLE);
+
+        if (userEntityList.size() == 2) {
+
+            UserEntity currentUserEntity = null;
+            UserEntity sendToUserEntity = null;
+            for (UserEntity forLoopObject : userEntityList) {
+                if (forLoopObject.getId().equals(currentUserId))
+                    currentUserEntity = forLoopObject;
+                else
+                    sendToUserEntity = forLoopObject;
+            }
+
+            Optional<FriendsInformationEntity> friendsInformationEntity = this.friendsInformationRepository.findByUserAAndUserBAndStatusAndDeletedAtIsNull(sendToUserEntity, currentUserEntity, FriendStatus.SEND);
+
+            if (friendsInformationEntity.isPresent()) {
+
+                friendsInformationEntity.get().setDeletedAt(new Date());
+                this.friendsInformationRepository.save(friendsInformationEntity.get());
+                return ResponseEntity.ok(Map.of(MESSAGE, SUCCESSFULLY_CANCEL_FRIEND_REQUEST_SENT));
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(MESSAGE, DATA_NOT_FOUND));
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(MESSAGE, USER_NOT_FOUND));
     }
 }

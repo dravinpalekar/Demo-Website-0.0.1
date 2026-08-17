@@ -23,6 +23,8 @@ export class allRoutes {
     static readonly editPermission = this.superAdminDashboard + "/editPermission/";
     static readonly editRole = this.superAdminDashboard + "/editRole/";
     static readonly findFriend = "findFriend";
+    static readonly friendLists = "friendList";
+    static readonly friendRequestNotify = "friendRequestNotify";
     static readonly chatBox = "chat";
 
 
@@ -50,9 +52,11 @@ export class allRoutes {
     static readonly user = "user/";
     static readonly activateDeactivate = "activateDeactivate";
     static readonly people = "people/";
-     static readonly friendList = "friendList/";
+    static readonly friendList = "friendList/";
+    static readonly friendRequestList = "friendRequestList/";
     static readonly send = "send/";
     static readonly accept = "accept/";
+    static readonly cancel = "cancel/";
     static readonly request = "request";
 
     static readonly oneToOneSendMessageBackendUrl = "oneToOneSendMessage";
@@ -102,6 +106,8 @@ export class allRoutes {
     static readonly sendFriendRequestBackendUrl = this.userBackendBaseUrl + this.api + this.user + this.send + this.request;
     static readonly acceptFriendRequestBackendUrl = this.userBackendBaseUrl + this.api + this.user + this.accept + this.request;
     static readonly getFriendListBackendUrl = this.userBackendBaseUrl + this.api + this.user + this.friendList + this.get;
+    static readonly getFriendRequestListBackendUrl = this.userBackendBaseUrl + this.api + this.user + this.friendRequestList + this.get;
+    static readonly cancelFriendRequestBackendUrl = this.userBackendBaseUrl + this.api + this.user + this.cancel + this.request;
     // Define all normal user routes used in the appliation for backend
 
 

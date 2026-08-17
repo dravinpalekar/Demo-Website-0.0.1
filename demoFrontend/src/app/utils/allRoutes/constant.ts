@@ -7,7 +7,10 @@ export class constant{
     "/superAdminDashboard/managePermission": "Manage Permission",
     "/superAdminDashboard/createPermission": "Create Permission",
     "/superAdminDashboard/myProfile": "My Profile",
-    "/superAdminDashboard/manageUser": "User"
+    "/superAdminDashboard/manageUser": "User",
+
+    // "/superAdminDashboard/friendList": "Friend List",
+    // "/superAdminDashboard/friendRequestNotify": "Friend Request Notification"
   };
 
 }

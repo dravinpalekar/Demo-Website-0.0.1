@@ -25,20 +25,20 @@ public class WebSocketEventListener {
         //To listen to another even, create the another method with NewEvent as argument.
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
 
-        String currentUserName = (String) headerAccessor.getSessionAttributes().get("currentUserName");
-        String targetUserName = (String) headerAccessor.getSessionAttributes().get("targetUserName");
+        String currentUserId = (String) headerAccessor.getSessionAttributes().get("currentUserId");
+        String targetUserId = (String) headerAccessor.getSessionAttributes().get("targetUserId");
 
-        if(currentUserName !=null && targetUserName !=null ){
+        if(currentUserId !=null && targetUserId !=null ){
 
-            logger.info("User disconnected: {} | Chat Partner: {}", currentUserName, targetUserName);
+            logger.info("User disconnected: {} | Chat Partner: {}", currentUserId, targetUserId);
 
             ChatMessage message = ChatMessage.builder()
                     .type(ChatMessageType.LEAVE)
-                    .sender(currentUserName)
+                    .sender(currentUserId)
                     .content("User lost connection")
                     .build();
             //pass the message to the broker specific topic : private
-            messageSendingOperations.convertAndSendToUser(targetUserName, "/private", message);
+            messageSendingOperations.convertAndSendToUser(targetUserId, "/private", message);
         }
     }
 

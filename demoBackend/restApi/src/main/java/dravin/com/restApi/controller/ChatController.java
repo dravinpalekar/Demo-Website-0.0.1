@@ -50,30 +50,30 @@ public class ChatController {
     @MessageMapping(ONE_TO_ONE_ADD_USER)
     public void addUser(@Payload ChatMessage msg, SimpMessageHeaderAccessor headerAccessor, Principal principal) {
 
-        String currentUserName = principal.getName();
+        String currentUserId = principal.getName();
 
-        headerAccessor.getSessionAttributes().put("targetUserName", msg.getRecipient());
+        headerAccessor.getSessionAttributes().put("targetUserId", msg.getRecipient());
 
         logger.info("User joined chat: {} -> {}", msg.getSender(), msg.getRecipient());
 
-        checkBothUsersConnected( currentUserName, msg.getRecipient());
+        checkBothUsersConnected( currentUserId, msg.getRecipient());
     }
 
-    private void checkBothUsersConnected(String currentUserName, String targetUserName)
+    private void checkBothUsersConnected(String currentUserId, String targetUserId)
     {
-        boolean currentUserConnected = simpUserRegistry.getUser(currentUserName) != null;
-        boolean targetUserConnected = simpUserRegistry.getUser(targetUserName) != null;
+        boolean currentUserIdConnected = simpUserRegistry.getUser(currentUserId) != null;
+        boolean targetUserIdConnected = simpUserRegistry.getUser(targetUserId) != null;
 
-        logger.info("Connection status -> {} : {} | {} : {}", currentUserName, currentUserConnected, targetUserName, targetUserConnected );
+        logger.info("Connection status -> {} : {} | {} : {}", currentUserId, currentUserIdConnected, targetUserId, targetUserIdConnected );
 
-        if (currentUserConnected && targetUserConnected) {
+        if (currentUserIdConnected && targetUserIdConnected) {
 
             ChatMessage message = ChatMessage.builder().type(ChatMessageType.CONNECTED).content("You are now connected").build();
 
-            messagingTemplate.convertAndSendToUser(currentUserName, WEBSOCKET_PRIVATE, message );
-            messagingTemplate.convertAndSendToUser(targetUserName, WEBSOCKET_PRIVATE, message );
+            messagingTemplate.convertAndSendToUser(currentUserId, WEBSOCKET_PRIVATE, message );
+            messagingTemplate.convertAndSendToUser(targetUserId, WEBSOCKET_PRIVATE, message );
 
-            logger.info("Both users connected successfully: {} <-> {}", currentUserName, targetUserName );
+            logger.info("Both users connected successfully: {} <-> {}", currentUserId, targetUserId );
         }
     }
 

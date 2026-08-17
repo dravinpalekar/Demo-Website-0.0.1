@@ -8,6 +8,8 @@ const routes: Routes = [
     children: [
       { path: '', loadComponent: () => import('./component/dashboard-content/dashboard-content').then(m => m.DashboardContent) },
       { path: allRoutes.findFriend, loadComponent: () => import('./component/find-friend/find-friend').then(m => m.FindFriend) },
+      { path: allRoutes.friendLists, loadComponent: () => import('./component/find-friend/find-friend').then(m => m.FindFriend) },
+      { path: allRoutes.friendRequestNotify, loadComponent: () => import('./component/find-friend/find-friend').then(m => m.FindFriend) },
       { path: allRoutes.chatBox, loadComponent: () => import('./component/chat-box/chat-box').then(m => m.ChatBox) },
 
       { path: allRoutes.manageProfile, loadComponent: () => import('./../../superAdmin/dashboard/component/manage-profile/manage-profile').then(m => m.ManageProfile) },

@@ -22,11 +22,11 @@ public class WebSocketAuthChannelInterceptor implements ChannelInterceptor {
 
         if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
 
-            String currentUserName = (String) accessor.getSessionAttributes().get("currentUserName");
+            String currentUserId = (String) accessor.getSessionAttributes().get("currentUserId");
 
-            if (currentUserName != null && !currentUserName.isEmpty()) {
-                accessor.setUser(new StompPrincipal(currentUserName));
-                logger.info("set user in StompPrincipal - " + currentUserName);
+            if (currentUserId != null && !currentUserId.isEmpty()) {
+                accessor.setUser(new StompPrincipal(currentUserId));
+                logger.info("set user in StompPrincipal - " + currentUserId);
             }
         }
         return message;
