@@ -122,8 +122,21 @@
                                         class="text-muted d-flex justify-content-start align-items-center pe-3 pt-3 mt-auto border-top">
                                         <img width="40" height="40" [ngSrc] = "currentPhotoUrl ||'assets/superAdminModule/images/user/user-xs-01.jpg'" alt="avatar 3" class="input-avatar flex-shrink-0 me-2" style="object-fit: cover;">
                                         <input type="text" class="form-control form-control-lg me-2" [(ngModel)]="messageTextBoxArea" placeholder="Type message" (keydown.enter)="sendMessage($event)">
-                                        <a class="ms-1 text-muted" href="#!"><i class="fas fa-paperclip fs-5"></i></a>
-                                        <a class="ms-3 text-muted" href="#!"><i class="fas fa-smile fs-5"></i></a>
+                                        <!-- <a class="ms-1 text-muted" href="#!"><i class="fas fa-paperclip fs-5"></i></a>
+                                        <a class="ms-3 text-muted" href="#!"><i class="fas fa-smile fs-5"></i></a> -->
+                                        
+                                        <a class="ms-1 text-muted" href="#" (click)="$event.preventDefault()"><i class="fas fa-paperclip fs-5"></i></a>
+
+                                        <!-- Emoji Button -->
+                                        <a class="ms-3" href="#" (click)="toggleEmojiPicker($event)"><i class="bi bi-emoji-smile-fill fs-5"></i></a>
+                                        
+                                        <!-- Emoji Picker -->
+                                        @if (showEmojiPicker) 
+                                        {
+                                            <div class="emoji-picker-container"  (click)="$event.stopPropagation()">
+                                                <emoji-picker (emoji-click)="onEmojiClick($event)"></emoji-picker>
+                                            </div>
+                                        }
                                         <a class="ms-3 text-primary" href="#" (click)="sendMessage($event)"><i class="bi bi-send-fill fs-5"></i></a>
                                     </div>
                                 </div>

@@ -1,15 +1,17 @@
-import { ChangeDetectorRef, Component, ElementRef, inject, OnDestroy, OnInit, PLATFORM_ID, signal, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, HostListener, inject, OnDestroy, OnInit, PLATFORM_ID, signal, ViewChild } from '@angular/core';
 import { WebSocketService } from '../../../../../service/web-socket-service';
 import { FormsModule } from '@angular/forms';
 import { CookieService } from 'ngx-cookie-service';
 import { DatePipe, isPlatformBrowser, NgOptimizedImage } from '@angular/common';
 import { UserService } from '../../../../../service/user-service';
+// import 'emoji-picker-element';
 
 @Component({
     selector: 'app-chat-box',
-    imports: [FormsModule, NgOptimizedImage, DatePipe],
+    imports: [FormsModule, NgOptimizedImage, DatePipe,],
     templateUrl: './chat-box.html',
     styleUrl: './chat-box.scss',
+    schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ChatBox implements OnInit, OnDestroy {
 
@@ -30,6 +32,8 @@ export class ChatBox implements OnInit, OnDestroy {
     currentUserName: string = "";
     anotherUserId!: number;
 
+    showEmojiPicker = false;
+
     @ViewChild('messagesContainer') private messagesContainer!: ElementRef<HTMLDivElement>;
 
     constructor(private socketService: WebSocketService, private userService: UserService, private cdr: ChangeDetectorRef) {
@@ -39,9 +43,12 @@ export class ChatBox implements OnInit, OnDestroy {
         }
     }
 
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
 
         if (isPlatformBrowser(this.platformId)) {
+
+            await import('emoji-picker-element');
+
             this.userService.getFriendList().subscribe({
                 next: (res) => {
                     this.friendList.set(JSON.parse(JSON.stringify(res)).data);
@@ -131,6 +138,24 @@ export class ChatBox implements OnInit, OnDestroy {
                 element.scrollTop = element.scrollHeight;
             }
         });
+    }
+
+    onEmojiClick(event: any): void {
+
+        this.messageTextBoxArea += event.detail.unicode;
+    }
+
+    toggleEmojiPicker(event: MouseEvent): void {
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        this.showEmojiPicker = !this.showEmojiPicker;
+    }
+
+    @HostListener('document:click')
+    onDocumentClick(): void {
+        this.showEmojiPicker = false;
     }
 
 }
