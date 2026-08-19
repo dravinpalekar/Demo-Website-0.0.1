@@ -35,6 +35,7 @@ export class allRoutes {
     // Define all the routes used in the application for backend 
     static readonly entryPointBackendBaseUrl = "http://localhost:8080/";
     static readonly userBackendBaseUrl = "http://localhost:8082/";
+    static readonly backendWebSocketBaseUrl = "http://localhost:8081/";
     static readonly backendWebSocketUrl = "ws://localhost:8081/ws";
 
     static readonly api = "api/";
@@ -58,6 +59,7 @@ export class allRoutes {
     static readonly accept = "accept/";
     static readonly cancel = "cancel/";
     static readonly request = "request";
+    static readonly uploadFile = "upload/file";
 
     static readonly oneToOneSendMessageBackendUrl = "oneToOneSendMessage";
     static readonly oneToOneAddUserBackendUrl = "oneToOneAddUser";
@@ -123,6 +125,6 @@ export class allRoutes {
 
     static readonly oneToOneSendMessage = "/app/" + this.oneToOneSendMessageBackendUrl;
     static readonly oneToOneAddUser = "/app/" + this.oneToOneAddUserBackendUrl;
-
+    static readonly uploadImageBackendUrl = this.backendWebSocketBaseUrl + this.api + this.user + this.uploadFile
     // Define websocket routes used in the application for frontend
 }

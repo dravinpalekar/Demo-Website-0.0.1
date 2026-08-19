@@ -3,8 +3,11 @@ package dravin.com.restApi.configuration.jwt;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.WebUtils;
 
 import javax.crypto.SecretKey;
 
@@ -14,6 +17,10 @@ public class JwtUtils {
 
     @Value("${jwtSecretKey}")
     private String jwtSecretKey;
+
+    @Value("${jwtCookieName:jwt_token}")
+    private String jwtCookieName;
+
 
     private SecretKey key() {
         // Use SecretKey instead of the generic Key interface
@@ -38,5 +45,13 @@ public class JwtUtils {
                 .parseSignedClaims(token)
                 .getPayload()
                 .get("id", Integer.class).toString();
+    }
+
+    public String getJwtFromCookies(HttpServletRequest request) {
+        Cookie cookie = WebUtils.getCookie(request, jwtCookieName);
+        if (cookie != null) {
+            return cookie.getValue();
+        }
+        return null;
     }
 }

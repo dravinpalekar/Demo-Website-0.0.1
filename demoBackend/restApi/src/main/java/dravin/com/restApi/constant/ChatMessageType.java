@@ -4,5 +4,6 @@ public enum ChatMessageType {
     JOIN,
     LEAVE,
     CHAT,
-    CONNECTED
+    CONNECTED,
+    IMAGE
 }

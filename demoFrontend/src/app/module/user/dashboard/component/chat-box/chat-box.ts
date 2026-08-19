@@ -1,10 +1,11 @@
 import { ChangeDetectorRef, Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, HostListener, inject, OnDestroy, OnInit, PLATFORM_ID, signal, ViewChild } from '@angular/core';
 import { WebSocketService } from '../../../../../service/web-socket-service';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormsModule } from '@angular/forms';
 import { CookieService } from 'ngx-cookie-service';
 import { DatePipe, isPlatformBrowser, NgOptimizedImage } from '@angular/common';
 import { UserService } from '../../../../../service/user-service';
-// import 'emoji-picker-element';
+import { CommonFun } from '../../../../../utils/helper/CommonFun';
+import { FileValidation } from '../../../../../utils/formValidation/FileValidation';
 
 @Component({
     selector: 'app-chat-box',
@@ -33,10 +34,12 @@ export class ChatBox implements OnInit, OnDestroy {
     anotherUserId!: number;
 
     showEmojiPicker = false;
+    isUploading = false;
 
     @ViewChild('messagesContainer') private messagesContainer!: ElementRef<HTMLDivElement>;
+    @ViewChild('fileInput') private fileInput!: ElementRef<HTMLInputElement>;
 
-    constructor(private socketService: WebSocketService, private userService: UserService, private cdr: ChangeDetectorRef) {
+    constructor(private socketService: WebSocketService, private userService: UserService, private cdr: ChangeDetectorRef, private commonFunctionObject: CommonFun) {
 
         if (this.cookieService.get("isLoggedIn")) {
             this.currentUserName = JSON.parse(this.cookieService.get("userSession")).userName;
@@ -73,11 +76,11 @@ export class ChatBox implements OnInit, OnDestroy {
                 if (message.type === 'JOIN') {
 
                     if (message.sender === this.anotherUserId) {
-                        console.log(`${message.sender} has joined the chat room.`);
+                        // console.log(`${message.sender} has joined the chat room.`);
                     }
                 }
 
-                if (message.type === 'CHAT') {
+                if (message.type === 'CHAT' || message.type === 'IMAGE') {
                     // console.log(`Message received from ${message.sender}: ${message.content}`);
                     this.messages.push(message);
                 }
@@ -100,7 +103,7 @@ export class ChatBox implements OnInit, OnDestroy {
     connect(targetUserId: number, targetPhotoData: string): void {
 
         this.showMessagingTextBox = true;
-        console.log('Attempting to connect to WebSocket at http://localhost:8080/ws with username:', this.currentUserName);
+        // console.log('Attempting to connect to WebSocket at http://localhost:8080/ws with username:', this.currentUserName);
         this.socketService.connect(targetUserId);
 
         this.anotherUserId = targetUserId;
@@ -115,7 +118,7 @@ export class ChatBox implements OnInit, OnDestroy {
         const chatMessage = { sender: this.currentUserName, recipient: this.anotherUserId, content: this.messageTextBoxArea, dataTime: new Date(), type: 'CHAT' };
         this.messages.push(chatMessage);
         if (this.messageTextBoxArea) {
-            this.socketService.sendMessage(this.anotherUserId, this.messageTextBoxArea);  // Send the message via WebSocket service
+            this.socketService.sendMessage(this.anotherUserId, this.messageTextBoxArea, "CHAT");  // Send the message via WebSocket service
             this.messageTextBoxArea = '';  // Clear the message input after sending
             this.scrollToBottom();
         }
@@ -156,6 +159,77 @@ export class ChatBox implements OnInit, OnDestroy {
     @HostListener('document:click')
     onDocumentClick(): void {
         this.showEmojiPicker = false;
+    }
+
+
+    onImageSelected(event: Event): void {
+
+        const input = event.target as HTMLInputElement;
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+
+            if (this.checkFileValidation(file))
+                return;
+
+            this.isUploading = true;
+            this.scrollToBottom();
+            const requestData = new FormData();
+            requestData.append('file', file);
+
+            this.userService.uploadChatImage(requestData).subscribe({
+                next: (res) => {
+                    const url = JSON.parse(JSON.stringify(res)).data;
+
+                    const chatMessage = { sender: this.currentUserName, recipient: String(this.anotherUserId), content: url, dataTime: new Date(), type: 'IMAGE' };
+
+                    this.messages.push(chatMessage);
+                    this.isUploading = false;
+
+                    this.socketService.sendMessage(this.anotherUserId, url, "IMAGE");           // Send the message via WebSocket service
+                    this.cdr.detectChanges();
+                    this.scrollToBottom();
+                },
+                error: (e) => {
+                    this.isUploading = false;
+
+                    if (e.status == 400) {
+                        this.commonFunctionObject.openSnackBar(e.error.detail, 'danger');
+                    }
+                }
+            });
+        }
+        // this.scrollToBottom();
+    }
+
+    private checkFileValidation(file: File) {
+
+        let fileControl = new FormControl<File | null>(null, [
+            FileValidation(['image/jpeg', 'image/jpg', 'image/jpe', 'image/png'], 1)
+        ]);
+
+        let fileErrorMessage: string | null = null;
+
+        fileControl.setValue(file);
+        fileControl.updateValueAndValidity();
+
+        // Step 2: Check karein agar validator ne error diya hai
+        if (fileControl.invalid) {
+            const errors = fileControl.errors;
+
+            if (errors?.['invalidFileType']) {
+                fileErrorMessage = 'This file type is not allowed. Please select a valid image file.(jpeg, jpg, jpe, png)';
+            } else if (errors?.['maxFileSize']) {
+                fileErrorMessage = `File size too big. Please compress or choose a smaller file (Max: 1 MB).`;
+            }
+
+            fileControl.reset();
+            // if (this.fileInput) {
+            //     this.fileInput.nativeElement.value = '';
+            // }
+            this.commonFunctionObject.openSnackBar(fileErrorMessage, 'danger');
+            return true;
+        }
+        return false;
     }
 
 }

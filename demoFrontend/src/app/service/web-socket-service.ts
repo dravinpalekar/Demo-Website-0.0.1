@@ -61,11 +61,11 @@ export class WebSocketService {
         this.stompClient?.activate();
     }
 
-    sendMessage(recipientUserId: number, content: string) {
+    sendMessage(recipientUserId: number, content: string, messageType: string) {
 
         if (this.stompClient && this.stompClient.connected) {
             // Create a chat message object
-            const chatMessage = { recipient: recipientUserId, content: content, dataTime: new Date(), type: 'CHAT' };
+            const chatMessage = { recipient: recipientUserId, content: content, dataTime: new Date(), type: messageType };
 
             // Log the message being sent and the sender
             // console.log(`Message sent by ${username}: ${content}`);

@@ -44,5 +44,10 @@ export class UserService {
         return this.http.post(allRoutes.cancelFriendRequestBackendUrl, requestData);
     }
 
+    public uploadChatImage(file:FormData){
+
+        return this.http.post(allRoutes.uploadImageBackendUrl, file);
+    }
+
 
 }

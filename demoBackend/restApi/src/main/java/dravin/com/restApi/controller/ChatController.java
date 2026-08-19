@@ -3,6 +3,7 @@ package dravin.com.restApi.controller;
 import dravin.com.restApi.configuration.jwt.JwtUtils;
 import dravin.com.restApi.constant.ChatMessageType;
 import dravin.com.restApi.requestModel.ChatMessage;
+import dravin.com.restApi.service.ChatService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,14 +13,16 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.Map;
 import static dravin.com.restApi.constant.RoutesFile.*;
 
-@Controller
+@RestController
 @RequestMapping(API_USER)
 @Tag(name = "This controller is for handling chatting between user to user")
 public class ChatController {
@@ -29,11 +32,13 @@ public class ChatController {
     private final SimpMessagingTemplate messagingTemplate;
     private final SimpUserRegistry simpUserRegistry;
     private final JwtUtils jwtUtils;
+    private final ChatService chatService;
 
-    public ChatController(SimpMessagingTemplate messagingTemplate, SimpUserRegistry simpUserRegistry, JwtUtils jwtUtils) {
+    public ChatController(SimpMessagingTemplate messagingTemplate, SimpUserRegistry simpUserRegistry, JwtUtils jwtUtils, ChatService chatService) {
         this.messagingTemplate = messagingTemplate;
         this.simpUserRegistry = simpUserRegistry;
         this.jwtUtils = jwtUtils;
+        this.chatService = chatService;
     }
 
 
@@ -77,6 +82,13 @@ public class ChatController {
         }
     }
 
+    @PostMapping("upload/file")
+    public ResponseEntity<?> uploadImage(@RequestParam(value = "file") MultipartFile file) throws IOException {
+        if (file != null && !file.isEmpty())
+            this.validateImageFile(file);
+        return this.chatService.uploadImage(file);
+    }
+
     @PostMapping("create/room")
     public ResponseEntity<?> createRoomForOneToOne(@RequestHeader("Authorization") String authHeader, @RequestBody String senderUserName) {
 
@@ -103,6 +115,17 @@ public class ChatController {
     }
 
 
+    private void validateImageFile(MultipartFile file) {
+
+        if (file.getSize() > 1048576) { // 1 MB
+            throw new MaxUploadSizeExceededException(1048576);
+        }
+
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.matches("image/(jpeg|jpg|jpe|png)")) {
+            throw new IllegalArgumentException("Only JPEG, JPG, JPE or PNG images are allowed");
+        }
+    }
 }
 
 
