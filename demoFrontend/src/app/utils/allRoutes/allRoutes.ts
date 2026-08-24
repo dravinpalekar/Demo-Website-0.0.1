@@ -60,6 +60,7 @@ export class allRoutes {
     static readonly cancel = "cancel/";
     static readonly request = "request";
     static readonly uploadFile = "upload/file";
+    static readonly createRoom = "create/room";
 
     static readonly oneToOneSendMessageBackendUrl = "oneToOneSendMessage";
     static readonly oneToOneAddUserBackendUrl = "oneToOneAddUser";
@@ -126,5 +127,6 @@ export class allRoutes {
     static readonly oneToOneSendMessage = "/app/" + this.oneToOneSendMessageBackendUrl;
     static readonly oneToOneAddUser = "/app/" + this.oneToOneAddUserBackendUrl;
     static readonly uploadImageBackendUrl = this.backendWebSocketBaseUrl + this.api + this.user + this.uploadFile
+    static readonly createRoomOrGetRoomBackendUrl = this.backendWebSocketBaseUrl + this.api + this.user + this.createRoom
     // Define websocket routes used in the application for frontend
 }

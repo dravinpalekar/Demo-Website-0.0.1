@@ -61,6 +61,7 @@ public class AuthenticationService {
         Map<String,Object> responseObject = new HashMap<>();
         responseObject.put("roles",roleList);
         responseObject.put("userName",requestObject.getUserName());
+        responseObject.put("id",((UserDetailsImpl) authenticationObject.getPrincipal()).getId());
         responseObject.put("message","User logged in successfully.");
 
         ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(authenticationObject);

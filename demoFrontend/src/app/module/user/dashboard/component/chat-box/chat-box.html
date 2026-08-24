@@ -70,7 +70,7 @@
                                         {
                                             @if(item.type === "CHAT" || item.type === "IMAGE")
                                             {
-                                                @if(item.sender != currentUserName)
+                                                @if(item.sender != currentUserId)
                                                 {
                                                     <div class="d-flex flex-row justify-content-start mb-3">
                                                         <img width="45" height="45" [ngSrc] = "anotherPhotoUrl || 'assets/superAdminModule/images/user/user-xs-01.jpg'" alt="avatar 1" class="chat-avatar flex-shrink-0 me-2 rounded-circle" style="object-fit: cover;">

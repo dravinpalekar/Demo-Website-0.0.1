@@ -1,7 +1,10 @@
-import { Service } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Client, Message } from '@stomp/stompjs';
 import { BehaviorSubject } from 'rxjs';
 import { allRoutes } from '../utils/allRoutes/allRoutes';
+import { CookieService } from 'ngx-cookie-service';
+// import { UserService } from './user-service';
+// import { IdModel } from '../model/requestModel/IdModel';
 
 // export interface ChatMessage {
 
@@ -14,7 +17,14 @@ import { allRoutes } from '../utils/allRoutes/allRoutes';
 @Service()
 export class WebSocketService {
 
-    stompClient: Client;
+    private cookieService = inject(CookieService);
+    // private userService = inject(UserService);
+
+    currentUserId: string = "";
+
+    stompClient: Client | null= null; 
+
+    activeRoomId: string = "";
 
     // Subject to manage the stream of incoming messages
     private messageSubject = new BehaviorSubject<any>(null);
@@ -26,15 +36,29 @@ export class WebSocketService {
 
     constructor() {
 
+        if (this.cookieService.get("isLoggedIn")) {
+            this.currentUserId = JSON.parse(this.cookieService.get("userSession")).id;
+        }
+
+    }
+
+    connect(targetUserId: number, roomId: string) {
+
         this.disconnect();
+
+        // this.stompClient = new Client({
+        //     brokerURL: allRoutes.backendWebSocketUrl,
+        //     reconnectDelay: 5000,
+        // });
+
+        this.activeRoomId = roomId; // RoomId save karein for future use
 
         this.stompClient = new Client({
             brokerURL: allRoutes.backendWebSocketUrl,
             reconnectDelay: 5000,
         });
-    }
 
-    connect(targetUserId: number) {
+     
 
         // On successful connection
         this.stompClient.onConnect = (frame) => {
@@ -42,14 +66,14 @@ export class WebSocketService {
             this.connectionSubject.next(true);  // Notify that the connection is successful
 
             // Subscribe to the '/user/private' topic to receive public messages
-            this.stompClient?.subscribe(allRoutes.userPrivateBackendUrl, (message: Message) => {
+            this.stompClient?.subscribe(allRoutes.userPrivateBackendUrl + "/" + roomId, (message: Message) => {
                 this.messageSubject.next(JSON.parse(message.body));
             });
 
             // Send a "JOIN" message to notify the server that a user has joined
             this.stompClient?.publish({
                 destination: allRoutes.oneToOneAddUser,
-                body: JSON.stringify({ recipient: targetUserId, type: 'JOIN' })
+                body: JSON.stringify({ recipient: targetUserId, roomId: roomId, type: 'JOIN' })
             });
         };
 
@@ -65,7 +89,7 @@ export class WebSocketService {
 
         if (this.stompClient && this.stompClient.connected) {
             // Create a chat message object
-            const chatMessage = { recipient: recipientUserId, content: content, dataTime: new Date(), type: messageType };
+            const chatMessage = { recipient: recipientUserId, roomId: this.activeRoomId, content: content, dataTime: new Date(), type: messageType };
 
             // Log the message being sent and the sender
             // console.log(`Message sent by ${username}: ${content}`);

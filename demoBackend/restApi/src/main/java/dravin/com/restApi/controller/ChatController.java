@@ -1,25 +1,23 @@
 package dravin.com.restApi.controller;
 
-import dravin.com.restApi.configuration.jwt.JwtUtils;
-import dravin.com.restApi.constant.ChatMessageType;
 import dravin.com.restApi.requestModel.ChatMessage;
+import dravin.com.restApi.requestModel.UserIdRequestModel;
 import dravin.com.restApi.service.ChatService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.Principal;
-import java.util.Map;
+
 import static dravin.com.restApi.constant.RoutesFile.*;
 
 @RestController
@@ -29,91 +27,37 @@ public class ChatController {
 
     private static final Logger logger = LoggerFactory.getLogger(ChatController.class);
 
-    private final SimpMessagingTemplate messagingTemplate;
-    private final SimpUserRegistry simpUserRegistry;
-    private final JwtUtils jwtUtils;
     private final ChatService chatService;
 
-    public ChatController(SimpMessagingTemplate messagingTemplate, SimpUserRegistry simpUserRegistry, JwtUtils jwtUtils, ChatService chatService) {
-        this.messagingTemplate = messagingTemplate;
-        this.simpUserRegistry = simpUserRegistry;
-        this.jwtUtils = jwtUtils;
+    public ChatController(ChatService chatService) {
         this.chatService = chatService;
     }
 
-
     @MessageMapping(ONE_TO_ONE_SEND_MESSAGE)
-    public void sendPrivateMessage(@Payload ChatMessage msg, Principal principal) {
+    public void sendMessageOneToOne(@Payload ChatMessage message, Principal principal) {
 
-        msg.setSender( principal.getName());
-
-        messagingTemplate.convertAndSendToUser( msg.getRecipient(),WEBSOCKET_PRIVATE, msg );
-//        logger.info("Message received from " + msg.getSender() + ": " + msg.getRecipient());
-//        return msg;
+        this.chatService.sendMessageOneToOne(message, principal);
     }
 
     @MessageMapping(ONE_TO_ONE_ADD_USER)
-    public void addUser(@Payload ChatMessage msg, SimpMessageHeaderAccessor headerAccessor, Principal principal) {
+    public void addUserForOneToOne(@Payload ChatMessage message, SimpMessageHeaderAccessor headerAccessor, Principal principal) {
 
-        String currentUserId = principal.getName();
-
-        headerAccessor.getSessionAttributes().put("targetUserId", msg.getRecipient());
-
-        logger.info("User joined chat: {} -> {}", msg.getSender(), msg.getRecipient());
-
-        checkBothUsersConnected( currentUserId, msg.getRecipient());
+        this.chatService.addUserForOneToOne(message, headerAccessor, principal);
     }
 
-    private void checkBothUsersConnected(String currentUserId, String targetUserId)
-    {
-        boolean currentUserIdConnected = simpUserRegistry.getUser(currentUserId) != null;
-        boolean targetUserIdConnected = simpUserRegistry.getUser(targetUserId) != null;
-
-        logger.info("Connection status -> {} : {} | {} : {}", currentUserId, currentUserIdConnected, targetUserId, targetUserIdConnected );
-
-        if (currentUserIdConnected && targetUserIdConnected) {
-
-            ChatMessage message = ChatMessage.builder().type(ChatMessageType.CONNECTED).content("You are now connected").build();
-
-            messagingTemplate.convertAndSendToUser(currentUserId, WEBSOCKET_PRIVATE, message );
-            messagingTemplate.convertAndSendToUser(targetUserId, WEBSOCKET_PRIVATE, message );
-
-            logger.info("Both users connected successfully: {} <-> {}", currentUserId, targetUserId );
-        }
-    }
-
-    @PostMapping("upload/file")
+    @PostMapping(UPLOAD_FILE)
     public ResponseEntity<?> uploadImage(@RequestParam(value = "file") MultipartFile file) throws IOException {
+
         if (file != null && !file.isEmpty())
             this.validateImageFile(file);
         return this.chatService.uploadImage(file);
     }
 
-    @PostMapping("create/room")
-    public ResponseEntity<?> createRoomForOneToOne(@RequestHeader("Authorization") String authHeader, @RequestBody String senderUserName) {
+    @PostMapping(CREATE_ROOM)
+    public ResponseEntity<?> createRoomForOneToOne(@Valid @RequestBody UserIdRequestModel requestModel) {
 
-//        String token = authHeader.substring(7);
-//        String userName = jwtUtils.getUserNameFromJwtToken(token);
-//        String temp = senderUserName;
-//
-//        List<UserEntity> userList = userRepository.findByUserNameInAndDeletedAtIsNullAndActive(List.of(userName, temp), Status.ENABLE);
-//
-//        final String[] userA = new String[1];
-//        String userB;
-//        userList.forEach(userEntity -> {
-//
-//            userA[0] = userEntity.getUserName();
-//        });
-
-//        if(userA.isPresent() && userB.isPresent())
-//        {
-//            oneToOneRoomRepository.findByUserAAndUserB(userA.get(),userB.get());
-//        }
-
-
-        return ResponseEntity.ok(Map.of("token", "dddddddddd"));
+        return chatService.createRoomForOneToOne(requestModel);
     }
-
 
     private void validateImageFile(MultipartFile file) {
 
@@ -126,6 +70,5 @@ public class ChatController {
             throw new IllegalArgumentException("Only JPEG, JPG, JPE or PNG images are allowed");
         }
     }
+
 }
-
-

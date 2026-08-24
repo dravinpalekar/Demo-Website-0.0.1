@@ -17,6 +17,7 @@ export enum Role {
 export class UserValidateModel {
     roles: Role[] | undefined;
     userName: string | undefined;
+    id: number | undefined;
 }
 
 
@@ -69,6 +70,7 @@ export class AuthenticationService {
                     let setUserData: UserValidateModel = new UserValidateModel();
                     setUserData.roles = this.roles;
                     setUserData.userName = responseData.data.userName;
+                    setUserData.id = responseData.data.id;
 
                     this.cookieService.set("userSession", JSON.stringify(setUserData), 86400000 / 1000, '/', '', true, 'Strict');
                     this.cookieService.set("isLoggedIn", "true", 86400000 / 1000, '/', '', true, 'Strict');

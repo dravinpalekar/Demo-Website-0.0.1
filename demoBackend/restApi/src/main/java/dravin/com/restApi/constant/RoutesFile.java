@@ -15,7 +15,7 @@ public class RoutesFile {
     public static final String CONNECT = "/connect";
 
 
-    // One To One Messaging                 ApplicationDestinationPrefixes
+    // One To One Messaging Application Destination Prefixes
 
     public static final String WEBSOCKET_CONNECTION = "/ws";
     public static final String WEBSOCKET_TOPIC = "/topic";
@@ -25,5 +25,8 @@ public class RoutesFile {
 
     public static final String ONE_TO_ONE_SEND_MESSAGE = "oneToOneSendMessage";
     public static final String ONE_TO_ONE_ADD_USER = "oneToOneAddUser";
+
+    public static final String UPLOAD_FILE = "upload/file";
+    public static final String CREATE_ROOM = "create/room";
 
 }

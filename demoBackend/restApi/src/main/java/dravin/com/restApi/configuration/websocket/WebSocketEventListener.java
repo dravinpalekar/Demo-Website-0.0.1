@@ -27,6 +27,7 @@ public class WebSocketEventListener {
 
         String currentUserId = (String) headerAccessor.getSessionAttributes().get("currentUserId");
         String targetUserId = (String) headerAccessor.getSessionAttributes().get("targetUserId");
+        String roomId = (String) headerAccessor.getSessionAttributes().get("roomId");
 
         if(currentUserId !=null && targetUserId !=null ){
 
@@ -35,10 +36,11 @@ public class WebSocketEventListener {
             ChatMessage message = ChatMessage.builder()
                     .type(ChatMessageType.LEAVE)
                     .sender(currentUserId)
+                    .roomId(roomId)
                     .content("User lost connection")
                     .build();
             //pass the message to the broker specific topic : private
-            messageSendingOperations.convertAndSendToUser(targetUserId, "/private", message);
+            messageSendingOperations.convertAndSendToUser(targetUserId, "/private" + "/" + roomId, message);
         }
     }
 

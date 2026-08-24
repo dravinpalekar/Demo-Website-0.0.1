@@ -6,6 +6,7 @@ import { DatePipe, isPlatformBrowser, NgOptimizedImage } from '@angular/common';
 import { UserService } from '../../../../../service/user-service';
 import { CommonFun } from '../../../../../utils/helper/CommonFun';
 import { FileValidation } from '../../../../../utils/formValidation/FileValidation';
+import { IdModel } from '../../../../../model/requestModel/IdModel';
 
 @Component({
     selector: 'app-chat-box',
@@ -30,7 +31,7 @@ export class ChatBox implements OnInit, OnDestroy {
     currentPhotoUrl: any;
 
     friendList = signal<any[]>([]);
-    currentUserName: string = "";
+    currentUserId: string = "";
     anotherUserId!: number;
 
     showEmojiPicker = false;
@@ -42,7 +43,7 @@ export class ChatBox implements OnInit, OnDestroy {
     constructor(private socketService: WebSocketService, private userService: UserService, private cdr: ChangeDetectorRef, private commonFunctionObject: CommonFun) {
 
         if (this.cookieService.get("isLoggedIn")) {
-            this.currentUserName = JSON.parse(this.cookieService.get("userSession")).userName;
+            this.currentUserId = JSON.parse(this.cookieService.get("userSession")).id;
         }
     }
 
@@ -102,22 +103,57 @@ export class ChatBox implements OnInit, OnDestroy {
 
     connect(targetUserId: number, targetPhotoData: string): void {
 
-        this.showMessagingTextBox = true;
-        // console.log('Attempting to connect to WebSocket at http://localhost:8080/ws with username:', this.currentUserName);
-        this.socketService.connect(targetUserId);
+        let roomId = "";
 
-        this.anotherUserId = targetUserId;
-        this.anotherPhotoUrl = targetPhotoData;
-        let imgElement = document.querySelector('.user-image') as HTMLImageElement;
-        this.currentPhotoUrl = imgElement.src;
+        if (isPlatformBrowser(this.platformId)) {
+            this.userService.createRoomOrGetRoom(new IdModel(targetUserId)).subscribe({
+                next: (res) => {
+                    roomId = JSON.parse(JSON.stringify(res)).data;
+
+                    this.showMessagingTextBox = false;
+                    this.messages = [];
+                    // this.ngOnDestroy();
+                    
+                    this.showMessagingTextBox = true;
+                    this.cdr.detectChanges();
+                    // console.log('Attempting to connect to WebSocket at http://localhost:8080/ws with username:', this.currentUserName);
+                    this.socketService.connect(targetUserId, roomId);
+            
+                    this.anotherUserId = targetUserId;
+                    this.anotherPhotoUrl = targetPhotoData;
+                    let imgElement = document.querySelector('.user-image') as HTMLImageElement;
+                    this.currentPhotoUrl = imgElement.src;
+                },
+                error: (e) => {
+
+                    // if (e.status == 400) {
+                    //     this.commonFunctionObject.openSnackBar(e.error.detail, 'danger');
+                    // }
+                }
+            });
+        }
+
+        // this.showMessagingTextBox = false;
+        // this.messages = [];
+        // this.ngOnDestroy();
+        // this.showMessagingTextBox = true;
+        // // console.log('Attempting to connect to WebSocket at http://localhost:8080/ws with username:', this.currentUserName);
+        // this.socketService.connect(targetUserId, roomId);
+
+        // this.anotherUserId = targetUserId;
+        // this.anotherPhotoUrl = targetPhotoData;
+        // let imgElement = document.querySelector('.user-image') as HTMLImageElement;
+        // this.currentPhotoUrl = imgElement.src;
     }
 
     sendMessage(event: Event) {
 
-        event.preventDefault();
-        const chatMessage = { sender: this.currentUserName, recipient: this.anotherUserId, content: this.messageTextBoxArea, dataTime: new Date(), type: 'CHAT' };
-        this.messages.push(chatMessage);
-        if (this.messageTextBoxArea) {
+        if (this.messageTextBoxArea.trim() !== '') {
+
+            event.preventDefault();
+            const chatMessage = { sender: this.currentUserId, recipient: this.anotherUserId, content: this.messageTextBoxArea, dataTime: new Date(), type: 'CHAT' };
+            this.messages.push(chatMessage);
+
             this.socketService.sendMessage(this.anotherUserId, this.messageTextBoxArea, "CHAT");  // Send the message via WebSocket service
             this.messageTextBoxArea = '';  // Clear the message input after sending
             this.scrollToBottom();
@@ -180,7 +216,7 @@ export class ChatBox implements OnInit, OnDestroy {
                 next: (res) => {
                     const url = JSON.parse(JSON.stringify(res)).data;
 
-                    const chatMessage = { sender: this.currentUserName, recipient: String(this.anotherUserId), content: url, dataTime: new Date(), type: 'IMAGE' };
+                    const chatMessage = { sender: this.currentUserId, recipient: String(this.anotherUserId), content: url, dataTime: new Date(), type: 'IMAGE' };
 
                     this.messages.push(chatMessage);
                     this.isUploading = false;

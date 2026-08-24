@@ -49,5 +49,10 @@ export class UserService {
         return this.http.post(allRoutes.uploadImageBackendUrl, file);
     }
 
+    public createRoomOrGetRoom(requestData: IdModel){
+
+        return this.http.post(allRoutes.createRoomOrGetRoomBackendUrl, requestData);
+    }
+
 
 }
