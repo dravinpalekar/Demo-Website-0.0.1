@@ -11,10 +11,10 @@
                         <div class="row chat-main-row">
 
                             <!-- Left Column: User List -->
-                            <div class="col-md-6 col-lg-5 col-xl-4 user-list-column">
+                            <div class="col-md-6 col-lg-5 col-xl-4 user-list-column border-right">
                                 <div class="p-2 d-flex flex-column h-100">
 
-                                    <div class="input-group rounded mb-3">
+                                    <div class="input-group rounded mb-3 border-bottom pb-2">
                                         <input type="search" class="form-control rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
                                         <span class="input-group-text border-0" id="search-addon">
                                             <i class="bi bi-search"></i>
@@ -28,7 +28,7 @@
                                             @for (item of friendList(); track $index)
                                             {
                                                 <li class="p-2 border-bottom">
-                                                    <a (click)="connect(item.id,item.photoData)" class="d-flex justify-content-between text-decoration-none">
+                                                    <a (click)="connect(item.id,item.photoData, item.fullName)" class="d-flex justify-content-between text-decoration-none">
                                                         <div class="d-flex flex-row">
                                                             <div class="avatar-wrapper me-3">
                                                                 <img [src] ="item.photoData || 'assets/superAdminModule/images/user/user-xs-01.jpg'" width="45" height="45" alt="avatar" class="align-self-center rounded-circle">
@@ -62,6 +62,31 @@
                             @if(showMessagingTextBox)
                             {
                                 <div class="col-md-6 col-lg-7 col-xl-8 chat-main-column">
+
+                                    <!-- navbar of chatting GUI -->
+                                    <div class="row border-bottom pb-2 pt-2" style="background-color: #FAFAFA;">
+
+                                        <div class="col-md-1">
+                                            <img width="40" height="40" [ngSrc]="anotherPhotoUrl ||'assets/superAdminModule/images/user/user-xs-01.jpg'" alt="avatar 3" class="rounded-circle input-avatar flex-shrink-0 me-2" style="object-fit: cover;">
+                                        </div>
+
+                                        <div class="col-md-10">
+                                            <p class="fw-bold ml-1 mt-1 text-dark">{{anotherUserFullName}}</p>
+                                        </div>
+
+                                        <div class="col-md-1 text-end">
+                                            <div class="dropdown">
+                                                <a class="dropdown-toggle icon-burger-mini" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                                                </a>
+                                    
+                                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuLink">
+                                                    <li><a class="dropdown-item" href="#">Profile</a></li>
+                                                    <li><a class="dropdown-item" href="#">Logout</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                    </div>
 
                                     <!-- Messages Container -->
                                     <div #messagesContainer class="pt-3 pe-3 chat-messages-container" data-mdb-perfect-scrollbar-init>

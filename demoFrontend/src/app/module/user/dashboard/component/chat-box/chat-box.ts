@@ -33,6 +33,7 @@ export class ChatBox implements OnInit, OnDestroy {
     friendList = signal<any[]>([]);
     currentUserId: string = "";
     anotherUserId!: number;
+    anotherUserFullName: string ="";
 
     showEmojiPicker = false;
     isUploading = false;
@@ -101,7 +102,7 @@ export class ChatBox implements OnInit, OnDestroy {
         });
     }
 
-    connect(targetUserId: number, targetPhotoData: string): void {
+    connect(targetUserId: number, targetPhotoData: string, anotherUserFullName: string): void {
 
         let roomId = "";
 
@@ -112,13 +113,14 @@ export class ChatBox implements OnInit, OnDestroy {
 
                     this.showMessagingTextBox = false;
                     this.messages = [];
-                    // this.ngOnDestroy();
-                    
+
+                    this.anotherUserFullName = anotherUserFullName;
                     this.showMessagingTextBox = true;
                     this.cdr.detectChanges();
                     // console.log('Attempting to connect to WebSocket at http://localhost:8080/ws with username:', this.currentUserName);
                     this.socketService.connect(targetUserId, roomId);
             
+                   
                     this.anotherUserId = targetUserId;
                     this.anotherPhotoUrl = targetPhotoData;
                     let imgElement = document.querySelector('.user-image') as HTMLImageElement;
