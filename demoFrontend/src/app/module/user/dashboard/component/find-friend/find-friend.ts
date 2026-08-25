@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { UserService } from '../../../../../service/user-service';
 import { isPlatformBrowser } from '@angular/common';
 import { DialogBox } from '../../../../../utils/dialog-box/dialog-box';
@@ -19,6 +19,7 @@ export class FindFriend implements OnInit {
     pageTitle = "";
     pageStatusName = "";
     private platformId = inject(PLATFORM_ID);
+     private userService = inject(UserService);
     userList = signal<any[]>([]);
     showModal = false;
     selectedUserId: number | null = null;
@@ -26,8 +27,20 @@ export class FindFriend implements OnInit {
     modalMessage = '';
     status = '';
 
-    constructor(private userService: UserService, private commonFunctionObject: CommonFun, private router: Router) {
+    readonly friendList = this.userService.friendList;
 
+    readonly displayedUsers = computed(() => {
+
+        if (this.pageStatusName === allRoutes.friendLists) {
+            return this.friendList();
+        }
+
+        return this.userList();
+
+    });
+
+    constructor( private commonFunctionObject: CommonFun, private router: Router) {
+        
     }
 
 
@@ -58,11 +71,7 @@ export class FindFriend implements OnInit {
 
             } else if (allRoutes.friendLists == this.pageStatusName) {
 
-                this.userService.getFriendList().subscribe({
-                    next: (res) => {
-                        this.userList.set(JSON.parse(JSON.stringify(res)).data);
-                    }
-                })
+                this.userService.getFriendList().subscribe();
 
             } else if (allRoutes.friendRequestNotify == this.pageStatusName) {
 

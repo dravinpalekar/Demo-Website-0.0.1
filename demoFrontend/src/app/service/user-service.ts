@@ -1,13 +1,18 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Service } from '@angular/core';
+import { inject, Service, signal } from '@angular/core';
 import { allRoutes } from '../utils/allRoutes/allRoutes';
-import { NameModel } from '../model/requestModel/NameModel';
 import { IdModel } from '../model/requestModel/IdModel';
+import { map, of, switchMap, tap } from 'rxjs';
 
 @Service()
 export class UserService {
 
     private http = inject(HttpClient);
+
+    private _friendList = signal<any[]>([]);
+    public friendList = this._friendList.asReadonly();
+
+    private friendListLoaded = false;
 
     constructor() {
 
@@ -26,12 +31,39 @@ export class UserService {
 
     public acceptFriendRequest(requestData: IdModel) {
 
-        return this.http.post(allRoutes.acceptFriendRequestBackendUrl, requestData);
+        return this.http.post(allRoutes.acceptFriendRequestBackendUrl, requestData).pipe(
+            switchMap(response =>
+            this.refreshFriendList().pipe(
+                map(() => response)
+            )
+        )
+        );
     }
 
     public getFriendList() {
 
-        return this.http.get<any[]>(allRoutes.getFriendListBackendUrl);
+        // Already loaded hai to API call mat karo
+        if (this.friendListLoaded) {
+            return of(this._friendList());
+        }
+
+        return this.http.get<any[]>(allRoutes.getFriendListBackendUrl).pipe(tap(data => {
+            this._friendList.set(JSON.parse(JSON.stringify(data)).data);
+             this.friendListLoaded = true;
+        }));
+    }
+
+   public refreshFriendList() {
+
+        return this.http.get<any>(allRoutes.getFriendListBackendUrl).pipe(
+            tap(response => {
+
+                const data = response?.data ?? [];
+                this._friendList.set(data);
+                this.friendListLoaded = true;
+            })
+        );
+
     }
 
     public getFriendRequestList() {
@@ -53,6 +85,5 @@ export class UserService {
 
         return this.http.post(allRoutes.createRoomOrGetRoomBackendUrl, requestData);
     }
-
 
 }

@@ -6,6 +6,7 @@ import { allRoutes } from '../../../../../../utils/allRoutes/allRoutes';
 import { CommonFun } from '../../../../../../utils/helper/CommonFun';
 import { CookieService } from 'ngx-cookie-service';
 import { isPlatformBrowser, NgOptimizedImage } from '@angular/common';
+import { UserService } from '../../../../../../service/user-service';
 
 @Component({
   selector: 'app-nav-bar',
@@ -19,8 +20,11 @@ export class NavBar {
   displayEmail: string | undefined;
   // profileImage: any;
   private cookieService = inject(CookieService);
+  private userService = inject(UserService);
   private platformId = inject(PLATFORM_ID);
   profileImage = signal<string>('');
+
+  public readonly friendList = this.userService.friendList;
 
   constructor(private authenticationServiceObject: AuthenticationService, private router: Router, private SuperAdminServiceObject: SuperAdminService, private renderer: Renderer2, private commonFunctionObject: CommonFun, private cdr: ChangeDetectorRef) {
     // this.commonFunctionObject.loadStyle( this.renderer, 'assets/superAdminModule/simplebar/simplebar.css' );
@@ -52,6 +56,9 @@ export class NavBar {
         error: (e) => {// console.log(e);
         },
       });
+
+      this.userService.getFriendList().subscribe();
+
     }
   }
 

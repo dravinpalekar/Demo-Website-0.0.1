@@ -19,6 +19,7 @@ export class ChatBox implements OnInit, OnDestroy {
 
     private cookieService = inject(CookieService);
     private platformId = inject(PLATFORM_ID);
+    private userService = inject(UserService);
 
     messageTextBoxArea: string = '';
     messages: any[] = [];
@@ -30,7 +31,6 @@ export class ChatBox implements OnInit, OnDestroy {
     anotherPhotoUrl: any;
     currentPhotoUrl: any;
 
-    friendList = signal<any[]>([]);
     currentUserId: string = "";
     anotherUserId!: number;
     anotherUserFullName: string ="";
@@ -38,10 +38,12 @@ export class ChatBox implements OnInit, OnDestroy {
     showEmojiPicker = false;
     isUploading = false;
 
+    public readonly friendList = this.userService.friendList;
+
     @ViewChild('messagesContainer') private messagesContainer!: ElementRef<HTMLDivElement>;
     @ViewChild('fileInput') private fileInput!: ElementRef<HTMLInputElement>;
 
-    constructor(private socketService: WebSocketService, private userService: UserService, private cdr: ChangeDetectorRef, private commonFunctionObject: CommonFun) {
+    constructor(private socketService: WebSocketService, private cdr: ChangeDetectorRef, private commonFunctionObject: CommonFun) {
 
         if (this.cookieService.get("isLoggedIn")) {
             this.currentUserId = JSON.parse(this.cookieService.get("userSession")).id;
@@ -54,11 +56,7 @@ export class ChatBox implements OnInit, OnDestroy {
 
             await import('emoji-picker-element');
 
-            this.userService.getFriendList().subscribe({
-                next: (res) => {
-                    this.friendList.set(JSON.parse(JSON.stringify(res)).data);
-                }
-            })
+            this.userService.getFriendList().subscribe();
         }
 
         this.socketService.messages$.subscribe(message => {
