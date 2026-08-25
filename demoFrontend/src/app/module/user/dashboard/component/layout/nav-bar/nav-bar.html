@@ -319,14 +319,14 @@
         <h2>Users</h2>
         <!-- <a href="#" class="btn btn-primary btn-pill px-4">Add New</a> -->
     </div>
-    <div class="card-body">
-        <div class="mb-4">
-            <input type="text" class="form-control form-control-lg form-control-secondary rounded-0" placeholder="Search users..." />
+    <div data-mdb-perfect-scrollbar-init class="card-body" (scroll)="onUserListScroll($event)" style="max-height: 830px; overflow-y: auto;">
+        <div class="mb-4 pb-2">
+            <input type="text" class="form-control form-control-lg form-control-secondary rounded-0" placeholder="Search users..." [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)"/>
         </div>
 
-        @for (item of friendList(); track $index)
+        @for (item of filteredFriendList(); track $index)
         {
-            <div class="media media-sm">
+            <div class="media media-sm pb-2">
                 <div class="media-sm-wrapper">
                     <a href="user-profile.html">
                         <!-- <img src="assets/superAdminModule/images/user/user-sm-01.jpg" alt="User Image" /> -->
@@ -342,6 +342,8 @@
                 </div>
             </div>
         }
-
+        @empty {
+            <p class="text-muted text-center my-3">No users found.</p>
+        }
     </div>
 </div>

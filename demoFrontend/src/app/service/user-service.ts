@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Service, signal } from '@angular/core';
 import { allRoutes } from '../utils/allRoutes/allRoutes';
 import { IdModel } from '../model/requestModel/IdModel';
@@ -13,6 +13,9 @@ export class UserService {
     public friendList = this._friendList.asReadonly();
 
     private friendListLoaded = false;
+
+    // Cache Map: search term + page number ke base par data store karega
+    private pageCache = new Map<string, any[]>();
 
     constructor() {
 
@@ -40,6 +43,46 @@ export class UserService {
         );
     }
 
+    // --- Backend Paginated & Cached Method ---
+    public getFriendListPaginated(page: number, size: number, search: string = '') {
+        const cacheKey = `${search.trim().toLowerCase()}_page_${page}_size_${size}`;
+
+        // 1. Agar ye specific page cache me hai to direct update karke return karein
+        if (this.pageCache.has(cacheKey)) {
+            const cachedRecords = this.pageCache.get(cacheKey)!;
+            this.updateFriendListSignal(cachedRecords, page === 0);
+            return of({ data: cachedRecords, fromCache: true });
+        }
+
+        // 2. Agar cache me nahi hai to API call karein
+        let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+
+        if (search.trim()) {
+            params = params.set('search', search.trim());
+        }
+
+        return this.http.get<any>(allRoutes.getFriendListBackendUrl, { params }).pipe(
+            tap(response => {
+                const data = response?.data ?? [];
+                
+                // Cache me store karein
+                this.pageCache.set(cacheKey, data);
+                
+                // Signal update karein (page 1 par reset, page 2+ par append)
+                this.updateFriendListSignal(data, page === 0);
+                this.friendListLoaded = true;
+            })
+        );
+    }
+
+    private updateFriendListSignal(newData: any[], isFirstPage: boolean) {
+        if (isFirstPage) {
+            this._friendList.set(newData);
+        } else {
+            this._friendList.update(currentList => [...currentList, ...newData]);
+        }
+    }
+
     public getFriendList() {
 
         // Already loaded hai to API call mat karo
@@ -54,6 +97,9 @@ export class UserService {
     }
 
    public refreshFriendList() {
+
+        // Cache invalidate karein jab nayi friend request accept ho
+        this.pageCache.clear();
 
         return this.http.get<any>(allRoutes.getFriendListBackendUrl).pipe(
             tap(response => {

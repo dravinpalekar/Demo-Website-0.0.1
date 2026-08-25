@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, HostListener, inject, OnDestroy, OnInit, PLATFORM_ID, signal, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, CUSTOM_ELEMENTS_SCHEMA, ElementRef, HostListener, inject, OnDestroy, OnInit, PLATFORM_ID, signal, ViewChild } from '@angular/core';
 import { WebSocketService } from '../../../../../service/web-socket-service';
 import { FormControl, FormsModule } from '@angular/forms';
 import { CookieService } from 'ngx-cookie-service';
@@ -7,6 +7,7 @@ import { UserService } from '../../../../../service/user-service';
 import { CommonFun } from '../../../../../utils/helper/CommonFun';
 import { FileValidation } from '../../../../../utils/formValidation/FileValidation';
 import { IdModel } from '../../../../../model/requestModel/IdModel';
+import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 
 @Component({
     selector: 'app-chat-box',
@@ -40,6 +41,30 @@ export class ChatBox implements OnInit, OnDestroy {
 
     public readonly friendList = this.userService.friendList;
 
+    // Search input ki value hold karne ke liye signal
+    searchTerm = signal<string>('');
+
+    // Pagination & Scroll Trackers
+    currentPage = signal<number>(0);
+    readonly pageSize = 10;
+    hasMore = signal<boolean>(true);
+    isLoading = signal<boolean>(false);
+
+    searchControl = new FormControl('');
+    private destroy$ = new Subject<void>();
+
+    // Automatically filter hone wala computed signal
+    filteredFriendList = computed(() => {
+
+        const term = this.searchTerm().toLowerCase().trim();
+        if (!term) {
+            return this.friendList();
+        }
+        return this.friendList().filter(item =>
+            item.fullName?.toLowerCase().includes(term)
+        );
+    });
+
     @ViewChild('messagesContainer') private messagesContainer!: ElementRef<HTMLDivElement>;
     @ViewChild('fileInput') private fileInput!: ElementRef<HTMLInputElement>;
 
@@ -56,7 +81,23 @@ export class ChatBox implements OnInit, OnDestroy {
 
             await import('emoji-picker-element');
 
-            this.userService.getFriendList().subscribe();
+            // this.userService.getFriendList().subscribe();
+
+            // 1. Initial Page 1 Load
+            this.loadUsers(0, true);
+
+            // 2. Search Debounce
+            this.searchControl.valueChanges
+                .pipe(
+                debounceTime(350),
+                distinctUntilChanged(),
+                takeUntil(this.destroy$)
+                )
+                .subscribe(() => {
+                this.currentPage.set(0);
+                this.hasMore.set(true);
+                this.loadUsers(0, true);
+                });
         }
 
         this.socketService.messages$.subscribe(message => {
@@ -98,6 +139,42 @@ export class ChatBox implements OnInit, OnDestroy {
                 console.log('WebSocket connection established');
             }
         });
+    }
+
+    // Backend Paginated Call
+    loadUsers(page: number, isReset: boolean = false): void {
+        if (this.isLoading() || (!this.hasMore() && !isReset)) return;
+
+        this.isLoading.set(true);
+        const searchVal = this.searchControl.value || '';
+
+        this.userService.getFriendListPaginated(page, this.pageSize, searchVal).subscribe({
+            next: (res: any) => {
+                const responseData = res?.data ?? [];
+                
+                // Agar response me aane wala data 10 se kam hai toh aage aur data nahi hai
+                if (responseData.length < this.pageSize) {
+                    this.hasMore.set(false);
+                }
+                
+                this.currentPage.set(page);
+                this.isLoading.set(false);
+                this.cdr.detectChanges();
+            },
+            error: () => {
+                this.isLoading.set(false);
+            }
+        });
+    }
+
+    // Mouse Scroll / Drag trigger
+    onUserListScroll(event: Event): void {
+        const target = event.target as HTMLElement;
+        const isAtBottom = target.scrollHeight - target.scrollTop <= target.clientHeight + 30;
+
+        if (isAtBottom && !this.isLoading() && this.hasMore()) {
+            this.loadUsers(this.currentPage() + 1, false);
+        }
     }
 
     connect(targetUserId: number, targetPhotoData: string, anotherUserFullName: string): void {
