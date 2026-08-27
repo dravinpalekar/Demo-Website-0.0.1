@@ -6,130 +6,199 @@ import { map, of, switchMap, tap } from 'rxjs';
 
 @Service()
 export class UserService {
+	private http = inject(HttpClient);
 
-    private http = inject(HttpClient);
+	private _friendList = signal<any[]>([]);
+	public friendList = this._friendList.asReadonly();
+	private friendListLoaded = false;
 
-    private _friendList = signal<any[]>([]);
-    public friendList = this._friendList.asReadonly();
+	// Cache Map: search term + page number ke base par data store karega
+	private friendListPaginationCache = new Map<string, any[]>();
 
-    private friendListLoaded = false;
+	private _allUserList = signal<any[]>([]);
+	public allUserList = this._allUserList.asReadonly();
+	private allUserListLoaded = false;
+	private allUserListPaginationCache = new Map<string, any[]>();
 
-    // Cache Map: search term + page number ke base par data store karega
-    private pageCache = new Map<string, any[]>();
+	private _getFriendRequest = signal<any[]>([]);
+	public getFriendRequest = this._getFriendRequest.asReadonly();
+	private getFriendRequestLoaded = false;
+	private getFriendRequestPaginationCache = new Map<string, any[]>();
 
-    constructor() {
+	constructor() { }
 
-    }
+	public getAllUserListPaginated(page: number, size: number, search: string = '') {
+		const cacheKey = `${search.trim().toLowerCase()}_page_${page}_size_${size}`;
 
+		// 1. Agar ye specific page cache me hai to direct update karke return karein
+		if (this.allUserListPaginationCache.has(cacheKey)) {
+			const cachedRecords = this.allUserListPaginationCache.get(cacheKey)!;
+			this.updateGetAllUserListSignal(cachedRecords, page === 0);
+			return of({ data: cachedRecords, fromCache: true });
+		}
 
-    public getAllUserList() {
+		// 2. Agar cache me nahi hai to API call karein
+		let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
 
-        return this.http.get<any[]>(allRoutes.getAllUserListBackendUrl);
-    }
+		if (search.trim()) {
+			params = params.set('search', search.trim());
+		}
 
-    public sendFriendRequest(requestData: IdModel) {
+		return this.http.get<any>(allRoutes.getAllUserListBackendUrl, { params }).pipe(
+			tap((response) => {
+				const data = response?.data ?? [];
 
-        return this.http.post(allRoutes.sendFriendRequestBackendUrl, requestData);
-    }
+				// Cache me store karein
+				this.allUserListPaginationCache.set(cacheKey, data);
 
-    public acceptFriendRequest(requestData: IdModel) {
+				// Signal update karein (page 1 par reset, page 2+ par append)
+				this.updateGetAllUserListSignal(data, page === 0);
+				this.allUserListLoaded = true;
+			}),
+		);
+	}
 
-        return this.http.post(allRoutes.acceptFriendRequestBackendUrl, requestData).pipe(
-            switchMap(response =>
-            this.refreshFriendList().pipe(
-                map(() => response)
-            )
-        )
-        );
-    }
+	private updateGetAllUserListSignal(newData: any[], isFirstPage: boolean) {
+		if (isFirstPage) {
+			this._allUserList.set(newData);
+		} else {
+			this._allUserList.update((currentList) => [...currentList, ...newData]);
+		}
+	}
 
-    // --- Backend Paginated & Cached Method ---
-    public getFriendListPaginated(page: number, size: number, search: string = '') {
-        const cacheKey = `${search.trim().toLowerCase()}_page_${page}_size_${size}`;
+	public getAllUserList() {
+		return this.http.get<any[]>(allRoutes.getAllUserListBackendUrl);
+	}
 
-        // 1. Agar ye specific page cache me hai to direct update karke return karein
-        if (this.pageCache.has(cacheKey)) {
-            const cachedRecords = this.pageCache.get(cacheKey)!;
-            this.updateFriendListSignal(cachedRecords, page === 0);
-            return of({ data: cachedRecords, fromCache: true });
-        }
+	public sendFriendRequest(requestData: IdModel) {
+		return this.http.post(allRoutes.sendFriendRequestBackendUrl, requestData);
+	}
 
-        // 2. Agar cache me nahi hai to API call karein
-        let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+	public acceptFriendRequest(requestData: IdModel) {
+		return this.http
+			.post(allRoutes.acceptFriendRequestBackendUrl, requestData)
+			.pipe(switchMap((response) => this.refreshFriendList().pipe(map(() => response))));
+	}
 
-        if (search.trim()) {
-            params = params.set('search', search.trim());
-        }
+	// --- Backend Paginated & Cached Method ---
+	public getFriendListPaginated(page: number, size: number, search: string = '') {
+		const cacheKey = `${search.trim().toLowerCase()}_page_${page}_size_${size}`;
 
-        return this.http.get<any>(allRoutes.getFriendListBackendUrl, { params }).pipe(
-            tap(response => {
-                const data = response?.data ?? [];
-                
-                // Cache me store karein
-                this.pageCache.set(cacheKey, data);
-                
-                // Signal update karein (page 1 par reset, page 2+ par append)
-                this.updateFriendListSignal(data, page === 0);
-                this.friendListLoaded = true;
-            })
-        );
-    }
+		// 1. Agar ye specific page cache me hai to direct update karke return karein
+		if (this.friendListPaginationCache.has(cacheKey)) {
+			const cachedRecords = this.friendListPaginationCache.get(cacheKey)!;
+			this.updateFriendListSignal(cachedRecords, page === 0);
+			return of({ data: cachedRecords, fromCache: true });
+		}
 
-    private updateFriendListSignal(newData: any[], isFirstPage: boolean) {
-        if (isFirstPage) {
-            this._friendList.set(newData);
-        } else {
-            this._friendList.update(currentList => [...currentList, ...newData]);
-        }
-    }
+		// 2. Agar cache me nahi hai to API call karein
+		let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
 
-    public getFriendList() {
+		if (search.trim()) {
+			params = params.set('search', search.trim());
+		}
 
-        // Already loaded hai to API call mat karo
-        if (this.friendListLoaded) {
-            return of(this._friendList());
-        }
+		return this.http.get<any>(allRoutes.getFriendListBackendUrl, { params }).pipe(
+			tap((response) => {
+				const data = response?.data ?? [];
 
-        return this.http.get<any[]>(allRoutes.getFriendListBackendUrl).pipe(tap(data => {
-            this._friendList.set(JSON.parse(JSON.stringify(data)).data);
-             this.friendListLoaded = true;
-        }));
-    }
+				// Cache me store karein
+				this.friendListPaginationCache.set(cacheKey, data);
 
-   public refreshFriendList() {
+				// Signal update karein (page 1 par reset, page 2+ par append)
+				this.updateFriendListSignal(data, page === 0);
+				this.friendListLoaded = true;
+			}),
+		);
+	}
 
-        // Cache invalidate karein jab nayi friend request accept ho
-        this.pageCache.clear();
+	private updateFriendListSignal(newData: any[], isFirstPage: boolean) {
+		if (isFirstPage) {
+			this._friendList.set(newData);
+		} else {
+			this._friendList.update((currentList) => [...currentList, ...newData]);
+		}
+	}
 
-        return this.http.get<any>(allRoutes.getFriendListBackendUrl).pipe(
-            tap(response => {
+	public getFriendList() {
+		// Already loaded hai to API call mat karo
+		if (this.friendListLoaded) {
+			return of(this._friendList());
+		}
 
-                const data = response?.data ?? [];
-                this._friendList.set(data);
-                this.friendListLoaded = true;
-            })
-        );
+		return this.http.get<any[]>(allRoutes.getFriendListBackendUrl).pipe(
+			tap((data) => {
+				this._friendList.set(JSON.parse(JSON.stringify(data)).data);
+				this.friendListLoaded = true;
+			}),
+		);
+	}
 
-    }
+	public refreshFriendList() {
+		// Cache invalidate karein jab nayi friend request accept ho
+		this.friendListPaginationCache.clear();
 
-    public getFriendRequestList() {
+		return this.http.get<any>(allRoutes.getFriendListBackendUrl).pipe(
+			tap((response) => {
+				const data = response?.data ?? [];
+				this._friendList.set(data);
+				this.friendListLoaded = true;
+			}),
+		);
+	}
 
-        return this.http.get<any[]>(allRoutes.getFriendRequestListBackendUrl);
-    }
+	public getFriendRequestPaginated(page: number, size: number, search: string = '') {
+		const cacheKey = `${search.trim().toLowerCase()}_page_${page}_size_${size}`;
 
-     public cancelFriendRequest(requestData: IdModel) {
+		// 1. Agar ye specific page cache me hai to direct update karke return karein
+		if (this.getFriendRequestPaginationCache.has(cacheKey)) {
+			const cachedRecords = this.getFriendRequestPaginationCache.get(cacheKey)!;
+			this.updateGetFriendRequestSignal(cachedRecords, page === 0);
+			return of({ data: cachedRecords, fromCache: true });
+		}
 
-        return this.http.post(allRoutes.cancelFriendRequestBackendUrl, requestData);
-    }
+		// 2. Agar cache me nahi hai to API call karein
+		let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
 
-    public uploadChatImage(file:FormData){
+		if (search.trim()) {
+			params = params.set('search', search.trim());
+		}
 
-        return this.http.post(allRoutes.uploadImageBackendUrl, file);
-    }
+		return this.http.get<any>(allRoutes.getFriendRequestListBackendUrl, { params }).pipe(
+			tap((response) => {
+				const data = response?.data ?? [];
 
-    public createRoomOrGetRoom(requestData: IdModel){
+				// Cache me store karein
+				this.getFriendRequestPaginationCache.set(cacheKey, data);
 
-        return this.http.post(allRoutes.createRoomOrGetRoomBackendUrl, requestData);
-    }
+				// Signal update karein (page 1 par reset, page 2+ par append)
+				this.updateGetFriendRequestSignal(data, page === 0);
+				this.getFriendRequestLoaded = true;
+			}),
+		);
+	}
 
+	private updateGetFriendRequestSignal(newData: any[], isFirstPage: boolean) {
+		if (isFirstPage) {
+			this._getFriendRequest.set(newData);
+		} else {
+			this._getFriendRequest.update((currentList) => [...currentList, ...newData]);
+		}
+	}
+
+	public getFriendRequestList() {
+		return this.http.get<any[]>(allRoutes.getFriendRequestListBackendUrl);
+	}
+
+	public cancelFriendRequest(requestData: IdModel) {
+		return this.http.post(allRoutes.cancelFriendRequestBackendUrl, requestData);
+	}
+
+	public uploadChatImage(file: FormData) {
+		return this.http.post(allRoutes.uploadImageBackendUrl, file);
+	}
+
+	public createRoomOrGetRoom(requestData: IdModel) {
+		return this.http.post(allRoutes.createRoomOrGetRoomBackendUrl, requestData);
+	}
 }

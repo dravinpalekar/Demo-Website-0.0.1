@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -48,7 +50,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
           )  AND fi.deletedAt IS NULL
       )
 """)
-    List<UserEntity> findUsersByRoleAndActiveAndDeletedAtIsNull(@Param("role") Roles role, @Param("userId") Long userId, @Param("active") Status active);
+    Page<UserEntity> findUsersByRoleAndActiveAndDeletedAtIsNull(@Param("role") Roles role, @Param("userId") Long userId, @Param("active") Status active, Pageable pageable);
 
     List<UserEntity> findByIdInAndDeletedAtIsNullAndActive(List<Long> userA, Status status);
 

@@ -35,9 +35,9 @@ public class FriendsInformationController {
     }
 
     @GetMapping(PEOPLE_GET)
-    public ResponseEntity<Map<String,Object>> getPeopleList(){
+    public ResponseEntity<Map<String,Object>> getPeopleList(@PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable){
 
-        return this.friendsInformationService.getPeopleList();
+        return this.friendsInformationService.getPeopleList(pageable);
     }
 
     @PostMapping(SEND_REQUEST)

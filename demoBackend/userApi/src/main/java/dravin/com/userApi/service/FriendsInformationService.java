@@ -58,12 +58,12 @@ public class FriendsInformationService {
         this.jwtUtils = jwtUtils;
     }
 
-    public ResponseEntity<Map<String, Object>> getPeopleList() {
+    public ResponseEntity<Map<String, Object>> getPeopleList(Pageable pageable) {
 
         ServletRequestAttributes request = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         String userIdFromToken = jwtUtils.getIdFromJwtToken(this.jwtUtils.getJwtFromCookies(request.getRequest()));
 
-        List<UserEntity> entityList = this.userRepository.findUsersByRoleAndActiveAndDeletedAtIsNull(Roles.ROLE_USER, Long.valueOf(userIdFromToken), Status.ENABLE);
+        Page<UserEntity> entityList = this.userRepository.findUsersByRoleAndActiveAndDeletedAtIsNull(Roles.ROLE_USER, Long.valueOf(userIdFromToken), Status.ENABLE, pageable);
 
         List<GetAllUserListResponseModel> responseData = new ArrayList<>();
 
@@ -80,7 +80,7 @@ public class FriendsInformationService {
             addToList.setPhotoData(photoUrl);
             responseData.add(addToList);
         }
-        return ResponseEntity.ok().body(Map.of("data", responseData));
+        return ResponseEntity.ok().body(Map.of("data", responseData, "pageSize", entityList.getSize(), "getTotalElements", entityList.getTotalElements()));
     }
 
     public ResponseEntity<Map<String, String>> sendFriendRequest(IdRequestModel requestModel) {

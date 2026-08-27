@@ -345,5 +345,15 @@
         @empty {
             <p class="text-muted text-center my-3">No users found.</p>
         }
+
+        <!-- Scroll Loading Spinner -->
+        @if (isLoading()) {
+            <li class="p-3 text-center">
+                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </li>
+        }
+
     </div>
 </div>

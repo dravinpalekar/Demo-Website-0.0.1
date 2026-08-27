@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { UserService } from '../../../../../service/user-service';
 import { isPlatformBrowser } from '@angular/common';
 import { DialogBox } from '../../../../../utils/dialog-box/dialog-box';
@@ -7,10 +7,12 @@ import { CommonFun } from '../../../../../utils/helper/CommonFun';
 import { Router } from '@angular/router';
 import { allRoutes } from '../../../../../utils/allRoutes/allRoutes';
 import { IdModel } from '../../../../../model/requestModel/IdModel';
+import { FormControl, FormsModule } from '@angular/forms';
+import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 
 @Component({
     selector: 'app-find-friend',
-    imports: [DialogBox],
+    imports: [DialogBox, FormsModule],
     templateUrl: './find-friend.html',
     styleUrl: './find-friend.scss',
 })
@@ -19,35 +21,74 @@ export class FindFriend implements OnInit {
     pageTitle = "";
     pageStatusName = "";
     private platformId = inject(PLATFORM_ID);
-     private userService = inject(UserService);
-    userList = signal<any[]>([]);
+    private userService = inject(UserService);
+    // userList = signal<any[]>([]);
     showModal = false;
     selectedUserId: number | null = null;
     modalTitle = '';
     modalMessage = '';
     status = '';
 
+    // Search input ki value hold karne ke liye signal
+    searchTerm = signal<string>('');
+
+    // Pagination & Scroll Trackers
+    currentPage = signal<number>(0);
+    readonly pageSize = 10;
+    hasMore = signal<boolean>(true);
+    isLoading = signal<boolean>(false);
+
+    searchControl = new FormControl('');
+    private destroy$ = new Subject<void>();
+
     readonly friendList = this.userService.friendList;
+
+    readonly userList = this.userService.allUserList;
+
+    readonly friendRequestList = this.userService.getFriendRequest;
 
     readonly displayedUsers = computed(() => {
 
         if (this.pageStatusName === allRoutes.friendLists) {
-            return this.friendList();
+            const term = this.searchTerm().toLowerCase().trim();
+            if (!term) {
+                return this.friendList();
+            }
+            return this.friendList().filter(item =>
+                item.fullName?.toLowerCase().includes(term)
+            );
         }
 
-        return this.userList();
+        else if (this.pageStatusName === allRoutes.findFriend) {
+            const term = this.searchTerm().toLowerCase().trim();
+            if (!term) {
+                return this.userList();
+            }
+            return this.userList().filter(item =>
+                item.fullName?.toLowerCase().includes(term)
+            );
+        }
 
+        else if (this.pageStatusName === allRoutes.friendRequestNotify) {
+            const term = this.searchTerm().toLowerCase().trim();
+            if (!term) {
+                return this.friendRequestList();
+            }
+            return this.friendRequestList().filter(item =>
+                item.fullName?.toLowerCase().includes(term)
+            );
+        }
+
+        return null;
     });
 
-    constructor( private commonFunctionObject: CommonFun, private router: Router) {
-        
+    constructor(private commonFunctionObject: CommonFun, private router: Router, private cdr: ChangeDetectorRef) {
+
     }
 
 
     ngOnInit(): void {
         console.log('----find-friend user module running--------ngOnInit------');
-
-        // alert(this.router.url);
 
         if (this.router.url.includes(allRoutes.findFriend)) {
             this.pageTitle = "Find friend";
@@ -60,30 +101,97 @@ export class FindFriend implements OnInit {
             this.pageStatusName = allRoutes.friendRequestNotify;
         }
 
+        // 1. Initial Page 1 Load
+        this.loadUsers(0, true);
+
+        // 2. Search Debounce
+        this.searchControl.valueChanges.pipe(debounceTime(350), distinctUntilChanged(), takeUntil(this.destroy$)).subscribe(() => {
+            this.currentPage.set(0);
+            this.hasMore.set(true);
+            this.loadUsers(0, true);
+        });
+    }
+
+    // Backend Paginated Call
+    loadUsers(page: number, isReset: boolean = false): void {
+
+        if (this.isLoading() || (!this.hasMore() && !isReset)) return;
+
+        this.isLoading.set(true);
+        const searchVal = this.searchControl.value || '';
+
         if (isPlatformBrowser(this.platformId)) {
-            if (allRoutes.findFriend == this.pageStatusName) {
 
-                this.userService.getAllUserList().subscribe({
-                    next: (res) => {
-                        this.userList.set(JSON.parse(JSON.stringify(res)).data);
+            if (allRoutes.friendLists == this.pageStatusName) {
+
+                this.userService.getFriendListPaginated(page, this.pageSize, searchVal).subscribe({
+                    next: (res: any) => {
+                        const responseData = res?.data ?? [];
+
+                        // Agar response me aane wala data 10 se kam hai toh aage aur data nahi hai
+                        if (responseData.length < this.pageSize) {
+                            this.hasMore.set(false);
+                        }
+
+                        this.currentPage.set(page);
+                        this.isLoading.set(false);
+                        this.cdr.detectChanges();
+                    },
+                    error: () => {
+                        this.isLoading.set(false);
                     }
-                })
+                });
+            } else if (allRoutes.findFriend == this.pageStatusName) {
 
-            } else if (allRoutes.friendLists == this.pageStatusName) {
+                this.userService.getAllUserListPaginated(page, this.pageSize, searchVal).subscribe({
+                    next: (res: any) => {
+                        const responseData = res?.data ?? [];
 
-                this.userService.getFriendList().subscribe();
+                        // Agar response me aane wala data 10 se kam hai toh aage aur data nahi hai
+                        if (responseData.length < this.pageSize) {
+                            this.hasMore.set(false);
+                        }
+
+                        this.currentPage.set(page);
+                        this.isLoading.set(false);
+                        this.cdr.detectChanges();
+                    },
+                    error: () => {
+                        this.isLoading.set(false);
+                    }
+                });
 
             } else if (allRoutes.friendRequestNotify == this.pageStatusName) {
 
-                this.userService.getFriendRequestList().subscribe({
-                    next: (res) => {
-                        this.userList.set(JSON.parse(JSON.stringify(res)).data);
-                    }
-                })
+                this.userService.getFriendRequestPaginated(page, this.pageSize, searchVal).subscribe({
+                    next: (res: any) => {
+                        const responseData = res?.data ?? [];
 
+                        // Agar response me aane wala data 10 se kam hai toh aage aur data nahi hai
+                        if (responseData.length < this.pageSize) {
+                            this.hasMore.set(false);
+                        }
+
+                        this.currentPage.set(page);
+                        this.isLoading.set(false);
+                        this.cdr.detectChanges();
+                    },
+                    error: () => {
+                        this.isLoading.set(false);
+                    }
+                });
             }
         }
+    }
 
+    // Mouse Scroll / Drag trigger
+    onUserListScroll(event: Event): void {
+        const target = event.target as HTMLElement;
+        const isAtBottom = target.scrollHeight - target.scrollTop <= target.clientHeight + 30;
+
+        if (isAtBottom && !this.isLoading() && this.hasMore()) {
+            this.loadUsers(this.currentPage() + 1, false);
+        }
     }
 
     serachFriend() {
@@ -141,7 +249,6 @@ export class FindFriend implements OnInit {
             else if (allRoutes.findFriend == this.pageStatusName) {
                 this.sendFriendRequest(this.selectedUserId);
             }
-
         }
 
         this.selectedUserId = null;
@@ -164,7 +271,6 @@ export class FindFriend implements OnInit {
                 }
             })
         }
-
     }
 
     private acceptFriendRequest(userId: number) {

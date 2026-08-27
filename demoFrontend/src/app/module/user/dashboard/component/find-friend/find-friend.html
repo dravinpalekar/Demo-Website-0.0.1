@@ -1,11 +1,11 @@
-<div class="content-wrapper ">
+<div data-mdb-perfect-scrollbar-init class="content-wrapper " (scroll)="onUserListScroll($event)" style="max-height: 755px; overflow-y: auto;">
     <div class="content  pl-0 pr-0 pt-0 pb-0">
         <div class="card card-default">
             <div class="card-header align-items-center px-3 px-md-5 col-12 col-sm-12 col-md-12 col-lg-12 d-flex align-items-center">
                 <h2>{{pageTitle}}</h2>
             
                 <div class="col-6 col-sm-6 col-md-6 col-lg-6 d-flex align-items-center text-end" style="">
-                    <input type="text" autocomplete="off" name="query" id="search-input" class="form-control" placeholder="Search friends ..." style="background-color: #f5f6fa; border-radius: 10px;"/>
+                    <input type="text" autocomplete="off" name="query" id="search-input" class="form-control" placeholder="Search friends ..." style="background-color: #f5f6fa; border-radius: 10px;" [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)"/>
                     <div class="input-group-append">
                         <button class="btn" type="button" style="background-color: #ffffff;" (click)="serachFriend()">
                             <span class="input-group-text border-0" id="search-addon">
@@ -17,7 +17,7 @@
 
             </div>      
 
-            <div class="card-body px-3 px-md-5">
+            <div  class="card-body px-3 px-md-5" >
                 <div class="row">
 
                     @for(item of displayedUsers(); track $index) {
@@ -77,6 +77,15 @@
                         <div class="col-12">
                             <p>No users found or loading...</p>
                         </div>
+                    }
+
+                    <!-- Scroll Loading Spinner -->
+                    @if (isLoading()) {
+                        <li class="p-3 text-center">
+                            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </li>
                     }
 
                 </div>
