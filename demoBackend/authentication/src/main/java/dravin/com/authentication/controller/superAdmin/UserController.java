@@ -3,13 +3,17 @@ package dravin.com.authentication.controller.superAdmin;
 
 import dravin.com.authentication.requestmodel.superAdmin.ActivateRequestModel;
 import dravin.com.authentication.service.superAdmin.UserService;
+import dravin.com.repository.constant.enumConstant.SearchFilterColumnName;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.Map;
 
@@ -33,9 +37,9 @@ public class UserController {
             summary = "Get all user lists",
             description = "This API is for getting all users of active or deactivate user."
     )
-    public ResponseEntity<Map<String,Object>> getAllUser(){
+    public ResponseEntity<Map<String,Object>> getAllUser(@RequestParam(required = false) String searchItem, @RequestParam(required = false) SearchFilterColumnName ColumnName, @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable){
 
-        return userService.getAllUser();
+        return userService.getAllUser(pageable, ColumnName, searchItem);
     }
 
     @DeleteMapping(DELETE + ID)

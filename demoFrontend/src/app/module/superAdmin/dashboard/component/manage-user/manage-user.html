@@ -1,15 +1,52 @@
+@if (showAlert ) {
+   @if (submittedForm) {
+    <div class="remove-mat-form-field-hint">
+      <div class="remove-mat-form-field-hint">
+        <app-alert-message [message]="displayAlertErrorList" (closed)="onAlertClosed()"></app-alert-message>
+      </div>
+    </div>
+  }
+}
+
 <div class="row">
     <div class="col-xl-12">
         <div class="card card-default">
             <div class="card-body">
 
-                <mat-form-field appearance="outline" class="custom-search">
-                    <mat-label>Search</mat-label>
-                    <input matInput (keyup)="applyFilter($event)" placeholder="Search records">
-                </mat-form-field>
+              <form id="myFilterForm" class="login-form" [formGroup]="myFilterForm" novalidate (ngSubmit)="onSubmit()">
+                <div class="row">
+                  <div class="col-md-2">
+                    <button [disabled]="!myFilterForm.dirty" type="button" class="btn btn-primary w-100 signin-btn mb-4" (click)="clearFilter()">Clear</button>
+                  </div>
+                  <div class="col-md-2">
+                    <mat-form-field appearance="outline" class="custom-search">
+                      <mat-label>Search</mat-label>
+                      <input matInput placeholder="Search records" required="" formControlName="searchItem" id="searchItem" required="">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-6">
+                    <select #columnNameFilter id="filterName" class="form-control" formControlName="filterName">
+                      <option value="FULL_NAME">Full Name</option>
+                      <option value="EMAIL_ADDRESS">Email Address</option>
+                      <option value="ROLE">Role</option>
+                      <option value="PERMISSION">Permission</option>
+                      <option value="AGE">Age</option>
+                      <option value="GENDER">Gender</option>
+                      <option value="COUNTRY">Country</option>
+                      <option value="STATUS">Status</option>
+                    </select>
+                  </div>
+                  <div class="col-md-2">
+                    <button [disabled]="!myFilterForm.dirty" type="submit" class="btn btn-primary w-100 signin-btn mb-4">Submit</button>
+                  </div>
+                </div>
 
+              </form>
 
-                <table mat-table [dataSource]="dataSource" matSort>
+              <ngx-ui-loader [loaderId]="'table-loader'"></ngx-ui-loader>
+
+                  <table mat-table [dataSource]="dataSource" matSort (matSortChange)="onSortChange($event)" [matSortDisableClear]="true">
+                <!-- <table mat-table [dataSource]="dataSource" matSort [matSortActive]="sortField" [matSortDirection]="'desc'" matSortDisableClear> -->
 
                     <ng-container matColumnDef="id">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
@@ -67,7 +104,7 @@
 
                     <ng-container matColumnDef="actions">
 
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Action</th>
+                        <th mat-header-cell *matHeaderCellDef>Action</th>
                         <td mat-cell *matCellDef="let element">
 
                             <button class="me-4 chnageColourMouseOverBlue" mat-icon-button color="accent" title="{{element.active == 'ENABLE' ? 'Deactivate' : 'Activate'}}" (click)="openDailogForActivateAndDeactivateItem(element.id, element.active)">
@@ -76,7 +113,7 @@
                                  }
                                  @else {
                                     <i class="bi bi-toggle-off fs-4"></i>
-                                 }                                 
+                                 }
                             </button>
 
                             <button class="chnageColourMouseOver" mat-icon-button color="accent" title="Delete" (click)="openDailogForDeteteItem(element.id)">
@@ -89,8 +126,7 @@
                     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
                 </table>
 
-                <mat-paginator [pageSize]="5" [pageSizeOptions]="[5, 10, 15]" showFirstLastButtons>
-                </mat-paginator>
+                <mat-paginator [length]="totalElements" [pageIndex]="pageIndex" [pageSize]="pageSize" [pageSizeOptions]="[5, 10]" (page)="onPageChange($event)" showFirstLastButtons></mat-paginator>
 
             </div>
         </div>

@@ -18,6 +18,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.security.access.AccessDeniedException;
@@ -158,6 +159,15 @@ public class CustomExceptionHandler {
         errorDetail.setProperty("message", "Maximum file size exceed");
         return errorDetail;
 
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ProblemDetail methodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
+
+        errorDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Invalid value '" + ex.getValue() + "' for parameter '" + ex.getName() + "'");
+        errorDetail.setProperty(ACCESS_DENIED_REASON, ENUM_NOT_MATCH);
+        return errorDetail;
     }
 
 

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Service, signal } from '@angular/core';
 import { Role } from '../authentication-service';
 import { allRoutes } from '../../utils/allRoutes/allRoutes';
@@ -127,8 +127,16 @@ export class SuperAdminService {
         this.cachedData.set(null);
     }
 
-    public getUsers() {
-        return this.http.get<any[]>(allRoutes.getUserBackendUrl);
+    public getUsers(page: number = 0, size: number = 10, filterColumnName: string, searchItem: string, sort: string = 'id,DESC') {
+
+      let params = new HttpParams().set('page', page.toString()).set('size', size.toString()).set('sort', sort);
+
+      if(filterColumnName != null && filterColumnName.trim() != "")
+      {
+        params = params.set('ColumnName',filterColumnName).set('searchItem',searchItem);
+      }
+
+      return this.http.get<any[]>(allRoutes.getUserBackendUrl, { params });
     }
 
     public deleteUserById(id: number) {

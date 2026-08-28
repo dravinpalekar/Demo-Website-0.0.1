@@ -4,7 +4,10 @@ package dravin.com.repository.repository;
 import dravin.com.repository.constant.enumConstant.Roles;
 import dravin.com.repository.constant.enumConstant.Status;
 import dravin.com.repository.entity.UserEntity;
+
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.repository.query.Param;
@@ -17,7 +20,7 @@ import java.util.Optional;
 
 @Repository
 @EnableJpaRepositories
-public interface UserRepository extends JpaRepository<UserEntity, Long> {
+public interface UserRepository extends JpaRepository<UserEntity, Long>, JpaSpecificationExecutor<UserEntity> {
 
     Optional<UserEntity> findByUserNameAndDeletedAtIsNullAndActive(String username, Status status);
 
@@ -25,7 +28,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     Boolean existsByEmail(String email);
 
-    List<UserEntity> findByDeletedAtIsNull();
+    Page<UserEntity> findByDeletedAtIsNull(Specification<UserEntity> specification, Pageable pageable);
 
     @Query("SELECT u FROM UserEntity u JOIN u.role r WHERE r.name = :role AND r.deletedAt IS NULL")
     Optional<UserEntity> findUsersByRoleAndDeletedAtIsNull(@Param("role") Roles role);
