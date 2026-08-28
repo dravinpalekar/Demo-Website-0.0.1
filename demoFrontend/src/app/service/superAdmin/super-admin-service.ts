@@ -60,9 +60,16 @@ export class SuperAdminService {
         return this.http.put(allRoutes.updatePermissionByIdBackendUrl + "/" + id, createPermissionModelObject);
     }
 
-    public getPermissions() {
+    public getPermissions(page: number = 0, size: number = 10, searchItem: string = '', sort: string = 'id,DESC') {
 
-        return this.http.get<any[]>(allRoutes.getPermissionBackendUrl);
+      let params = new HttpParams().set('page', page.toString()).set('size', size.toString()).set('sort', sort);
+
+      if(searchItem != null && searchItem.trim() != "")
+      {
+        params = params.set('searchItem', searchItem);
+      }
+
+      return this.http.get<any>(allRoutes.getPermissionBackendUrl, { params });
     }
 
     public getPermissionById(id: number) {

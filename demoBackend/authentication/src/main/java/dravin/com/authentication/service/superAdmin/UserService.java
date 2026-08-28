@@ -36,9 +36,8 @@ public class UserService {
 
     public ResponseEntity<Map<String,Object>> getAllUser(Pageable pageable, SearchFilterColumnName ColumnName, String searchItem){
 
-        Specification<UserEntity> specification = UserEnitySearchSpecification.search(ColumnName, searchItem);
-
-        Page<UserEntity> userEntities = userRepository.findByDeletedAtIsNull(specification, pageable);
+        Specification<UserEntity> specification = UserEnitySearchSpecification.notDeleted().and(UserEnitySearchSpecification.search(ColumnName, searchItem));
+        Page<UserEntity> userEntities = userRepository.findAll(specification, pageable);
 
         return ResponseEntity.ok(Map.of("data", userEntities.getContent(), "pageSizee", userEntities.getSize(), "getTotalElements", userEntities.getTotalElements()));
 

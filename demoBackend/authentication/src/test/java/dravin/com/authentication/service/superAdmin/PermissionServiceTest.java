@@ -12,6 +12,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -126,13 +131,16 @@ public class PermissionServiceTest {
     void testGetAllPermission() {
 
         List<PermissionEntity> list = List.of( new PermissionEntity(Permissions.ALL), new PermissionEntity(Permissions.CREATE), new PermissionEntity(Permissions.DELETE));
+        Page<PermissionEntity> page = new PageImpl<>(list, PageRequest.of(0, 10), list.size());
 
-        when(permissionRepository.findByDeletedAtIsNull()).thenReturn(list);
+        when(permissionRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
 
-        ResponseEntity<Map<String, Object>> response = permissionService.getAllPermission();
+        ResponseEntity<Map<String, Object>> response = permissionService.getAllPermission(PageRequest.of(0, 10), null);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(list, response.getBody().get("data"));
+        assertEquals(3, response.getBody().get("pageSize"));
+        assertEquals(3L, response.getBody().get("getTotalElements"));
     }
 
 

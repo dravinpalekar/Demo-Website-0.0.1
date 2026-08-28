@@ -11,7 +11,7 @@
 <div class="row">
     <div class="col-xl-12">
         <div class="card card-default">
-            <div class="card-body">
+            <div class="card-body table-responsive">
 
               <form id="myFilterForm" class="login-form" [formGroup]="myFilterForm" novalidate (ngSubmit)="onSubmit()">
                 <div class="row">
@@ -46,7 +46,6 @@
               <ngx-ui-loader [loaderId]="'table-loader'"></ngx-ui-loader>
 
                   <table mat-table [dataSource]="dataSource" matSort (matSortChange)="onSortChange($event)" [matSortDisableClear]="true">
-                <!-- <table mat-table [dataSource]="dataSource" matSort [matSortActive]="sortField" [matSortDirection]="'desc'" matSortDisableClear> -->
 
                     <ng-container matColumnDef="id">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>

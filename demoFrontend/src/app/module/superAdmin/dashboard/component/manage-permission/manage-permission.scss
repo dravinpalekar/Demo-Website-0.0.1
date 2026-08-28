@@ -1,43 +1,43 @@
 .custom-search {
-  width: 20%;    
-  height: 2%;       /* set width */
-  font-size: 13px;      /* increase label + input font size */
+  width: 100%;
+  font-size: 13px;
 }
 
 .custom-search input {
-  font-size: 14px;      /* input text size */
-//   padding: 8px 12px;    /* adjust spacing */
+  font-size: 14px;
 }
 
+::ng-deep .custom-search .mat-mdc-text-field-wrapper {
+  height: 42px !important;
+}
 
-// ::ng-deep .custom-search.mat-form-field-appearance-outline .mat-mdc-text-field-wrapper {
-//   border-color: red !important;   /* outline color */
-// }
+::ng-deep .custom-search .mat-mdc-form-field-flex {
+  height: 42px !important;
+}
 
-// ::ng-deep .custom-search.mat-form-field-appearance-outline.mat-focused .mat-mdc-text-field-wrapper {
-//   border-color: red !important;   /* focused outline color */
-// }
-
-
-
-
-
-
+::ng-deep .custom-search .mat-mdc-form-field-infix {
+  min-height: 42px !important;
+  height: 42px !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+}
 
 ::ng-deep .custom-search .mat-mdc-floating-label {
-  color: black !important;          /* label color */
+  color: black !important;
+  padding-bottom: 17px;
 }
 
 ::ng-deep .custom-search input {
-  color: black !important;          /* text color */
+  color: black !important;
 }
 
 .chnageColourMouseOver:hover i {
-    color: #dc3545;   /* Bootstrap danger red */
+    color: #dc3545;
     transition: color 0.2s ease-in-out;
 }
 
 .chnageColourMouseOverBlue:hover i {
-    color: blue;   /* Bootstrap danger red */
+    color: blue;
     transition: color 0.2s ease-in-out;
 }

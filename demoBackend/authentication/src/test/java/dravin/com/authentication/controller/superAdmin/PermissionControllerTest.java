@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -116,7 +117,7 @@ public class PermissionControllerTest {
     @DisplayName("While Super-Admin get all permissions")
     void testGetAllPermission() throws Exception {
 
-        when(permissionService.getAllPermission()).thenReturn(ResponseEntity.ok(Map.of("data", List.of())));
+        when(permissionService.getAllPermission(any(Pageable.class), any())).thenReturn(ResponseEntity.ok(Map.of("data", List.of())));
 
         mockMvc.perform(get(API_SUPER_ADMIN + PERMISSION + GET)).andExpect(status().isOk()).andExpect(jsonPath("$.data").isArray());
     }
