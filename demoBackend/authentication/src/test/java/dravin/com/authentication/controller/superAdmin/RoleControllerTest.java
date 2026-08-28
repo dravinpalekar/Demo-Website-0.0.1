@@ -12,6 +12,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -59,7 +60,8 @@ public class RoleControllerTest {
     @DisplayName("While Super-Admin valid request should have no validation errors")
     void testValidRequest() {
 
-        Set<ConstraintViolation<CreateRoleRequestModel>> violations = validator.validate(prepareCreateRoleRequestFunction(Roles.ROLE_ADMIN, Permissions.ALL));
+        Set<ConstraintViolation<CreateRoleRequestModel>> violations = validator
+                .validate(prepareCreateRoleRequestFunction(Roles.ROLE_ADMIN, Permissions.ALL));
         assertEquals(0, violations.size());
     }
 
@@ -82,10 +84,13 @@ public class RoleControllerTest {
     @DisplayName("While Super-Admin should request post /create - create role")
     void testCreateRole() throws Exception {
 
-        when(roleService.createRole(any(CreateRoleRequestModel.class))).thenReturn(ResponseEntity.ok(Map.of("message", "Role created successfully.")));
+        when(roleService.createRole(any(CreateRoleRequestModel.class)))
+                .thenReturn(ResponseEntity.ok(Map.of("message", "Role created successfully.")));
 
         mockMvc.perform(post(API_SUPER_ADMIN + ROLE + CREATE).contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(prepareCreateRoleRequestFunction(Roles.ROLE_ADMIN, Permissions.ALL)))).andExpect(status().isOk())
+                .content(objectMapper
+                        .writeValueAsString(prepareCreateRoleRequestFunction(Roles.ROLE_ADMIN, Permissions.ALL))))
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("Role created successfully."));
 
         verify(roleService).createRole(any(CreateRoleRequestModel.class));
@@ -96,10 +101,10 @@ public class RoleControllerTest {
     void testUpdateRole() throws Exception {
 
         when(roleService.updateRoleById(eq(1L), any(CreateRoleRequestModel.class)))
-                .thenReturn(ResponseEntity.ok( Map.of("message", "Role updated successfully.")));
+                .thenReturn(ResponseEntity.ok(Map.of("message", "Role updated successfully.")));
 
-        mockMvc.perform(put(API_SUPER_ADMIN + ROLE + UPDATE + "/1").contentType(MediaType.APPLICATION_JSON).
-                        content(objectMapper.writeValueAsString(prepareCreateRoleRequestFunction(Roles.ROLE_ADMIN, Permissions.ALL))))
+        mockMvc.perform(put(API_SUPER_ADMIN + ROLE + UPDATE + "/1").contentType(MediaType.APPLICATION_JSON).content(
+                objectMapper.writeValueAsString(prepareCreateRoleRequestFunction(Roles.ROLE_ADMIN, Permissions.ALL))))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.message").value("Role updated successfully."));
 
         verify(roleService).updateRoleById(eq(1L), any(CreateRoleRequestModel.class));
@@ -109,10 +114,11 @@ public class RoleControllerTest {
     @DisplayName("While Super-Admin should request get data - get all roles")
     void testGetAllRoles() throws Exception {
 
-        when(roleService.getAllRoles()).thenReturn(ResponseEntity.ok( Map.of("data", List.of())));
-        mockMvc.perform(get(API_SUPER_ADMIN + ROLE + GET)).andExpect(status().isOk()).andExpect(jsonPath("$.data").isArray());
+        when(roleService.getAllRoles(any(Pageable.class), any(), any())).thenReturn(ResponseEntity.ok(Map.of("data", List.of())));
+        mockMvc.perform(get(API_SUPER_ADMIN + ROLE + GET)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").isArray());
 
-        verify(roleService).getAllRoles();
+        verify(roleService).getAllRoles(any(Pageable.class), any(), any());
     }
 
     @Test
@@ -120,7 +126,8 @@ public class RoleControllerTest {
     void testGetRoleById() throws Exception {
 
         when(roleService.getRoleById(1L)).thenReturn(ResponseEntity.ok(Map.of("data", Map.of("id", 1))));
-        mockMvc.perform(get(API_SUPER_ADMIN + ROLE + GET + "/1")).andExpect(status().isOk()).andExpect(jsonPath("$.data.id").value(1));
+        mockMvc.perform(get(API_SUPER_ADMIN + ROLE + GET + "/1")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.id").value(1));
 
         verify(roleService).getRoleById(1L);
     }
@@ -130,11 +137,11 @@ public class RoleControllerTest {
     void testDeleteRole() throws Exception {
 
         when(roleService.deleteRole(1L)).thenReturn(ResponseEntity.ok(Map.of("message", "Role deleted successfully.")));
-        mockMvc.perform(delete(API_SUPER_ADMIN + ROLE + DELETE + "/1")).andExpect(status().isOk()).andExpect(jsonPath("$.message").value("Role deleted successfully."));
+        mockMvc.perform(delete(API_SUPER_ADMIN + ROLE + DELETE + "/1")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Role deleted successfully."));
 
         verify(roleService).deleteRole(1L);
     }
-
 
     @AfterAll
     static void tearDown() {

@@ -13,6 +13,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -47,9 +52,11 @@ public class RoleServiceTest {
     void testCreateRoleSuccess() {
 
         when(roleRepository.findByNameAndDeletedAtIsNull(Roles.ROLE_ADMIN)).thenReturn(Optional.empty());
-        when(permissionRepository.findByNameAndDeletedAtIsNull(Permissions.ALL)).thenReturn(Optional.of(new PermissionEntity(Permissions.ALL)));
+        when(permissionRepository.findByNameAndDeletedAtIsNull(Permissions.ALL))
+                .thenReturn(Optional.of(new PermissionEntity(Permissions.ALL)));
 
-        ResponseEntity<Map<String, String>> response = roleService.createRole(prepareCreateRoleRequestFunction(Roles.ROLE_ADMIN, Permissions.ALL));
+        ResponseEntity<Map<String, String>> response = roleService
+                .createRole(prepareCreateRoleRequestFunction(Roles.ROLE_ADMIN, Permissions.ALL));
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(ROLE_CREATED_SUCCESSFULLY, response.getBody().get("message"));
@@ -61,9 +68,11 @@ public class RoleServiceTest {
     @DisplayName("While Admin-user should create role and role already exists")
     void testCreateRoleAlreadyExists() {
 
-        when(roleRepository.findByNameAndDeletedAtIsNull(Roles.ROLE_ADMIN)).thenReturn(Optional.of(prepareRoleEntityRequestFunction()));
+        when(roleRepository.findByNameAndDeletedAtIsNull(Roles.ROLE_ADMIN))
+                .thenReturn(Optional.of(prepareRoleEntityRequestFunction()));
 
-        ResponseEntity<Map<String, String>> response = roleService.createRole(prepareCreateRoleRequestFunction(Roles.ROLE_ADMIN, Permissions.ALL));
+        ResponseEntity<Map<String, String>> response = roleService
+                .createRole(prepareCreateRoleRequestFunction(Roles.ROLE_ADMIN, Permissions.ALL));
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals(ROLE_ALREADY_EXISTS, response.getBody().get("message"));
@@ -78,7 +87,8 @@ public class RoleServiceTest {
         when(roleRepository.findByNameAndDeletedAtIsNull(Roles.ROLE_ADMIN)).thenReturn(Optional.empty());
         when(permissionRepository.findByNameAndDeletedAtIsNull(Permissions.ALL)).thenReturn(Optional.empty());
 
-        NullPointerException ex = assertThrows(NullPointerException.class, () -> roleService.createRole(prepareCreateRoleRequestFunction(Roles.ROLE_ADMIN, Permissions.ALL)));
+        NullPointerException ex = assertThrows(NullPointerException.class,
+                () -> roleService.createRole(prepareCreateRoleRequestFunction(Roles.ROLE_ADMIN, Permissions.ALL)));
 
         assertEquals(PERMISSION_NOT_FOUND, ex.getMessage());
     }
@@ -91,9 +101,11 @@ public class RoleServiceTest {
 
         when(roleRepository.findByIdAndDeletedAtIsNull(1L)).thenReturn(Optional.of(roleEntity));
         when(roleRepository.findByNameAndDeletedAtIsNull(Roles.ROLE_ADMIN)).thenReturn(Optional.empty());
-        when(permissionRepository.findByNameAndDeletedAtIsNull(Permissions.ALL)).thenReturn(Optional.of(new PermissionEntity(Permissions.ALL)));
+        when(permissionRepository.findByNameAndDeletedAtIsNull(Permissions.ALL))
+                .thenReturn(Optional.of(new PermissionEntity(Permissions.ALL)));
 
-        ResponseEntity<Map<String,String>> response = roleService.updateRoleById(1L, prepareCreateRoleRequestFunction(Roles.ROLE_ADMIN, Permissions.ALL));
+        ResponseEntity<Map<String, String>> response = roleService.updateRoleById(1L,
+                prepareCreateRoleRequestFunction(Roles.ROLE_ADMIN, Permissions.ALL));
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(ROLE_UPDATED_SUCCESSFULLY, response.getBody().get("message"));
@@ -106,7 +118,8 @@ public class RoleServiceTest {
     void testUpdateRoleNotFound() {
 
         when(roleRepository.findByIdAndDeletedAtIsNull(1L)).thenReturn(Optional.empty());
-        ResponseEntity<Map<String,String>> response = roleService.updateRoleById(1L, prepareCreateRoleRequestFunction(Roles.ROLE_ADMIN, Permissions.ALL));
+        ResponseEntity<Map<String, String>> response = roleService.updateRoleById(1L,
+                prepareCreateRoleRequestFunction(Roles.ROLE_ADMIN, Permissions.ALL));
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals(ROLE_NOT_FOUND, response.getBody().get("message"));
@@ -121,7 +134,8 @@ public class RoleServiceTest {
         when(roleRepository.findByIdAndDeletedAtIsNull(1L)).thenReturn(Optional.of(prepareRoleEntityRequestFunction()));
         when(roleRepository.findByNameAndDeletedAtIsNull(Roles.ROLE_ADMIN)).thenReturn(Optional.of(duplicate));
 
-        ResponseEntity<Map<String,String>> response = roleService.updateRoleById(1L, prepareCreateRoleRequestFunction(Roles.ROLE_ADMIN, Permissions.ALL));
+        ResponseEntity<Map<String, String>> response = roleService.updateRoleById(1L,
+                prepareCreateRoleRequestFunction(Roles.ROLE_ADMIN, Permissions.ALL));
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals(ROLE_ALREADY_EXISTS, response.getBody().get("message"));
@@ -138,7 +152,8 @@ public class RoleServiceTest {
         when(permissionRepository.findByNameAndDeletedAtIsNull(Permissions.ALL)).thenReturn(Optional.empty());
 
         NullPointerException ex = assertThrows(NullPointerException.class,
-                () -> roleService.updateRoleById(1L, prepareCreateRoleRequestFunction(Roles.ROLE_ADMIN, Permissions.ALL)));
+                () -> roleService.updateRoleById(1L,
+                        prepareCreateRoleRequestFunction(Roles.ROLE_ADMIN, Permissions.ALL)));
 
         assertEquals(PERMISSION_NOT_FOUND, ex.getMessage());
     }
@@ -148,12 +163,15 @@ public class RoleServiceTest {
     void testGetAllRoles() {
 
         List<RoleEntity> roles = List.of(prepareRoleEntityRequestFunction());
+        Page<RoleEntity> page = new PageImpl<>(roles, PageRequest.of(0, 10), roles.size());
 
-        when(roleRepository.findByDeletedAtIsNull()).thenReturn(roles);
-        ResponseEntity<Map<String,Object>> response = roleService.getAllRoles();
+        when(roleRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
+        ResponseEntity<Map<String, Object>> response = roleService.getAllRoles(PageRequest.of(0, 10), null, null);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(roles, response.getBody().get("data"));
+        assertEquals(1, response.getBody().get("pageSize"));
+        assertEquals(1L, response.getBody().get("getTotalElements"));
     }
 
     @Test
@@ -163,7 +181,7 @@ public class RoleServiceTest {
         RoleEntity roleEntity = prepareRoleEntityRequestFunction();
         when(roleRepository.findByIdAndDeletedAtIsNull(1L)).thenReturn(Optional.of(roleEntity));
 
-        ResponseEntity<Map<String,Object>> response = roleService.getRoleById(1L);
+        ResponseEntity<Map<String, Object>> response = roleService.getRoleById(1L);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(roleEntity, response.getBody().get("data"));
@@ -186,7 +204,7 @@ public class RoleServiceTest {
         RoleEntity roleEntity = prepareRoleEntityRequestFunction();
 
         when(roleRepository.findByIdAndDeletedAtIsNull(1L)).thenReturn(Optional.of(roleEntity));
-        ResponseEntity<Map<String,String>> response = roleService.deleteRole(1L);
+        ResponseEntity<Map<String, String>> response = roleService.deleteRole(1L);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(ROLE_DELETED_SUCCESSFULLY, response.getBody().get("message"));
@@ -200,14 +218,13 @@ public class RoleServiceTest {
     void testDeleteRoleNotFound() {
 
         when(roleRepository.findByIdAndDeletedAtIsNull(1L)).thenReturn(Optional.empty());
-        ResponseEntity<Map<String,String>> response = roleService.deleteRole(1L);
+        ResponseEntity<Map<String, String>> response = roleService.deleteRole(1L);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals(ROLE_NOT_FOUND, response.getBody().get("message"));
 
         verify(roleRepository, never()).save(any());
     }
-
 
     private RoleEntity prepareRoleEntityRequestFunction() {
         RoleEntity roleEntity = new RoleEntity();

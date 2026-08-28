@@ -35,9 +35,16 @@ export class SuperAdminService {
         return this.http.put(allRoutes.updateRoleByIdBackendUrl + "/" + id, createRoleModelObject);
     }
 
-    public getRoles() {
+    public getRoles(page: number = 0, size: number = 10, filterColumnName: string = '', searchItem: string = '', sort: string = 'id,DESC') {
 
-        return this.http.get<any[]>(allRoutes.getRoleBackendUrl);
+      let params = new HttpParams().set('page', page.toString()).set('size', size.toString()).set('sort', sort);
+
+      if(filterColumnName != null && filterColumnName.trim() != "")
+      {
+        params = params.set('ColumnName', filterColumnName).set('searchItem', searchItem);
+      }
+
+      return this.http.get<any>(allRoutes.getRoleBackendUrl, { params });
     }
 
     public getRoleById(id: number) {
