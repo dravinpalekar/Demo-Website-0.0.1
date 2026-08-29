@@ -8,6 +8,7 @@ export class allRoutes {
     static readonly login = "login";
     static readonly signUp = "signUp";
     static readonly logOut = "logout";
+    static readonly refreshToken = "refreshToken";
     static readonly forgotPassword = "forgotPassword";
     static readonly superAdminLogin = "superAdminLogin";
     static readonly superAdminSignUp = "superAdminSignUp";
@@ -72,6 +73,7 @@ export class allRoutes {
     static readonly signUpBackendUrl = this.entryPointBackendBaseUrl + this.api + this.auth + this.signUp;
 
      static readonly logOutBackendUrl = this.entryPointBackendBaseUrl + this.api + this.auth + this.logOut;
+     static readonly refreshTokenBackendUrl = this.entryPointBackendBaseUrl + this.api + this.auth + this.refreshToken;
 
     static readonly createRoleBackendUrl = this.entryPointBackendBaseUrl + this.api + this.super + this.role + this.create;
     static readonly getRoleBackendUrl = this.entryPointBackendBaseUrl + this.api + this.super + this.role + this.get;

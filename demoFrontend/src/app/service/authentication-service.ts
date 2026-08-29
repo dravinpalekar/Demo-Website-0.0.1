@@ -62,6 +62,7 @@ export class AuthenticationService {
                 if (userValidateModel && userValidateModel.data) {
 
                     let responseData = JSON.parse(JSON.stringify(userValidateModel));
+                    this.roles = [];
 
                     responseData.data.roles.forEach((element: any) => {
                         this.roles.push(element);
@@ -80,6 +81,31 @@ export class AuthenticationService {
                 return userValidateModel;
             }
             ));
+    }
+
+    public refreshToken(): Observable<any> {
+        return this.http.post<any>(allRoutes.refreshTokenBackendUrl, {}, { withCredentials: true })
+            .pipe(map(response => {
+                if (response && response.data) {
+                    let responseData = JSON.parse(JSON.stringify(response));
+                    let updatedRoles: Role[] = [];
+
+                    responseData.data.roles.forEach((element: any) => {
+                        updatedRoles.push(element);
+                    });
+
+                    let setUserData: UserValidateModel = new UserValidateModel();
+                    setUserData.roles = updatedRoles;
+                    setUserData.userName = responseData.data.userName;
+                    setUserData.id = responseData.data.id;
+
+                    this.cookieService.set("userSession", JSON.stringify(setUserData), 86400000 / 1000, '/', '', true, 'Strict');
+                    this.cookieService.set("isLoggedIn", "true", 86400000 / 1000, '/', '', true, 'Strict');
+
+                    this.currentUserSubject.next(setUserData);
+                }
+                return response;
+            }));
     }
 
     logout() {
