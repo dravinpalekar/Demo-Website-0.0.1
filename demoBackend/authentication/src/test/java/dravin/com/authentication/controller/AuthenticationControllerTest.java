@@ -282,13 +282,26 @@ public class AuthenticationControllerTest {
     @DisplayName("While User logout Should logout user successfully")
     void logoutUser_Success() throws Exception {
 
-        when(authenticationService.logoutUser()).thenReturn(ResponseEntity.ok(Map.of("message", "User logged out successfully.")));
+        when(authenticationService.logoutUser(any())).thenReturn(ResponseEntity.ok(Map.of("message", "User logged out successfully.")));
 
         mockMvc.perform(post(API_AUTH + LOGOUT))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("User logged out successfully."));
 
-        verify(authenticationService).logoutUser();
+        verify(authenticationService).logoutUser(any());
+    }
+
+    @Test
+    @DisplayName("While User refreshToken Should refresh token successfully")
+    void refreshToken_Success() throws Exception {
+
+        when(authenticationService.refreshToken(any())).thenReturn(ResponseEntity.ok(Map.of("data", Map.of("message", "Token refreshed successfully."))));
+
+        mockMvc.perform(post(API_AUTH + REFRESH_TOKEN))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.message").value("Token refreshed successfully."));
+
+        verify(authenticationService).refreshToken(any());
     }
 
     @AfterAll

@@ -24,6 +24,7 @@ public class RoutesFile {
     public static final String SIGN_IN = "/signIn";
     public static final String SIGN_UP = "/signUp";
     public static final String LOGOUT = "/logout";
+    public static final String REFRESH_TOKEN = "/refreshToken";
     public static final String CREATE = "/create";
     public static final String UPDATE = "/update";
     public static final String GET = "/get";

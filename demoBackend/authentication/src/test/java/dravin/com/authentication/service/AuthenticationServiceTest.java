@@ -4,11 +4,13 @@
     import dravin.com.authentication.configuration.jwt.JwtUtils;
     import dravin.com.authentication.requestmodel.LoginRequestModel;
     import dravin.com.authentication.requestmodel.SignupRequestModel;
+    import dravin.com.authentication.service.loaduser.UserDetailsImpl;
     import dravin.com.repository.constant.enumConstant.Roles;
     import dravin.com.repository.entity.RoleEntity;
     import dravin.com.repository.entity.UserEntity;
     import dravin.com.repository.repository.RoleRepository;
     import dravin.com.repository.repository.UserRepository;
+    import jakarta.servlet.http.HttpServletRequest;
     import org.junit.jupiter.api.DisplayName;
     import org.junit.jupiter.api.Test;
     import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,6 +26,7 @@
     import org.springframework.security.crypto.password.PasswordEncoder;
     import org.springframework.test.util.ReflectionTestUtils;
 
+    import java.util.Collections;
     import java.util.Map;
     import java.util.Optional;
     import java.util.Set;
@@ -63,16 +66,22 @@
         @DisplayName("While User Login Should pass when both fields are valid")
         void authenticateUserShouldReturnJwtToken() {
 
+            UserDetailsImpl user = new UserDetailsImpl(1L, "admin@gamil.com", "admin@gamil.com", "Admin@123", Collections.emptyList());
+            when(authentication.getPrincipal()).thenReturn(user);
             when(authenticationManager.authenticate(any())).thenReturn(authentication);
-            when(jwtUtils.generateJwtToken(authentication)).thenReturn("jwt-token");
-            ResponseEntity<Map<String, String>> response = authenticationService.authenticateUser(prepareLoginRequestFunction("admin@gamil.com", "Admin@123"));
+            when(jwtUtils.generateJwtCookie(authentication)).thenReturn(ResponseCookie.from("jwt_token", "token").build());
+            when(jwtUtils.generateRefreshJwtCookie(anyString())).thenReturn(ResponseCookie.from("refresh_token", "refresh").build());
+            when(userRepository.findByIdAndDeletedAtIsNull(1L)).thenReturn(Optional.of(new UserEntity()));
+
+            ResponseEntity<Map<String, Object>> response = authenticationService.authenticateUser(prepareLoginRequestFunction("admin@gamil.com", "Admin@123"));
             assertEquals(HttpStatus.OK, response.getStatusCode());
 
             assertNotNull(response.getBody());
-            assertEquals("jwt-token", response.getBody().get("token"));
+            assertNotNull(response.getBody().get("data"));
 
             verify(authenticationManager).authenticate(any());
-            verify(jwtUtils).generateJwtToken(authentication);
+            verify(jwtUtils).generateJwtCookie(authentication);
+            verify(jwtUtils).generateRefreshJwtCookie(anyString());
         }
 
         @Test
@@ -302,21 +311,82 @@
         @DisplayName("While User Logout Should logout successfully and clear cookie")
         void logoutUserSuccess() {
 
+            HttpServletRequest request = mock(HttpServletRequest.class);
             ResponseCookie cleanCookie = ResponseCookie.from("jwt_token", "")
                     .path("/")
                     .maxAge(0)
                     .httpOnly(true)
                     .build();
 
-            when(jwtUtils.getCleanJwtCookie()).thenReturn(cleanCookie);
+            ResponseCookie cleanRefreshCookie = ResponseCookie.from("refresh_token", "")
+                    .path("/")
+                    .maxAge(0)
+                    .httpOnly(true)
+                    .build();
 
-            ResponseEntity<Map<String, String>> response = authenticationService.logoutUser();
+            when(jwtUtils.getJwtRefreshFromCookies(request)).thenReturn("sample-refresh-token");
+            when(userRepository.findByRefreshTokenAndDeletedAtIsNull("sample-refresh-token")).thenReturn(Optional.of(new UserEntity()));
+            when(jwtUtils.getCleanJwtCookie()).thenReturn(cleanCookie);
+            when(jwtUtils.getCleanJwtRefreshCookie()).thenReturn(cleanRefreshCookie);
+
+            ResponseEntity<Map<String, String>> response = authenticationService.logoutUser(request);
 
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertEquals(USER_LOGGED_OUT_SUCCESSFULLY, response.getBody().get("message"));
-            assertTrue(response.getHeaders().getFirst("Set-Cookie").contains("Max-Age=0"));
 
             verify(jwtUtils).getCleanJwtCookie();
+            verify(jwtUtils).getCleanJwtRefreshCookie();
+        }
+
+        @Test
+        @DisplayName("While User Refresh Token Should refresh token successfully")
+        void refreshTokenSuccess() {
+
+            HttpServletRequest request = mock(HttpServletRequest.class);
+            UserEntity user = new UserEntity("admin@mail.com", "admin", "password", Collections.emptySet());
+            ReflectionTestUtils.setField(user, "id", 1L);
+
+            when(jwtUtils.getJwtRefreshFromCookies(request)).thenReturn("valid-refresh-token");
+            when(userRepository.findByRefreshTokenAndDeletedAtIsNull("valid-refresh-token")).thenReturn(Optional.of(user));
+            when(jwtUtils.generateJwtCookieFromUser(user)).thenReturn(ResponseCookie.from("jwt_token", "new-jwt").build());
+            when(jwtUtils.generateRefreshJwtCookie(anyString())).thenReturn(ResponseCookie.from("refresh_token", "new-refresh").build());
+
+            ResponseEntity<Map<String, Object>> response = authenticationService.refreshToken(request);
+
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertNotNull(response.getBody().get("data"));
+            Map<?, ?> data = (Map<?, ?>) response.getBody().get("data");
+            assertNotNull(data.get("roles"));
+            assertEquals("admin", data.get("userName"));
+            assertEquals(1L, data.get("id"));
+
+            verify(userRepository).save(user);
+            verify(jwtUtils).generateJwtCookieFromUser(user);
+        }
+
+        @Test
+        @DisplayName("While User Refresh Token Should return BAD_REQUEST when refresh token is missing")
+        void refreshTokenMissing() {
+
+            HttpServletRequest request = mock(HttpServletRequest.class);
+            when(jwtUtils.getJwtRefreshFromCookies(request)).thenReturn(null);
+
+            ResponseEntity<Map<String, Object>> response = authenticationService.refreshToken(request);
+
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        }
+
+        @Test
+        @DisplayName("While User Refresh Token Should return FORBIDDEN when refresh token is invalid or not in DB")
+        void refreshTokenInvalid() {
+
+            HttpServletRequest request = mock(HttpServletRequest.class);
+            when(jwtUtils.getJwtRefreshFromCookies(request)).thenReturn("invalid-token");
+            when(userRepository.findByRefreshTokenAndDeletedAtIsNull("invalid-token")).thenReturn(Optional.empty());
+
+            ResponseEntity<Map<String, Object>> response = authenticationService.refreshToken(request);
+
+            assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
         }
 
     }

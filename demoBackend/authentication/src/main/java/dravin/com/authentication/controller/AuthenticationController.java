@@ -5,6 +5,7 @@ import dravin.com.authentication.requestmodel.SignupRequestModel;
 import dravin.com.authentication.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,11 +48,19 @@ public class AuthenticationController {
         return authenticationService.registerUser(signUpRequest);
     }
 
+    @PostMapping(REFRESH_TOKEN)
+    @Operation(summary = "Refresh Token API", description = "Generate new access token using refresh token cookie.")
+    public ResponseEntity<Map<String, Object>> refreshToken(HttpServletRequest request) {
+
+        logger.info("Attempt token refresh");
+        return authenticationService.refreshToken(request);
+    }
+
     @PostMapping(LOGOUT)
-    @Operation(summary = "Logout API for User", description = "Logout user and clear JWT cookie.")
-    public ResponseEntity<Map<String, String>> logoutUser() {
+    @Operation(summary = "Logout API for User", description = "Logout user and clear JWT cookies.")
+    public ResponseEntity<Map<String, String>> logoutUser(HttpServletRequest request) {
 
         logger.info("Attempt user logout");
-        return authenticationService.logoutUser();
+        return authenticationService.logoutUser(request);
     }
 }

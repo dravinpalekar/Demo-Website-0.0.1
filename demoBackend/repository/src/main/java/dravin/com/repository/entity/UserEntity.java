@@ -45,6 +45,9 @@ public class UserEntity extends AbstractDateTimeEntity implements Serializable {
     @Column(name="active", nullable = false)
     private Status active;
 
+    @Column(name="refresh_token", nullable = true, length = 500)
+    private String refreshToken;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_other_information_id", referencedColumnName = "id", nullable = true)
     private UserOtherInformationEntity userOtherInformation;

@@ -1,6 +1,7 @@
 package dravin.com.authentication.configuration.jwt;
 
 import dravin.com.authentication.service.loaduser.UserDetailsImpl;
+import dravin.com.repository.entity.UserEntity;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -17,6 +18,7 @@ import org.springframework.web.util.WebUtils;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.List;
 
 import static dravin.com.authentication.constant.ConstantString.AUTHORIZATION;
 import static dravin.com.authentication.constant.ConstantString.BEARER;
@@ -31,8 +33,14 @@ public class JwtUtils {
     @Value("${jwtExpirationInMillisecond}")
     private int jwtExpirationMillisecond;
 
-    @Value("${jwtCookieName:jwt_token}")
+    @Value("${jwtCookieName}")
     private String jwtCookieName;
+
+    @Value("${jwtRefreshCookieName}")
+    private String jwtRefreshCookieName;
+
+    @Value("${jwtRefreshExpirationInMillisecond}")
+    private long jwtRefreshExpirationInMs;
 
     public String generateJwtToken(Authentication authentication) {
 
@@ -67,6 +75,65 @@ public class JwtUtils {
         return ResponseCookie.from(jwtCookieName, "")
                 .path("/")
                 .maxAge(0)                     // Immediate expire
+                .httpOnly(true)
+                .secure(false)
+                .sameSite("Strict")
+                .build();
+    }
+
+    // Refresh Token Cookie generate karne ke liye
+    public ResponseCookie generateRefreshJwtCookie(String refreshToken) {
+        return ResponseCookie.from(jwtRefreshCookieName, refreshToken)
+                .path("/")
+                .maxAge(jwtRefreshExpirationInMs / 1000)
+                .httpOnly(true)
+                .secure(false)
+                .sameSite("Strict")
+                .build();
+    }
+
+    // Refresh Token Cookie clean/expire karne ke liye
+    public ResponseCookie getCleanJwtRefreshCookie() {
+        return ResponseCookie.from(jwtRefreshCookieName, "")
+                .path("/")
+                .maxAge(0)
+                .httpOnly(true)
+                .secure(false)
+                .sameSite("Strict")
+                .build();
+    }
+
+    // Request Cookie se Refresh Token extract karne ke liye
+    public String getJwtRefreshFromCookies(HttpServletRequest request) {
+        Cookie cookie = WebUtils.getCookie(request, jwtRefreshCookieName);
+        if (cookie != null) {
+            return cookie.getValue();
+        }
+        return null;
+    }
+
+    // UserEntity se naya Access Token generate karne ke liye
+    public String generateTokenFromUser(UserEntity user) {
+        List<String> roles = user.getRole().stream()
+                .map(role -> role.getName().name())
+                .toList();
+
+        return Jwts.builder()
+                .subject(user.getUserName())
+                .claim("id", user.getId())
+                .claim("roles", roles)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + jwtExpirationMillisecond))
+                .signWith(key(), Jwts.SIG.HS256)
+                .compact();
+    }
+
+    // UserEntity se naya Access Token Cookie generate karne ke liye
+    public ResponseCookie generateJwtCookieFromUser(UserEntity user) {
+        String jwt = generateTokenFromUser(user);
+        return ResponseCookie.from(jwtCookieName, jwt)
+                .path("/")
+                .maxAge(jwtExpirationMillisecond / 1000)
                 .httpOnly(true)
                 .secure(false)
                 .sameSite("Strict")

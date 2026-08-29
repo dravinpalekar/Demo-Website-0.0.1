@@ -10,6 +10,7 @@ import dravin.com.repository.entity.RoleEntity;
 import dravin.com.repository.entity.UserEntity;
 import dravin.com.repository.repository.RoleRepository;
 import dravin.com.repository.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -56,17 +57,30 @@ public class AuthenticationService {
 
         SecurityContextHolder.getContext().setAuthentication(authenticationObject);
 
-        List<String> roleList = ((UserDetailsImpl) authenticationObject.getPrincipal()).getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+        UserDetailsImpl userPrincipal = (UserDetailsImpl) authenticationObject.getPrincipal();
+        List<String> roleList = userPrincipal.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+
+        String refreshToken = UUID.randomUUID().toString();
+
+        userRepository.findByIdAndDeletedAtIsNull(userPrincipal.getId()).ifPresent(user -> {
+            user.setRefreshToken(refreshToken);
+            userRepository.save(user);
+        });
 
         Map<String,Object> responseObject = new HashMap<>();
         responseObject.put("roles",roleList);
         responseObject.put("userName",requestObject.getUserName());
-        responseObject.put("id",((UserDetailsImpl) authenticationObject.getPrincipal()).getId());
+        responseObject.put("id",userPrincipal.getId());
         responseObject.put("message","User logged in successfully.");
 
         ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(authenticationObject);
+        ResponseCookie jwtRefreshCookie = jwtUtils.generateRefreshJwtCookie(refreshToken);
 
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString()).body(Map.of("data", responseObject));
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.SET_COOKIE, jwtCookie.toString());
+        headers.add(HttpHeaders.SET_COOKIE, jwtRefreshCookie.toString());
+
+        return ResponseEntity.ok().headers(headers).body(Map.of("data", responseObject));
     }
 
 
@@ -113,10 +127,61 @@ public class AuthenticationService {
         return ResponseEntity.ok(Map.of(MESSAGE, USER_REGISTERED_SUCCESSFULLY));
     }
 
-    public ResponseEntity<Map<String, String>> logoutUser() {
+    public ResponseEntity<Map<String, Object>> refreshToken(HttpServletRequest request) {
+        String refreshToken = jwtUtils.getJwtRefreshFromCookies(request);
+
+        if (refreshToken == null || refreshToken.isBlank()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(MESSAGE, "Refresh token is missing."));
+        }
+
+        Optional<UserEntity> userOptional = userRepository.findByRefreshTokenAndDeletedAtIsNull(refreshToken);
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of(MESSAGE, "Invalid or expired refresh token. Please sign in again."));
+        }
+
+        UserEntity user = userOptional.get();
+
+        String newRefreshToken = UUID.randomUUID().toString();
+        user.setRefreshToken(newRefreshToken);
+        userRepository.save(user);
+
+        ResponseCookie jwtCookie = jwtUtils.generateJwtCookieFromUser(user);
+        ResponseCookie jwtRefreshCookie = jwtUtils.generateRefreshJwtCookie(newRefreshToken);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.SET_COOKIE, jwtCookie.toString());
+        headers.add(HttpHeaders.SET_COOKIE, jwtRefreshCookie.toString());
+
+        List<String> roleList = user.getRole().stream().map(role -> role.getName().name()).toList();
+
+        Map<String, Object> responseData = new HashMap<>();
+        responseData.put("roles", roleList);
+        responseData.put("userName", user.getUserName());
+        responseData.put("id", user.getId());
+        responseData.put("message", "Token refreshed successfully.");
+
+        return ResponseEntity.ok().headers(headers).body(Map.of("data", responseData));
+    }
+
+    public ResponseEntity<Map<String, String>> logoutUser(HttpServletRequest request) {
+        if (request != null) {
+            String refreshToken = jwtUtils.getJwtRefreshFromCookies(request);
+            if (refreshToken != null && !refreshToken.isBlank()) {
+                userRepository.findByRefreshTokenAndDeletedAtIsNull(refreshToken).ifPresent(user -> {
+                    user.setRefreshToken(null);
+                    userRepository.save(user);
+                });
+            }
+        }
         SecurityContextHolder.clearContext();
-        ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body(Map.of(MESSAGE, USER_LOGGED_OUT_SUCCESSFULLY));
+        ResponseCookie cleanJwtCookie = jwtUtils.getCleanJwtCookie();
+        ResponseCookie cleanRefreshCookie = jwtUtils.getCleanJwtRefreshCookie();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.SET_COOKIE, cleanJwtCookie.toString());
+        headers.add(HttpHeaders.SET_COOKIE, cleanRefreshCookie.toString());
+
+        return ResponseEntity.ok().headers(headers).body(Map.of(MESSAGE, USER_LOGGED_OUT_SUCCESSFULLY));
     }
 
 }

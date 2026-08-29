@@ -23,6 +23,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>, JpaSpec
 
     Optional<UserEntity> findByIdAndDeletedAtIsNull(Long id);
 
+    Optional<UserEntity> findByRefreshTokenAndDeletedAtIsNull(String refreshToken);
+
     Boolean existsByEmail(String email);
 
     Page<UserEntity> findByDeletedAtIsNull(Pageable pageable);

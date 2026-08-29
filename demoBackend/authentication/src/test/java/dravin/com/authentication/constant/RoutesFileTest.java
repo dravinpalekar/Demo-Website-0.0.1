@@ -31,6 +31,7 @@ public class RoutesFileTest {
         assertEquals("/signIn", RoutesFile.SIGN_IN);
         assertEquals("/signUp", RoutesFile.SIGN_UP);
         assertEquals("/logout", RoutesFile.LOGOUT);
+        assertEquals("/refreshToken", RoutesFile.REFRESH_TOKEN);
         assertEquals("/create", RoutesFile.CREATE);
         assertEquals("/update", RoutesFile.UPDATE);
         assertEquals("/get", RoutesFile.GET);
