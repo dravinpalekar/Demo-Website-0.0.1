@@ -68,6 +68,8 @@ public class JwtUtils {
                 .path("/")
                 .maxAge(0)                     // Immediate expire
                 .httpOnly(true)
+                .secure(false)
+                .sameSite("Strict")
                 .build();
     }
 

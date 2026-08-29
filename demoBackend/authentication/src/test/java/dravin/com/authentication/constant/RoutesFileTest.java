@@ -30,6 +30,7 @@ public class RoutesFileTest {
     void shouldVerifyVerbConstants() {
         assertEquals("/signIn", RoutesFile.SIGN_IN);
         assertEquals("/signUp", RoutesFile.SIGN_UP);
+        assertEquals("/logout", RoutesFile.LOGOUT);
         assertEquals("/create", RoutesFile.CREATE);
         assertEquals("/update", RoutesFile.UPDATE);
         assertEquals("/get", RoutesFile.GET);

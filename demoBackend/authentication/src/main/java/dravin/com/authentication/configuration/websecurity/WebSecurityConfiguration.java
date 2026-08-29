@@ -1,6 +1,5 @@
 package dravin.com.authentication.configuration.websecurity;
 
-
 import dravin.com.authentication.configuration.jwt.JwtAuthFilter;
 import dravin.com.authentication.configuration.jwt.JwtAuthenticationEntryPoint;
 import dravin.com.authentication.service.loaduser.UserDetailsServiceImpl;
@@ -29,13 +28,12 @@ public class WebSecurityConfiguration {
 
     private JwtAuthenticationEntryPoint unauthorizedHandler;
 
-
-
     @Autowired
     @Qualifier("handlerExceptionResolver")
     private HandlerExceptionResolver handlerExceptionResolver;
 
-    public WebSecurityConfiguration(UserDetailsServiceImpl userDetailsService, JwtAuthenticationEntryPoint unauthorizedHandler) {
+    public WebSecurityConfiguration(UserDetailsServiceImpl userDetailsService,
+            JwtAuthenticationEntryPoint unauthorizedHandler) {
         this.userDetailsService = userDetailsService;
         this.unauthorizedHandler = unauthorizedHandler;
     }
@@ -45,7 +43,7 @@ public class WebSecurityConfiguration {
 
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
 
-//        authProvider.setUserDetailsService(userDetailsService);
+        // authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
 
         return authProvider;
@@ -60,19 +58,21 @@ public class WebSecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
         httpSecurity
-                .cors(cors -> {}) // Enable CORS
+                .cors(cors -> {
+                }) // Enable CORS
                 .csrf(csrf -> csrf.disable())
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/auth/signIn","/api/auth/signUp",
-                                        "/v3/api-docs/**",
-                                        "/swagger-ui.html",
-                                        "/swagger-ui/**").permitAll()
-//                                .requestMatchers("/api/super/**").permitAll()
-                                .requestMatchers("/api/super/**").hasRole("SUPER_ADMIN")
-//                                .requestMatchers("/api/auth/**").permitAll()
-                                .anyRequest().authenticated());
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/auth/signIn", "/api/auth/signUp", "/api/auth/logout",
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html",
+                                "/swagger-ui/**")
+                        .permitAll()
+                        // .requestMatchers("/api/super/**").permitAll()
+                        .requestMatchers("/api/super/**").hasRole("SUPER_ADMIN")
+                        // .requestMatchers("/api/auth/**").permitAll()
+                        .anyRequest().authenticated());
         httpSecurity.authenticationProvider(authenticationProvider());
         httpSecurity.addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
 
@@ -81,7 +81,8 @@ public class WebSecurityConfiguration {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 

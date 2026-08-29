@@ -12,6 +12,7 @@ public class ConstantString {
     public static final String BEARER = "Bearer";
 
     public static final String USER_REGISTERED_SUCCESSFULLY = "User registered successfully.";
+    public static final String USER_LOGGED_OUT_SUCCESSFULLY = "User logged out successfully.";
     public static final String SUPER_ADMIN_IS_ALREADY_EXISTS = "Super Admin is already exists.";
     public static final String USER_DELETED_SUCCESSFULLY = "User deleted successfully.";
 

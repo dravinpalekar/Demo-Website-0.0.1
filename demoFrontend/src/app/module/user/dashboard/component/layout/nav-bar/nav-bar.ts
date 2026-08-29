@@ -139,8 +139,7 @@ export class NavBar {
     }
 
     logout() {
-
-        this.authenticationServiceObject.logout();
+        this.authenticationServiceObject.logout().subscribe();
         this.router.navigate([allRoutes.login]);
         // Implement your logout logic here
         // For example, you might want to clear user data and redirect to the login page

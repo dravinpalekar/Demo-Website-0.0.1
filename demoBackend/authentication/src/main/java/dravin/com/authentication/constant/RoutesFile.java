@@ -8,8 +8,7 @@ public class RoutesFile {
 
     public static final String API = "/api";
 
-    //    All nouns related string
-
+    // All nouns related string
 
     public static final String API_AUTH = API + "/auth";
     public static final String API_SUPER_ADMIN = API + "/super/admin";
@@ -21,12 +20,10 @@ public class RoutesFile {
 
     public static final String ID = "/{id}";
 
-
-
-
-    //    All verbs related string
+    // All verbs related string
     public static final String SIGN_IN = "/signIn";
     public static final String SIGN_UP = "/signUp";
+    public static final String LOGOUT = "/logout";
     public static final String CREATE = "/create";
     public static final String UPDATE = "/update";
     public static final String GET = "/get";

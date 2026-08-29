@@ -16,6 +16,7 @@
     import org.mockito.Mock;
     import org.mockito.junit.jupiter.MockitoExtension;
     import org.springframework.http.HttpStatus;
+    import org.springframework.http.ResponseCookie;
     import org.springframework.http.ResponseEntity;
     import org.springframework.security.authentication.AuthenticationManager;
     import org.springframework.security.authentication.BadCredentialsException;
@@ -28,6 +29,7 @@
     import java.util.Set;
 
     import static dravin.com.authentication.constant.ConstantString.SUPER_ADMIN_IS_ALREADY_EXISTS;
+    import static dravin.com.authentication.constant.ConstantString.USER_LOGGED_OUT_SUCCESSFULLY;
     import static dravin.com.authentication.constant.ConstantString.USER_REGISTERED_SUCCESSFULLY;
     import static org.junit.jupiter.api.Assertions.*;
     import static org.mockito.ArgumentMatchers.any;
@@ -294,6 +296,27 @@
             when(userRepository.findUsersByRoleAndDeletedAtIsNull(Roles.ROLE_SUPER_ADMIN)).thenReturn(Optional.empty());
 
             assertThrows(NullPointerException.class, () -> authenticationService.registerUser(request));
+        }
+
+        @Test
+        @DisplayName("While User Logout Should logout successfully and clear cookie")
+        void logoutUserSuccess() {
+
+            ResponseCookie cleanCookie = ResponseCookie.from("jwt_token", "")
+                    .path("/")
+                    .maxAge(0)
+                    .httpOnly(true)
+                    .build();
+
+            when(jwtUtils.getCleanJwtCookie()).thenReturn(cleanCookie);
+
+            ResponseEntity<Map<String, String>> response = authenticationService.logoutUser();
+
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals(USER_LOGGED_OUT_SUCCESSFULLY, response.getBody().get("message"));
+            assertTrue(response.getHeaders().getFirst("Set-Cookie").contains("Max-Age=0"));
+
+            verify(jwtUtils).getCleanJwtCookie();
         }
 
     }

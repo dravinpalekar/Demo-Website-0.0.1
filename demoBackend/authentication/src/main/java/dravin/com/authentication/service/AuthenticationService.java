@@ -113,5 +113,10 @@ public class AuthenticationService {
         return ResponseEntity.ok(Map.of(MESSAGE, USER_REGISTERED_SUCCESSFULLY));
     }
 
+    public ResponseEntity<Map<String, String>> logoutUser() {
+        SecurityContextHolder.clearContext();
+        ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body(Map.of(MESSAGE, USER_LOGGED_OUT_SUCCESSFULLY));
+    }
 
 }

@@ -84,9 +84,12 @@ export class AuthenticationService {
 
     logout() {
         // remove user from cookie storage to log user out
-        this.cookieService.delete('cookieToken', '/');
+        this.cookieService.delete('userSession', '/', '', true, 'Strict');
+        this.cookieService.delete('isLoggedIn', '/', '', true, 'Strict');
         this.cookieService.delete('userSession', '/');
         this.cookieService.delete('isLoggedIn', '/');
+        this.cookieService.deleteAll('/');
         this.currentUserSubject.next(null!);
+        return this.http.post(allRoutes.logOutBackendUrl, {}, { withCredentials: true });
     }
 }

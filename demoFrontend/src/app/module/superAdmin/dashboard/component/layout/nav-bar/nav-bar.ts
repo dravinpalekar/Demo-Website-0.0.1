@@ -31,7 +31,7 @@ export class NavBar implements OnInit {
 
   ngOnInit(): void {
     console.log("----nav-bar-Super-Admin module running--------ngOnInit------");
-    
+
     this.SuperAdminServiceObject.getMyImage().subscribe({
       next: (res) => { //console.log(JSON.parse(JSON.stringify(res)).data);
         let responseData = JSON.parse(JSON.stringify(res));
@@ -50,7 +50,7 @@ export class NavBar implements OnInit {
 
   logout() {
 
-    this.authenticationServiceObject.logout();
+    this.authenticationServiceObject.logout().subscribe();
     this.router.navigate([allRoutes.superAdminLogin]);
     // Implement your logout logic here
     // For example, you might want to clear user data and redirect to the login page

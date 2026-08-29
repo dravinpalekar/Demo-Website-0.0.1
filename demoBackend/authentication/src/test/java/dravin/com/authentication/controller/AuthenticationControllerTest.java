@@ -278,6 +278,19 @@ public class AuthenticationControllerTest {
 
 
 
+    @Test
+    @DisplayName("While User logout Should logout user successfully")
+    void logoutUser_Success() throws Exception {
+
+        when(authenticationService.logoutUser()).thenReturn(ResponseEntity.ok(Map.of("message", "User logged out successfully.")));
+
+        mockMvc.perform(post(API_AUTH + LOGOUT))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("User logged out successfully."));
+
+        verify(authenticationService).logoutUser();
+    }
+
     @AfterAll
     static void tearDown() {
         factory.close();

@@ -2,11 +2,12 @@ import { readonly } from "@angular/forms/signals";
 
 export class allRoutes {
 
-    // Define all the routes used in the application for frontend 
+    // Define all the routes used in the application for frontend
 
     static readonly notFound = "notFound";
     static readonly login = "login";
     static readonly signUp = "signUp";
+    static readonly logOut = "logout";
     static readonly forgotPassword = "forgotPassword";
     static readonly superAdminLogin = "superAdminLogin";
     static readonly superAdminSignUp = "superAdminSignUp";
@@ -28,11 +29,11 @@ export class allRoutes {
     static readonly chatBox = "chat";
 
 
-    // Define all the routes used in the application for frontend 
+    // Define all the routes used in the application for frontend
 
 
 
-    // Define all the routes used in the application for backend 
+    // Define all the routes used in the application for backend
     static readonly entryPointBackendBaseUrl = "http://localhost:8080/";
     static readonly userBackendBaseUrl = "http://localhost:8082/";
     static readonly backendWebSocketBaseUrl = "http://localhost:8081/";
@@ -69,6 +70,8 @@ export class allRoutes {
 
     static readonly loginBackendUrl = this.entryPointBackendBaseUrl + this.api + this.auth + this.signIn;
     static readonly signUpBackendUrl = this.entryPointBackendBaseUrl + this.api + this.auth + this.signUp;
+
+     static readonly logOutBackendUrl = this.entryPointBackendBaseUrl + this.api + this.auth + this.logOut;
 
     static readonly createRoleBackendUrl = this.entryPointBackendBaseUrl + this.api + this.super + this.role + this.create;
     static readonly getRoleBackendUrl = this.entryPointBackendBaseUrl + this.api + this.super + this.role + this.get;

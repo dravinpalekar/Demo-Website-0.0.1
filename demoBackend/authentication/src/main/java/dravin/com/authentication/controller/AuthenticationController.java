@@ -23,7 +23,7 @@ import static dravin.com.authentication.constant.RoutesFile.*;
 @Tag(name = "This controller is for authentication or authorisation and will be for all types of users.")
 public class AuthenticationController {
 
-    private static final Logger logger = LoggerFactory.getLogger( AuthenticationController.class );
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
 
     private final AuthenticationService authenticationService;
 
@@ -32,25 +32,26 @@ public class AuthenticationController {
     }
 
     @PostMapping(SIGN_IN)
-    @Operation(
-            summary = "Authenticate API for User Or Guest User",
-            description = "Authenticate Admin and Super-AdminFeatures as well."
-    )
-    public ResponseEntity<Map<String,Object>> authenticateUser(@Valid @RequestBody LoginRequestModel loginRequest) {
+    @Operation(summary = "Authenticate API for User Or Guest User", description = "Authenticate Admin and Super-AdminFeatures as well.")
+    public ResponseEntity<Map<String, Object>> authenticateUser(@Valid @RequestBody LoginRequestModel loginRequest) {
 
         logger.info("Attempt user for authenticate and UserName is {}", loginRequest.getUserName());
         return authenticationService.authenticateUser(loginRequest);
     }
 
-
     @PostMapping(SIGN_UP)
-    @Operation(
-            summary = "Register API for User Or Guest User",
-            description = "Register Super-Admin as well."
-    )
-    public ResponseEntity<Map<String,String>> registerUser(@Valid @RequestBody SignupRequestModel signUpRequest) {
+    @Operation(summary = "Register API for User Or Guest User", description = "Register Super-Admin as well.")
+    public ResponseEntity<Map<String, String>> registerUser(@Valid @RequestBody SignupRequestModel signUpRequest) {
 
         logger.info("Attempt user for register and email is {}", signUpRequest.getEmail());
         return authenticationService.registerUser(signUpRequest);
+    }
+
+    @PostMapping(LOGOUT)
+    @Operation(summary = "Logout API for User", description = "Logout user and clear JWT cookie.")
+    public ResponseEntity<Map<String, String>> logoutUser() {
+
+        logger.info("Attempt user logout");
+        return authenticationService.logoutUser();
     }
 }
