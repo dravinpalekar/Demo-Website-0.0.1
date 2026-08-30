@@ -115,11 +115,11 @@ public class CustomExceptionHandler {
         return errorDetail;
     }
 
-    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(ExpiredJwtException.class)
     public ProblemDetail expiredJwtException(ExpiredJwtException ex) {
 
-        errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(HttpServletResponse.SC_FORBIDDEN), ex.getMessage());
+        errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(HttpServletResponse.SC_UNAUTHORIZED), ex.getMessage());
         errorDetail.setProperty(ACCESS_DENIED_REASON, JWT_TOKEN_ALREADY_EXPIRED);
         return errorDetail;
     }

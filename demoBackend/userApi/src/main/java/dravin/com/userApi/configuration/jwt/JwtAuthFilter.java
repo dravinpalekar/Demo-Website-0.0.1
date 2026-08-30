@@ -1,12 +1,15 @@
 package dravin.com.userApi.configuration.jwt;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import jakarta.servlet.http.Cookie;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
@@ -15,10 +18,14 @@ import java.io.IOException;
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    private final HandlerExceptionResolver handlerExceptionResolver;
+    private static final Logger logger = LoggerFactory.getLogger(JwtAuthFilter.class);
 
-    public JwtAuthFilter(HandlerExceptionResolver handlerExceptionResolver) {
+    private final HandlerExceptionResolver handlerExceptionResolver;
+    private final JwtUtils jwtUtils;
+
+    public JwtAuthFilter(HandlerExceptionResolver handlerExceptionResolver, JwtUtils jwtUtils) {
         this.handlerExceptionResolver = handlerExceptionResolver;
+        this.jwtUtils = jwtUtils;
     }
 
     @Override
@@ -28,13 +35,21 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        Cookie[] getCookies = request.getCookies();
 
-        if (getCookies == null) {
+        try {
+            String jwt = jwtUtils.getJwtFromCookies(request);
 
-            handlerExceptionResolver.resolveException(request, response, null, new SignatureException("Cookies Token is required."));
-            return;
+
+            if (jwt == null || jwt.isBlank()) {
+                handlerExceptionResolver.resolveException(request, response, null, new SignatureException("Cookies Token is required."));
+                return;
+            }
+            jwtUtils.validateJwtToken(jwt);
+           
+            filterChain.doFilter(request, response);
+        } catch (ExpiredJwtException | SignatureException | MalformedJwtException ex) {
+            handlerExceptionResolver.resolveException(request, response, null, ex);
+            logger.error("Authentication Failure: {}", ex.getMessage());
         }
-        filterChain.doFilter(request, response);
     }
 }

@@ -18,7 +18,7 @@ public class JwtUtils {
     @Value("${jwtSecretKey}")
     private String jwtSecretKey;
 
-    @Value("${jwtCookieName:jwt_token}")
+    @Value("${jwtCookieName}")
     private String jwtCookieName;
 
     private SecretKey key() {
@@ -52,6 +52,14 @@ public class JwtUtils {
             return cookie.getValue();
         }
         return null;
+    }
+
+    public boolean validateJwtToken(String authToken) {
+        Jwts.parser()
+                .verifyWith(key())
+                .build()
+                .parseSignedClaims(authToken);
+        return true;
     }
 
 }
